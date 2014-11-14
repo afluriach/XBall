@@ -16,7 +16,18 @@
    H4sIAAAAAAAAA2NgGH6AmQqYGDsodSM+wATFlABCZlBqPjHmjNoxMu2gddoFAVrnQZgaWpcltAIAQuSiBdwFAAA=
   </data>
  </layer>
- <objectgroup name="agents" width="25" height="15"/>
+ <objectgroup name="agents" width="25" height="15">
+  <object name="blue_player" type="Player" x="320" y="320" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="red_player" type="Player" x="448" y="512" width="64" height="64">
+   <properties>
+    <property name="color" value="red"/>
+   </properties>
+  </object>
+ </objectgroup>
  <objectgroup name="environment" width="25" height="15"/>
  <objectgroup name="sensor" width="25" height="15">
   <object name="left_goal" type="GoalSensor" x="192" y="320" width="64" height="384">
