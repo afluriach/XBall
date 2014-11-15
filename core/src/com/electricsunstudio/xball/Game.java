@@ -37,7 +37,6 @@ public class Game extends ApplicationAdapter {
 	
 	SpriteBatch batch;
 	ShapeRenderer shapeRenderer;
-	//Texture img;
 	
 	TiledMap crntMap;
 	
@@ -86,7 +85,6 @@ public class Game extends ApplicationAdapter {
 		
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
-		//img = new Texture("badlogic.jpg");
 		setCameraPosition(new Vector2(8,6));
 		
 		loadMapObjects();
@@ -121,6 +119,8 @@ public class Game extends ApplicationAdapter {
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
+		
+		setCameraPosition(crntPlayer.getCenterPos());
 		
 		Matrix4 defaultMatrix = batch.getProjectionMatrix();
 		batch.setProjectionMatrix(camera.combined);
