@@ -40,9 +40,11 @@ public class ContactHandler implements ContactListener
 		GameObject a = (GameObject) bodyA.getUserData();
 		GameObject b = (GameObject) bodyB.getUserData();
 		
-		a.handleEndContact(b);
-		b.handleEndContact(a);
-
+		if(a != null && b != null)
+		{
+			a.handleEndContact(b);
+			b.handleEndContact(a);
+		}
 	}
 
 	@Override

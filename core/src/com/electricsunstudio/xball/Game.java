@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -17,11 +18,12 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.electricsunstudio.xball.levels.Level;
+import com.electricsunstudio.xball.levels.Level1;
 
 import com.electricsunstudio.xball.objects.Player;
+import java.util.logging.Logger;
 
 public class Game extends ApplicationAdapter {
 	public static final int PIXELS_PER_TILE = 64;
@@ -36,12 +38,15 @@ public class Game extends ApplicationAdapter {
 	OrthogonalTiledMapRenderer mapRenderer;
 	
 	OrthographicCamera camera;
-	int screenWidth, screenHeight;
+	public int screenWidth, screenHeight;
 	
-	SpriteBatch batch;
-	ShapeRenderer shapeRenderer;
+	public SpriteBatch batch;
+	public SpriteBatch guiBatch;
+	public ShapeRenderer shapeRenderer;
+	public BitmapFont font;
 	
 	TiledMap crntMap;
+	Level crntLevel;
 	
 	public GameObjectSystem gameObjectSystem;
 	public Physics physics;
@@ -81,17 +86,34 @@ public class Game extends ApplicationAdapter {
 		initCamera();
 		
 		batch = new SpriteBatch();
+		guiBatch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
+		font = new BitmapFont(Gdx.files.internal("font/arial-32.fnt"));
 		
-		loadMap("map/stadium1.tmx");
+		//loadMap("stadium1");
+		loadLevel(Level1.class);
 	}
 	
-	void loadMap(String path)
+	void loadLevel(Class cls)
+	{
+		try {
+			crntLevel = (Level) cls.getConstructor().newInstance();
+		} catch (Exception ex) {
+			Game.log("error loading level " + cls.getSimpleName());
+			ex.printStackTrace();
+			throw new RuntimeException("Error loading level");
+		}
+		
+		loadMap(crntLevel.getMapName());
+		crntLevel.init();
+	}
+	
+	void loadMap(String name)
 	{
 		gameObjectSystem = new GameObjectSystem();
 		physics = new Physics();
 		
-		crntMap = mapLoader.load(path);
+		crntMap = mapLoader.load("map/"+name+".tmx");
 		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
 		
 		loadMapObjects();
@@ -116,6 +138,8 @@ public class Game extends ApplicationAdapter {
 	
 	public void updateTick()
 	{
+		crntLevel.update();
+		
 		gameObjectSystem.update();
 		physics.update();
 		
@@ -141,10 +165,12 @@ public class Game extends ApplicationAdapter {
 		batch.begin();
 		gameObjectSystem.render(batch);
 		batch.end();
-		
+
 		controls.render(shapeRenderer);
 		
 		batch.setProjectionMatrix(defaultMatrix);
+		
+		crntLevel.render();
 	}
 	
 	public static void drawSprite(Sprite sprite, Vector2 centerPos, SpriteBatch batch, float rotation)
@@ -295,5 +321,16 @@ public class Game extends ApplicationAdapter {
 				}
 			}
 		}
+	}
+	
+	public void drawTextCentered(Color color, String msg, float x, float y)
+	{
+		float lineWidth = font.getBounds(msg).width;
+        
+		guiBatch.begin();
+		font.setScale(1f);
+        font.setColor(color);
+		font.draw(guiBatch, msg, x-lineWidth/2, y+font.getCapHeight()/2);
+		guiBatch.end();
 	}
 }

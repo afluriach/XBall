@@ -12,7 +12,7 @@ import com.electricsunstudio.xball.FilterClass;
  *
  * @author toni
  */
-public class GoldBall extends GameObject
+public class GoldBall extends Ball
 {
 	float radius = 0.5f;
 	
