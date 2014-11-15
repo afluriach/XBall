@@ -170,6 +170,7 @@ public class Game extends ApplicationAdapter {
 	public void loadMapObjects()
 	{
 		loadObjectsFromLayer(crntMap.getLayers().get("agents"));
+		loadObjectsFromLayer(crntMap.getLayers().get("sensor"));
 	}
 	
 	public void loadObjectsFromLayer(MapLayer layer)
@@ -195,11 +196,11 @@ public class Game extends ApplicationAdapter {
 		return pos;
 	}
 	
-	static void log(String msg) {
+	public static void log(String msg) {
 		Gdx.app.log("X-Ball", msg);
 	}
 	
-	static String string(Vector2 v)
+	public static String string(Vector2 v)
 	{
 		return v.x + ", " + v.y;
 	}

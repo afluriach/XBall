@@ -1,5 +1,8 @@
 package com.electricsunstudio.xball;
 
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import com.badlogic.gdx.physics.box2d.Body;
@@ -67,6 +70,7 @@ public class Physics {
 	{
 		//no gravity, allow sleeping objects
 		world = new World(new Vector2(0,0), true);
+		world.setContactListener(new ContactHandler());
 	}
 	
 	public Body addCircleBody(Vector2 pos, float radius, BodyType type, GameObject ref, float mass, boolean sensor, FilterClass filter)
@@ -96,6 +100,26 @@ public class Physics {
 		
 		return b;
 	}
+	
+	public Body addRectBody(MapObject mo,
+							BodyType type,
+							GameObject ref,
+							float mass,
+							boolean sensor,
+							FilterClass filter)
+	{
+		Rectangle pixRect = ((RectangleMapObject)mo).getRectangle();
+		
+		return addRectBody(Game.mapObjectPos(mo),
+						   pixRect.height*Game.TILES_PER_PIXEL,
+						   pixRect.width*Game.TILES_PER_PIXEL,
+						   type,
+						   ref,
+						   mass,
+						   sensor,
+						   filter);
+	}
+
 	
 	public Body addRectBody(Vector2 pos,
 						float height,
