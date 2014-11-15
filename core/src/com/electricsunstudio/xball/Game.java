@@ -12,11 +12,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import com.electricsunstudio.xball.objects.Player;
 
@@ -54,7 +57,6 @@ public class Game extends ApplicationAdapter {
 		camera = new OrthographicCamera(screenWidth, screenHeight);
 		camera.position.set(screenWidth/2, screenHeight/2, 0);
 		camera.update();
-		mapRenderer.setView(camera);
 	}
 	
 	void setCameraPosition(Vector2 pos)
@@ -70,13 +72,8 @@ public class Game extends ApplicationAdapter {
 		inst = this;
 		
 		mapLoader = new TmxMapLoader();
-		crntMap = mapLoader.load("map/stadium1.tmx");
-		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
 		
 		controls = new Controls();
-		
-		gameObjectSystem = new GameObjectSystem();
-		physics = new Physics();
 		
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
@@ -85,12 +82,24 @@ public class Game extends ApplicationAdapter {
 		
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
-		setCameraPosition(new Vector2(8,6));
+		
+		loadMap("map/stadium1.tmx");
+	}
+	
+	void loadMap(String path)
+	{
+		gameObjectSystem = new GameObjectSystem();
+		physics = new Physics();
+		
+		crntMap = mapLoader.load(path);
+		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
 		
 		loadMapObjects();
 		gameObjectSystem.handleAdditions();
 		
 		crntPlayer = gameObjectSystem.getObjectByName("blue_player", Player.class);
+
+		addWalls();
 	}
 
 	public void update()
@@ -259,4 +268,30 @@ public class Game extends ApplicationAdapter {
 		return new Color(r1+m, g1+m, b1+m, a);
 	}
 
+	public void addWalls()
+	{
+		TiledMapTileLayer wallLayer = (TiledMapTileLayer) crntMap.getLayers().get("wall");
+		int width = wallLayer.getWidth();
+		int height = wallLayer.getHeight();
+
+		for(int i=0;i<height; ++i)
+		{
+			for(int j=0;j<width; ++j)
+			{
+				if(wallLayer.getCell(j,  i) != null)
+				{
+					physics.addRectBody(
+						new Vector2(j+0.5f,i+0.5f),
+						1f,
+						1f,
+						BodyType.StaticBody,
+						null,
+						1f,
+						false,
+						FilterClass.wall
+					);
+				}
+			}
+		}
+	}
 }
