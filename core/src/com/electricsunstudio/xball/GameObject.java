@@ -102,6 +102,12 @@ public abstract class GameObject
 		this.name = name;
 	}
 	
+	public void setRotation(Vector2 v)
+	{
+		//vector2 and sprite angle conventions are different
+		rotation = v.angle() - 90;
+	}
+	
 	public void expire()
 	{
 		if(!expired)

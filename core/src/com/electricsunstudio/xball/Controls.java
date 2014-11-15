@@ -23,7 +23,7 @@ public class Controls {
 	int width;
 	int height;
 	
-	Vector2 controlPadPos = Vector2.Zero;
+	public Vector2 controlPadPos = Vector2.Zero;
 
 	boolean kick, grab, lock = false;
 	

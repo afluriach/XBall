@@ -18,6 +18,8 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import com.electricsunstudio.xball.objects.Player;
+
 public class Game extends ApplicationAdapter {
 	public static final int PIXELS_PER_TILE = 64;
 	public static final float TILES_PER_PIXEL = (float) (1.0/PIXELS_PER_TILE);
@@ -44,7 +46,9 @@ public class Game extends ApplicationAdapter {
 	
 	float updateDelta = 0;
 	
-	Controls controls;
+	public Controls controls;
+	
+	public Player crntPlayer;
 	
 	void initCamera()
 	{
@@ -87,6 +91,8 @@ public class Game extends ApplicationAdapter {
 		
 		loadMapObjects();
 		gameObjectSystem.handleAdditions();
+		
+		crntPlayer = gameObjectSystem.getObjectByName("blue_player", Player.class);
 	}
 
 	public void update()
@@ -104,7 +110,9 @@ public class Game extends ApplicationAdapter {
 	public void updateTick()
 	{
 		gameObjectSystem.update();
-		//physics update
+		physics.update();
+		
+		crntPlayer.handleControls();
 	}
 	
 	@Override
