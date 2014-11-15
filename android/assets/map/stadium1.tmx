@@ -17,24 +17,17 @@
   </data>
  </layer>
  <objectgroup name="agents" width="25" height="15">
-  <object name="blue_player" type="Player" x="320" y="384" width="64" height="64">
+  <object name="blue_player" type="Player" x="320" y="448" width="64" height="64">
    <properties>
     <property name="color" value="blue"/>
    </properties>
   </object>
-  <object name="red_player" type="Player" x="256" y="640" width="64" height="64">
+  <object name="red_player" type="Player" x="1024" y="448" width="64" height="64">
    <properties>
     <property name="color" value="red"/>
    </properties>
   </object>
-  <object name="red_player" type="Player" x="320" y="256" width="64" height="64">
-   <properties>
-    <property name="color" value="red"/>
-   </properties>
-  </object>
-  <object name="ball1" type="GoldBall" x="704" y="448" width="64" height="64"/>
-  <object name="ball2" type="GoldBall" x="576" y="576" width="64" height="64"/>
-  <object name="ball3" type="GoldBall" x="832" y="576" width="64" height="64"/>
+  <object name="ball1" type="GoldBall" x="672" y="448" width="64" height="64"/>
  </objectgroup>
  <objectgroup name="environment" width="25" height="15"/>
  <objectgroup name="sensor" width="25" height="15">
