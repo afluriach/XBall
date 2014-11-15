@@ -19,12 +19,22 @@ public class GoldBall extends Ball
 	public GoldBall(MapObject mo)
 	{
 		super(mo);
-		
+		create(Game.mapObjectPos(mo));
+	}
+	
+	public GoldBall(Vector2 pos)
+	{
+		super();
+		create(pos);
+	}
+	
+	void create(Vector2 pos)
+	{
 		//load the appropriate sprite
 		sprite = Game.loadSprite("gold_ball");
 		
 		physicsBody = Game.inst.physics.addCircleBody(
-			Game.mapObjectPos(mo),
+			pos,
 			radius,
 			BodyType.DynamicBody,
 			this,

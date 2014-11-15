@@ -17,12 +17,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.electricsunstudio.xball.levels.Level;
 import com.electricsunstudio.xball.levels.Level1;
 
 import com.electricsunstudio.xball.objects.Player;
+import java.util.Random;
 import java.util.logging.Logger;
 
 public class Game extends ApplicationAdapter {
@@ -57,6 +59,8 @@ public class Game extends ApplicationAdapter {
 	
 	public Player crntPlayer;
 	
+	public Random rand;
+	
 	void initCamera()
 	{
 		camera = new OrthographicCamera(screenWidth, screenHeight);
@@ -82,6 +86,8 @@ public class Game extends ApplicationAdapter {
 		
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
+		
+		rand = new Random();
 		
 		initCamera();
 		
@@ -332,5 +338,16 @@ public class Game extends ApplicationAdapter {
         font.setColor(color);
 		font.draw(guiBatch, msg, x-lineWidth/2, y+font.getCapHeight()/2);
 		guiBatch.end();
+	}
+	
+	public static Rectangle toTilespace(Rectangle r)
+	{
+		Rectangle rect = new Rectangle();
+		rect.x = r.x *TILES_PER_PIXEL;
+		rect.y = r.y *TILES_PER_PIXEL;
+		rect.width = r.width *TILES_PER_PIXEL;
+		rect.height = r.height *TILES_PER_PIXEL;
+		
+		return rect;
 	}
 }

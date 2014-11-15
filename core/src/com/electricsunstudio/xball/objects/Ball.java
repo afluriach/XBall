@@ -13,4 +13,14 @@ public abstract class Ball extends GameObject
 	{
 		super(mo);
 	}
+	
+	public Ball(String name)
+	{
+		super(name);
+	}
+	
+	public Ball()
+	{
+		super("ball");
+	}
 }

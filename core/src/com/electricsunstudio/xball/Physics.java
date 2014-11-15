@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import java.util.Map;
 import java.util.EnumMap;
@@ -162,4 +163,27 @@ public class Physics {
 		Game.inst.gameObjectSystem.applyAccel();
 		world.step(Game.SECONDS_PER_FRAME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 	}
+	
+	void queryAABB(Rectangle rect, QueryCallback cb)
+	{
+		world.QueryAABB(cb, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);        
+	}
+
+	/**
+	 * check to see if there is any object obstructing a given space
+	 * @param rect the area to check
+	 * @return whether or not there is an object present
+	 */
+	public boolean checkSpace(Rectangle rect)
+	{
+		DetectObjectCallback cb = new DetectObjectCallback();
+		queryAABB(rect, cb);
+		return cb.detected();
+	}
+	
+	public void removeBody(Body b)
+	{
+		world.destroyBody(b);
+	}
+
 }

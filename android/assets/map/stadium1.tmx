@@ -29,7 +29,6 @@
   </object>
   <object name="ball1" type="GoldBall" x="672" y="448" width="64" height="64"/>
  </objectgroup>
- <objectgroup name="environment" width="25" height="15"/>
  <objectgroup name="sensor" width="25" height="15">
   <object name="player_goal" type="GoalSensor" x="192" y="320" width="64" height="384">
    <properties>
@@ -41,5 +40,6 @@
     <property name="team" value="right"/>
    </properties>
   </object>
+  <object name="spawn_sensor" type="SpawnSensor" x="672" y="256" width="64" height="512"/>
  </objectgroup>
 </map>

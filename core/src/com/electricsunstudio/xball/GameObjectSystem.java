@@ -91,6 +91,10 @@ public class GameObjectSystem
 		//if a gameobject is touching another when it is expiring, the physics engine will not register an end contact
 		for(GameObject go : expired)
 		{
+			if(go.physicsBody != null)
+			{
+				Game.inst.physics.removeBody(go.physicsBody);
+			}
 			remove(go);
 		}
 	}
@@ -137,7 +141,29 @@ public class GameObjectSystem
 		}
 		return (List<T>) results;
 	}
-        
+    
+	public <T> T getObjectByType(Class<T> cls)
+	{
+		ArrayList<GameObject> results = new ArrayList<GameObject>();
+		for(GameObject go : gameObjects)
+		{
+			if(cls.isInstance(go))
+				return (T) go;
+		}
+		return null;
+	}
+	
+	public int countObjectsByType(Class cls)
+	{
+		int count = 0;
+		for(GameObject go : gameObjects)
+		{
+			if(cls.isInstance(go))
+				++count;
+		}
+		return count;		
+	}
+	
 	public List<GameObject> getObjects()
 	{
 		return gameObjects;

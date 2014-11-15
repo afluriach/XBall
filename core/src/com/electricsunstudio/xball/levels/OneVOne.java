@@ -5,6 +5,7 @@ import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.BallNotify;
 import com.electricsunstudio.xball.objects.GoalSensor;
 import com.electricsunstudio.xball.objects.Ball;
+import com.electricsunstudio.xball.objects.SpawnSensor;
 
 /**
  *
@@ -13,15 +14,18 @@ import com.electricsunstudio.xball.objects.Ball;
 public abstract class OneVOne extends Level {
 	GoalSensor playerGoal,opponentGoal;
 	int playerScore, opponentScore;
+	SpawnSensor spawnSensor;
 	
 	@Override
 	public void init()
 	{
 		playerGoal = Game.inst.gameObjectSystem.getObjectByName("player_goal", GoalSensor.class);
 		opponentGoal = Game.inst.gameObjectSystem.getObjectByName("opponent_goal", GoalSensor.class);
+		spawnSensor = Game.inst.gameObjectSystem.getObjectByType(SpawnSensor.class);
 		
 		playerGoal.notifier = new PlayerGoalHit();
 		opponentGoal.notifier = new OpponentGoalHit();
+		
 	}
 
 	@Override
