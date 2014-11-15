@@ -191,6 +191,7 @@ public class Game extends ApplicationAdapter {
 		Vector2 pos = new Vector2(mo.getProperties().get("x", Float.class),
 								  mo.getProperties().get("y", Float.class));
 		pos.scl(Game.TILES_PER_PIXEL);
+		pos.add(0.5f, 0.5f);
 		return pos;
 	}
 	
