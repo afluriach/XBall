@@ -2,10 +2,13 @@ package com.electricsunstudio.xball;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -31,12 +34,17 @@ public class Game extends ApplicationAdapter {
 	int screenWidth, screenHeight;
 	
 	SpriteBatch batch;
+	ShapeRenderer shapeRenderer;
 	//Texture img;
 	
 	TiledMap crntMap;
 	
 	public GameObjectSystem gameObjectSystem;
 	public Physics physics;
+	
+	float updateDelta = 0;
+	
+	Controls controls;
 	
 	void initCamera()
 	{
@@ -62,6 +70,8 @@ public class Game extends ApplicationAdapter {
 		crntMap = mapLoader.load("map/stadium1.tmx");
 		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
 		
+		controls = new Controls();
+		
 		gameObjectSystem = new GameObjectSystem();
 		physics = new Physics();
 		
@@ -71,6 +81,7 @@ public class Game extends ApplicationAdapter {
 		initCamera();
 		
 		batch = new SpriteBatch();
+		shapeRenderer = new ShapeRenderer();
 		//img = new Texture("badlogic.jpg");
 		setCameraPosition(new Vector2(8,6));
 		
@@ -78,8 +89,28 @@ public class Game extends ApplicationAdapter {
 		gameObjectSystem.handleAdditions();
 	}
 
+	public void update()
+	{
+		controls.update();
+		
+		updateDelta += Gdx.graphics.getDeltaTime();
+		while(updateDelta >= SECONDS_PER_FRAME)
+		{
+			updateDelta -= SECONDS_PER_FRAME;
+			updateTick();
+		}
+	}
+	
+	public void updateTick()
+	{
+		gameObjectSystem.update();
+		//physics update
+	}
+	
 	@Override
 	public void render () {
+		update();
+		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
 		
@@ -94,24 +125,29 @@ public class Game extends ApplicationAdapter {
 		gameObjectSystem.render(batch);
 		batch.end();
 		
+		controls.render(shapeRenderer);
+		
 		batch.setProjectionMatrix(defaultMatrix);
 	}
 	
-	public static void drawTexture(Texture texture, Vector2 centerPos, SpriteBatch batch)
+	public static void drawSprite(Sprite sprite, Vector2 centerPos, SpriteBatch batch, float rotation)
 	{
-		int centerPixX = (int) (centerPos.x*Game.PIXELS_PER_TILE);
-		int centerPixY = (int) (centerPos.y*Game.PIXELS_PER_TILE);
-
-		//lower left corner
-		int x = centerPixX - texture.getWidth()/2;
-		int y = centerPixY - texture.getHeight()/2;
+		Vector2 pix = centerPos.cpy().scl(Game.PIXELS_PER_TILE);
 		
-		batch.draw(texture, x, y, texture.getWidth(), texture.getHeight());
+		sprite.setCenter(pix.x, pix.y);
+		sprite.setRotation(rotation);
+		
+		sprite.draw(batch);
 	}
 	
-	public static Texture loadSprite(String name)
+	public static Sprite loadSprite(String name)
 	{
-		return new Texture(Gdx.files.internal("sprite/"+name+".png"));
+		Texture texture = new Texture(Gdx.files.internal("sprite/"+name+".png"));
+		Sprite sprite = new Sprite(texture);
+		
+		sprite.setOriginCenter();
+		
+		return sprite;
 	}
 	
 	public void loadMapObjects()
@@ -148,6 +184,71 @@ public class Game extends ApplicationAdapter {
 	static String string(Vector2 v)
 	{
 		return v.x + ", " + v.y;
+	}
+
+		/**
+	 *
+	 * @param h [0.0 to 360.0)
+	 * @param s [0.0 to 1.0]
+	 * @param v [0.0 to 1.0]
+	 * @param a [0.0 to 1.0]
+	 * @return
+	 */
+	public static Color hsva(float h, float s, float v, float a)
+	{
+		float r1, g1, b1;
+		float C = v*s;
+		float hPrime = h / 60;
+		float x = C*(1-Math.abs(hPrime % 2.0f - 1));
+		float m = v - C;
+		
+		if(s == 0)
+		{
+			//hue is undefined and no color will be added
+			r1 = g1 = b1 = 0;
+		}
+		else if(0 <= hPrime && hPrime < 1)
+		{
+			r1 = C;
+			g1 = x;
+			b1 = 0;
+		}
+		else if(1 <= hPrime && hPrime < 2)
+		{
+			r1 = x;
+			g1 = C;
+			b1 = 0;
+		}
+		else if(2 <= hPrime && hPrime < 3)
+		{
+			r1 = 0;
+			g1 = C;
+			b1 = x;
+		}
+		else if(3 <= hPrime && hPrime < 4)
+		{
+			r1 = 0;
+			g1 = x;
+			b1 = C;
+		}
+		else if(4 <= hPrime && hPrime < 5)
+		{
+			r1 = x;
+			g1 = 0;
+			b1 = C;
+		}
+		else if(5 <= hPrime && hPrime < 6)
+		{
+			r1 = C;
+			g1 = 0;
+			b1 = x;
+		}
+		else
+		{
+			throw new IllegalArgumentException(String.format("Illegal hue given: %f", h));
+		}
+		
+		return new Color(r1+m, g1+m, b1+m, a);
 	}
 
 }

@@ -151,4 +151,19 @@ public class GameObjectSystem
 		}		
 		return true;
 	}
+	
+	public void update()
+	{
+		handleAdditions();
+		updateAll();
+		removeExpired();
+	}
+	
+	public void applyAccel()
+	{
+		for(GameObject go : gameObjects)
+		{
+			go.applyAccel();
+		}
+	}
 }

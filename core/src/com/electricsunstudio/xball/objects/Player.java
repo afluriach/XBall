@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
+import com.electricsunstudio.xball.FilterClass;
 
 /**
  *
@@ -28,12 +29,12 @@ public class Player extends GameObject
 			this,
 			10,
 			false,
-			"");
+			FilterClass.player);
 	}
 	
 	public void update()
 	{
-		
+		rotation += 1;
 	}
 	
 	public void handleContact(GameObject other)

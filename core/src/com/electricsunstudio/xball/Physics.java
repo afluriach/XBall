@@ -1,24 +1,18 @@
 package com.electricsunstudio.xball;
 
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import java.util.Map;
-import java.util.TreeMap;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
+import java.util.EnumMap;
+import java.util.HashMap;
 
 
 /**
@@ -26,7 +20,48 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
  * @author toni
  */
 public class Physics {
+	public static final int VELOCITY_ITERATIONS = 8;
+	public static final int POSITION_ITERATIONS = 3;
+	
 	World world;
+	
+	public static final short
+		playerCategory = 1,
+		ballCategory = 2,
+		wallCategory = 4,
+		ballSensorCategory = 8;
+
+	//the mask type is short but the result of the expression is int
+	public static void putFilter(short category, int mask, FilterClass cls, Map map)
+	{
+		Filter filter = new Filter();
+		filter.categoryBits = category;
+		filter.maskBits = (short) mask;
+		map.put(cls, filter);
+	}
+	
+	public static Map<FilterClass, Filter> collisionFilters = new EnumMap<FilterClass,Filter>(FilterClass.class) {{
+		
+		putFilter(playerCategory,
+			playerCategory | ballCategory | wallCategory,
+			FilterClass.player,
+			this);
+		
+		putFilter(ballCategory,
+			playerCategory | ballCategory | wallCategory | ballSensorCategory,
+			FilterClass.ball,
+			this);
+		
+		putFilter(wallCategory,
+			playerCategory | ballCategory ,
+			FilterClass.wall,
+			this);
+		
+		putFilter(ballSensorCategory,
+				  ballCategory,
+				  FilterClass.ballSensor,
+				  this);
+	}};
 
 	public Physics()
 	{
@@ -34,7 +69,7 @@ public class Physics {
 		world = new World(new Vector2(0,0), true);
 	}
 	
-	public Body addCircleBody(Vector2 pos, float radius, BodyType type, GameObject ref, float mass, boolean sensor, String filter)
+	public Body addCircleBody(Vector2 pos, float radius, BodyType type, GameObject ref, float mass, boolean sensor, FilterClass filter)
 	{
 		float area = (float) (Math.PI*radius*radius);
 		float density = mass/area;
@@ -52,7 +87,7 @@ public class Physics {
 		
 		Fixture f = b.createFixture(shape, density);
 		f.setSensor(sensor);
-		//f.setFilterData(collisionFilters.get(filter));
+		f.setFilterData(collisionFilters.get(filter));
 		
 		b.setUserData(ref);
 		b.resetMassData();
@@ -60,5 +95,47 @@ public class Physics {
 		shape.dispose();
 		
 		return b;
+	}
+	
+	public Body addRectBody(Vector2 pos,
+						float height,
+						float width,
+						BodyType type,
+						GameObject ref,
+						float mass,
+						boolean sensor,
+						FilterClass filter)
+	{
+		float area = height*width;
+		float density = mass/area;
+		
+		BodyDef bd = new BodyDef();
+		
+		bd.type = type;
+		bd.fixedRotation = true;
+		bd.position.set(pos);
+		
+		Body b = world.createBody(bd);
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(width/2, height/2);
+		
+		Fixture f = b.createFixture(shape, density);
+		f.setSensor(sensor);
+		
+		b.setUserData(ref);
+		b.resetMassData();
+
+		f.setFilterData(collisionFilters.get(filter));
+		
+		shape.dispose();
+		
+		return b;
+	}
+	
+	public void update()
+	{
+		Game.inst.gameObjectSystem.applyAccel();
+		world.step(Game.SECONDS_PER_FRAME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 	}
 }

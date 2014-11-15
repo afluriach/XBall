@@ -1,6 +1,7 @@
 package com.electricsunstudio.xball;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -86,7 +87,10 @@ public abstract class GameObject
 	String name;
 	boolean expired = false;
 
-	public Texture sprite;
+	public Sprite sprite;
+	public float rotation;
+	
+	Vector2 crntAcceleration;
 	
 	public GameObject(MapObject mo)
 	{
@@ -138,7 +142,21 @@ public abstract class GameObject
 	public void setPos(Vector2 pos)
 	{
 		physicsBody.setTransform(pos, physicsBody.getAngle());
-	}	
+	}
+	
+	public void setAccel(Vector2 acc)
+	{
+		crntAcceleration = acc;
+	}
+	
+	public void applyAccel()
+	{
+		if(crntAcceleration != null)
+		{
+			Vector2 dv = crntAcceleration.cpy().scl(Game.SECONDS_PER_FRAME);
+			setVel(getVel().add(dv));
+		}
+	}
 	
 	@Override
 	public String toString()
@@ -264,7 +282,7 @@ public abstract class GameObject
 	public void render(SpriteBatch sb)
 	{
 		if(sprite != null)
-			Game.drawTexture(sprite, getCenterPos(), sb);
+			Game.drawSprite(sprite, getCenterPos(), sb, rotation);
 	}
 	public abstract void handleContact(GameObject other);
 	public abstract void handleEndContact(GameObject other);
