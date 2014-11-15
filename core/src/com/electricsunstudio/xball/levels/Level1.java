@@ -2,7 +2,6 @@ package com.electricsunstudio.xball.levels;
 
 import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.Game;
-import com.electricsunstudio.xball.objects.GoalSensor;
 import com.electricsunstudio.xball.objects.Ball;
 import com.electricsunstudio.xball.objects.GoldBall;
 

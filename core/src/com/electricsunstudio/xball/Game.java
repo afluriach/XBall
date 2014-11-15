@@ -215,7 +215,7 @@ public class Game extends ApplicationAdapter {
 			
 			gameObjectSystem.addObject(obj);
 			
-			log(String.format("loaded object %s, %s at %s", obj.getName(), obj.getClass().getName(), Game.string(obj.getCenterPos())));
+			log(String.format("loaded object %s, %s at %s", obj.getName(), obj.getClass().getSimpleName(), Game.string(obj.getCenterPos())));
 		}
 	}
 	
