@@ -17,7 +17,9 @@ public class Controls {
 	public static final int buttonTrimThickness = 5;
 	
 	public static final int controlpadDiameter = 240;
-	public static final int controlpadDeadzone = 40;
+	public static final float controlpadDeadzone = 1.0f/6;
+	public static final float controlpadMax = 0.8f;
+	public static final float actualRange = controlpadMax - controlpadDeadzone;
 
 	//screen
 	int width;
@@ -32,7 +34,10 @@ public class Controls {
 	Pair<Color,Color> kickColor = new Pair(Game.hsva(10f,.8f,.3f, 1f), Game.hsva(10f, 1f, .8f, 1f));
 	Pair<Color,Color> grabColor = new Pair(Game.hsva(251f,.8f,.3f, 1f), Game.hsva(251f, 1f, .8f, 1f));
 	Pair<Color,Color> lockColor = new Pair(Game.hsva(130f,.8f,.3f, 1f), Game.hsva(130f, 1f, .8f, 1f));
-	Pair<Color,Color> controlPadColor = new Pair(Game.hsva(251f,.1f,.3f, 1f), Game.hsva(251f, .1f, .8f, 1f));
+	
+	Color controlPadOuterColor = Game.hsva(251, .3f, .7f, 1f);
+	Color controlPadColor = Game.hsva(251f,.1f,.3f, 1f);
+	Color controlPadInnerColor = Game.hsva(251f, .1f, .8f, 1f);
 		
 	public Controls()
 	{
@@ -78,8 +83,17 @@ public class Controls {
 		drawButton(shapeRenderer, kick, kickColor, kickButton);
 		drawButton(shapeRenderer, grab, grabColor, grabButton);
 		drawButton(shapeRenderer, lock, lockColor, lockButton);
-		drawButton(shapeRenderer, false, controlPadColor, controlPad);
 		
+		//draw outer margin
+		shapeRenderer.setColor(controlPadOuterColor);
+		shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius);
+		
+		shapeRenderer.setColor(controlPadColor);
+		shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadMax);
+
+		shapeRenderer.setColor(controlPadInnerColor);
+		shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadDeadzone);
+
 		shapeRenderer.end();
 	}
 	
@@ -106,10 +120,18 @@ public class Controls {
 		else if(controlPad.contains(point))
 		{
 			Vector2 posOnPad = point.cpy().sub(new Vector2(controlPad.x, controlPad.y));
+			float dist = posOnPad.len()/controlPad.radius;
+			Vector2 posNorm = posOnPad.nor();
 			
-			if(posOnPad.len2() >= controlpadDeadzone*controlpadDeadzone)
+			if(dist >= controlpadDeadzone)
 			{
-				controlPadPos = posOnPad.scl((float)1.0/controlPad.radius);
+				float actualDist = (dist - controlpadDeadzone) / actualRange;
+				
+				//scale to get full range of speed between deadzone and max margin
+				if(actualDist < 1)
+					posNorm.scl(actualDist);
+				
+				controlPadPos = posNorm;
 			}
 		}
 	}
