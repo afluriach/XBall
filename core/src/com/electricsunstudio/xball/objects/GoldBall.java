@@ -17,6 +17,7 @@ public class GoldBall extends Ball
 {
 	float radius = 0.5f;
 	float elasticity = 0.4f;
+	float uk = 0.02f;
 	
 	public GoldBall(MapObject mo)
 	{
@@ -49,6 +50,7 @@ public class GoldBall extends Ball
 	
 	public void update()
 	{
+		applyKineticFriction(uk);
 	}
 	
 	public void handleContact(GameObject other)

@@ -27,6 +27,8 @@ public class Physics {
 	public static final int VELOCITY_ITERATIONS = 8;
 	public static final int POSITION_ITERATIONS = 3;
 	
+	public static final float GRAVITY = 9.8f;
+	
 	World world;
 	
 	public static final short

@@ -296,4 +296,28 @@ public abstract class GameObject
 	public abstract void handleContact(GameObject other);
 	public abstract void handleEndContact(GameObject other);
 	public abstract void init();
+	
+	public void applyKineticFriction(float uk)
+	{
+		//impulse is F*t so
+		//F*t =
+		//m*a*t =
+		//m*v/t*t
+		//m*v
+		//impulse / mass is dv
+		float impulseMag = physicsBody.getMass()*Physics.GRAVITY*uk*Game.SECONDS_PER_FRAME;
+		float dv = Physics.GRAVITY*uk*Game.SECONDS_PER_FRAME;
+		
+		if(getVel().len2() <= dv*dv)
+		{
+			//if dv >= velocity, kinetic friction will halt object in the next frame
+			//set velocity to zero to avoid overshooting
+			setVel(Vector2.Zero);
+		}
+		else
+		{
+			Vector2 impulse = getVel().scl(-impulseMag);
+			physicsBody.applyLinearImpulse(impulse, getCenterPos(), true);
+		}
+	}
 }
