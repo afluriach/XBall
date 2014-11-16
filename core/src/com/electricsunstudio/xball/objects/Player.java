@@ -21,15 +21,13 @@ public class Player extends GameObject
 {
 	float speed = 3f;
 	float accel = 5f;
-	
-	float radius = 0.5f;
-	
+
 	Sprite actionEffect;
 	float fadeStart = 0.4f;
 	
 	float kickInterval = 0.7f;
-	float kickDist = 1.5f;
-	float kickWidth = 30f;
+	float kickDist = 2.75f;
+	float kickWidth = 45f;
 	float kickPower = 10f;
 	
 	float actionCooldown;
@@ -37,6 +35,8 @@ public class Player extends GameObject
 	public Player(MapObject mo)
 	{
 		super(mo);
+		
+		radius = 0.5f;
 		
 		String color = mo.getProperties().get("color", String.class);
 		
@@ -151,7 +151,7 @@ public class Player extends GameObject
 		for(GameObject go : prospective)
 		{
 			Vector2 disp = go.getCenterPos().sub(getCenterPos());
-			if(disp.len2() <= radius*radius &&
+			if(disp.len2() <= (radius+go.radius)*(radius+go.radius) &&
 			   disp.dot(facing) >= widthCos)
 			{
 				actual.add(go);
@@ -167,11 +167,11 @@ public class Player extends GameObject
 		//show the kick effect, sprite will remain in place and fade out
 		actionEffect = Game.loadSprite("kick_effect");
 		//draw the kick effect in front of the player
-		Vector2 disp = Game.rayRad(radius, Math.toRadians(rotation+90));
+		Vector2 disp = Game.rayRad(radius+0.25, Math.toRadians(rotation+90));
 		actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
 		actionEffect.setRotation(rotation);
 		
-		ArrayList<GameObject> targets = coneQuery(radius + kickDist, rotation+90, kickWidth);
+		ArrayList<GameObject> targets = coneQuery(radius + 0.25f + kickDist, rotation+90, kickWidth);
 		
 		//any object in the cone will have a force applied
 		for(GameObject go : targets)

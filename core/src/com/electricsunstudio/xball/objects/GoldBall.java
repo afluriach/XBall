@@ -15,7 +15,6 @@ import com.electricsunstudio.xball.Physics;
  */
 public class GoldBall extends Ball
 {
-	float radius = 0.5f;
 	float elasticity = 0.4f;
 	float uk = 0.02f;
 	
@@ -33,6 +32,8 @@ public class GoldBall extends Ball
 	
 	void create(Vector2 pos)
 	{
+		radius = 0.5f;
+		
 		//load the appropriate sprite
 		sprite = Game.loadSprite("gold_ball");
 		

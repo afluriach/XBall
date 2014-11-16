@@ -20,6 +20,7 @@ public abstract class GameObject
 	//to get the full path name. i.e. all objects that can be loaded by name
 	//will be in this package (including subpackages)
 	public static final String basePackage = "com.electricsunstudio.xball.objects";
+	public float radius;
 
 	public static Class<?> getObjectClass(String name)
 	{
@@ -319,5 +320,10 @@ public abstract class GameObject
 			Vector2 impulse = getVel().scl(-impulseMag);
 			physicsBody.applyLinearImpulse(impulse, getCenterPos(), true);
 		}
+	}
+	
+	public float getRadius()
+	{
+		return radius;
 	}
 }
