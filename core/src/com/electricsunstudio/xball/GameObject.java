@@ -107,9 +107,19 @@ public abstract class GameObject
 		physicsBody.setTransform(getCenterPos(), (float)Math.toRadians(rotation));
 	}
 	
+	public void setRotationRad(float rad)
+	{
+		physicsBody.setTransform(getCenterPos(), rad);
+	}
+	
 	public float getRotation()
 	{
 		return (float) Math.toDegrees(physicsBody.getAngle());
+	}
+
+	public float getRotationRad()
+	{
+		return physicsBody.getAngle();
 	}
 
 	

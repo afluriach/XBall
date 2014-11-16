@@ -21,7 +21,8 @@ public class Player extends GameObject
 {
 	float speed = 3f;
 	float accel = 5f;
-
+	float angularSpeedMult = 10f;
+	
 	Sprite actionEffect;
 	float fadeStart = 0.4f;
 	
@@ -125,7 +126,16 @@ public class Player extends GameObject
 	{
 		if(Game.inst.controls.aimPadPos.len2() != 0)
 		{
-			setRotation(Game.inst.controls.aimPadPos);
+			float targetAngle = Game.inst.controls.aimPadPos.angleRad();
+			
+			//predict 1/2 second ahead
+			float nextAngle = getRotationRad() + physicsBody.getAngularVelocity() / 2;
+			float totalRotation = targetAngle- nextAngle;
+			while ( totalRotation < -Math.PI ) totalRotation += Math.PI*2;
+			while ( totalRotation >  Math.PI) totalRotation -= Math.PI*2;
+			float desiredAngularVelocity = totalRotation*angularSpeedMult;
+			float impulse = physicsBody.getInertia() * desiredAngularVelocity*Game.SECONDS_PER_FRAME;
+			physicsBody.applyAngularImpulse(impulse, true);
 		}
 	}
 	
