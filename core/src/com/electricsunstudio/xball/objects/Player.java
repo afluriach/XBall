@@ -94,6 +94,7 @@ public class Player extends GameObject
 	public void handleControls()
 	{
 		handleMoveControls();
+		handleAimControls();
 		handleActionControls();
 	}
 	
@@ -118,9 +119,13 @@ public class Player extends GameObject
 			setAccel(velDisp.nor().scl(accel));
 		}
 		
-		if(targetVelocity.len2() != 0)
+	}
+	
+	void handleAimControls()
+	{
+		if(Game.inst.controls.aimPadPos.len2() != 0)
 		{
-			setRotation(targetVelocity);
+			setRotation(Game.inst.controls.aimPadPos);
 		}
 	}
 	
@@ -167,11 +172,11 @@ public class Player extends GameObject
 		//show the kick effect, sprite will remain in place and fade out
 		actionEffect = Game.loadSprite("kick_effect");
 		//draw the kick effect in front of the player
-		Vector2 disp = Game.rayRad(radius+0.25, Math.toRadians(rotation+90));
+		Vector2 disp = Game.rayRad(radius+0.25, Math.toRadians(getRotation()));
 		actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
-		actionEffect.setRotation(rotation);
+		actionEffect.setRotation(getRotation()-90);
 		
-		ArrayList<GameObject> targets = coneQuery(radius + 0.25f + kickDist, rotation+90, kickWidth);
+		ArrayList<GameObject> targets = coneQuery(radius + 0.25f + kickDist, getRotation(), kickWidth);
 		
 		//any object in the cone will have a force applied
 		for(GameObject go : targets)

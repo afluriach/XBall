@@ -86,7 +86,6 @@ public abstract class GameObject
 	boolean expired = false;
 
 	public Sprite sprite;
-	public float rotation;
 	
 	Vector2 crntAcceleration;
 	
@@ -103,8 +102,16 @@ public abstract class GameObject
 	public void setRotation(Vector2 v)
 	{
 		//vector2 and sprite angle conventions are different
-		rotation = v.angle() - 90;
+		float rotation = v.angle();
+		
+		physicsBody.setTransform(getCenterPos(), (float)Math.toRadians(rotation));
 	}
+	
+	public float getRotation()
+	{
+		return (float) Math.toDegrees(physicsBody.getAngle());
+	}
+
 	
 	public void expire()
 	{
@@ -159,7 +166,6 @@ public abstract class GameObject
 			setVel(getVel().add(dv));
 		}
 	}
-	
 	@Override
 	public String toString()
 	{
@@ -274,7 +280,7 @@ public abstract class GameObject
 	{
 		return name;
 	}	
-		
+
 	/**
 	 * set each of the GameObjects fixtures to 
 	 * @param sensor the value to set. if true, fixtures will still register collisions but will not have any solid physical presence.
@@ -292,7 +298,7 @@ public abstract class GameObject
 	public void render(SpriteBatch sb)
 	{
 		if(sprite != null)
-			Game.drawSprite(sprite, getCenterPos(), sb, rotation);
+			Game.drawSprite(sprite, getCenterPos(), sb, getRotation()-90);
 	}
 	public abstract void handleContact(GameObject other);
 	public abstract void handleEndContact(GameObject other);
