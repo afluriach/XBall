@@ -91,10 +91,7 @@ public class GameObjectSystem
 		//if a gameobject is touching another when it is expiring, the physics engine will not register an end contact
 		for(GameObject go : expired)
 		{
-			if(go.physicsBody != null)
-			{
-				Game.inst.physics.removeBody(go.physicsBody);
-			}
+			go.onExpire();
 			remove(go);
 		}
 	}

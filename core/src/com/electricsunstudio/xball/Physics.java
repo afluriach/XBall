@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -179,6 +180,13 @@ public class Physics {
 		DetectObjectCallback cb = new DetectObjectCallback();
 		queryAABB(rect, cb);
 		return cb.detected();
+	}
+	
+	public ArrayList<GameObject> getWithinSpace(Rectangle rect)
+	{
+		ObjectsInSpaceCallback cb = new ObjectsInSpaceCallback();
+		queryAABB(rect, cb);
+		return cb.detected;
 	}
 	
 	public void removeBody(Body b)

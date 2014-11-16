@@ -107,8 +107,6 @@ public abstract class GameObject
 	
 	public void expire()
 	{
-		if(!expired)
-			onExpire();
 		expired = true;
 	}
 	
@@ -169,6 +167,14 @@ public abstract class GameObject
 	
 	public void onExpire()
 	{
+		if(physicsBody != null)
+		{
+			Game.inst.physics.removeBody(physicsBody);
+		}
+		if(sprite != null)
+		{
+			sprite.getTexture().dispose();
+		}
 	}
 
 	/**

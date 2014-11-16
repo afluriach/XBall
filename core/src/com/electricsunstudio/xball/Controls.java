@@ -27,7 +27,7 @@ public class Controls {
 	
 	public Vector2 controlPadPos = Vector2.Zero;
 
-	boolean kick, grab, lock = false;
+	public boolean kick, grab, lock = false;
 	
 	Circle controlPad, kickButton, grabButton, lockButton;
 	

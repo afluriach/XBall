@@ -189,6 +189,11 @@ public class Game extends ApplicationAdapter {
 		sprite.draw(batch);
 	}
 	
+	public static void drawSprite(Sprite sprite, SpriteBatch batch)
+	{
+		sprite.draw(batch);
+	}
+	
 	public static Sprite loadSprite(String name)
 	{
 		Texture texture = new Texture(Gdx.files.internal("sprite/"+name+".png"));
@@ -349,5 +354,10 @@ public class Game extends ApplicationAdapter {
 		rect.height = r.height *TILES_PER_PIXEL;
 		
 		return rect;
+	}
+	
+	public static Vector2 rayRad(double len, double angle)
+	{
+		return new Vector2((float) (len*Math.cos(angle)), (float)(len*Math.sin(angle)));
 	}
 }
