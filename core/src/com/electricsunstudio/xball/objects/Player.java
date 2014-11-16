@@ -7,11 +7,14 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.Controls;
 import com.electricsunstudio.xball.FilterClass;
+import com.electricsunstudio.xball.Pair;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -30,8 +33,14 @@ public class Player extends GameObject
 	float kickDist = 2.75f;
 	float kickWidth = 45f;
 	float kickPower = 10f;
-	
+
+	float grabDist = 2.75f;
+	float grabWidth = 45f;
+
 	float actionCooldown;
+	
+	ArrayList<Joint> grabJoints = new ArrayList();
+	boolean grabbing = false;
 	
 	public Player(MapObject mo)
 	{
@@ -147,6 +156,17 @@ public class Player extends GameObject
 		{
 			kick();
 		}
+		
+		if(!grabbing && controls.grab)
+		{
+			grabStart();
+			grabbing = true;
+		}
+		else if(grabbing && !controls.grab)
+		{
+			grabEnd();
+			grabbing = false;
+		}
 	}
 	
 	ArrayList<GameObject> coneQuery(float radius, float angle, float halfwidthAngle)
@@ -206,5 +226,28 @@ public class Player extends GameObject
 			
 			go.physicsBody.applyLinearImpulse(impulse, go.getCenterPos(), true);
 		}
+	}
+	
+	void grabStart()
+	{
+		ArrayList<GameObject> targets = coneQuery(radius + 0.25f + grabDist, getRotation(), grabWidth);
+		
+		for(GameObject go : targets)
+		{
+			//grab object by joining to it
+			List<Joint> joints = Game.inst.physics.joinBodies(physicsBody, go.physicsBody);
+			grabJoints.addAll(joints);
+		}
+	}
+	
+	void grabEnd()
+	{
+		Game.log("grab end");
+		for(Joint j : grabJoints)
+		{
+			Game.log("trying to remove");
+			Game.inst.physics.removeJoint(j);
+		}
+		grabJoints.clear();
 	}
 }

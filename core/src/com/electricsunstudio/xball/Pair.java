@@ -10,8 +10,8 @@ package com.electricsunstudio.xball;
  * @author toni
  */
 public class Pair<A,B> {
-	A a;
-	B b;
+	public A a;
+	public B b;
 	public Pair(A a, B b)
 	{
 		this.a = a;

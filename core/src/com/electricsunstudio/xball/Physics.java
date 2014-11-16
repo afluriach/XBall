@@ -12,12 +12,17 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.EnumMap;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -192,13 +197,65 @@ public class Physics {
 		return cb.detected;
 	}
 	
+	//remove joints when body is removed
 	public void removeBody(Body b)
 	{
+		while(b.getJointList().size > 0)
+		{
+			JointEdge e = b.getJointList().get(0);
+			e.joint.setUserData(Boolean.TRUE);
+			world.destroyJoint(e.joint);
+		}
 		world.destroyBody(b);
 	}
 
 	public static void setRestitution(Body b, float restitution)
 	{
 		b.getFixtureList().get(0).setRestitution(restitution);
+	}
+	
+	public List<Joint> joinBodies(Body a, Body b)
+	{
+		ArrayList<Joint> joints = new ArrayList();
+		float ratio = 10;
+		float freq = Game.FRAMES_PER_SECOND/2;
+		
+		DistanceJointDef defA = new DistanceJointDef();
+		defA.initialize(a, b, a.getPosition().add(-0.4f,0), b.getPosition().add(0.4f, 0));
+		defA.dampingRatio = ratio;
+		defA.frequencyHz = freq;
+		
+		DistanceJointDef defB = new DistanceJointDef();
+		defB.initialize(a, b, a.getPosition().add(0.4f,0), b.getPosition().add(-0.4f, 0));
+		defB.dampingRatio = ratio;
+		defB.frequencyHz = freq;
+
+		DistanceJointDef defC = new DistanceJointDef();
+		defC.initialize(a, b, a.getPosition().add(0,0.4f), b.getPosition().add(0,-0.4f));
+		defC.dampingRatio = ratio;
+		defC.frequencyHz = freq;
+
+		DistanceJointDef defD = new DistanceJointDef();
+		defD.initialize(a, b, a.getPosition().add(0,-0.4f), b.getPosition().add(0, 0.4f));
+		defD.dampingRatio = ratio;
+		defD.frequencyHz = freq;
+
+		joints.add(world.createJoint(defA));
+		joints.add(world.createJoint(defB));
+		joints.add(world.createJoint(defC));
+		joints.add(world.createJoint(defD));
+		
+		return joints;
+	}
+	
+	//to avoid double removing, check if either attached body has already expired
+	public void removeJoint(Joint j)
+	{
+		if(j.getUserData() != Boolean.TRUE)
+		{
+			Game.log("destroy joint ");
+			world.destroyJoint(j);
+			j.setUserData(Boolean.TRUE);
+		}
 	}
 }
