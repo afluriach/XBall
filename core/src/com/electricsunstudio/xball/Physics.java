@@ -17,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.EnumMap;
-import java.util.HashMap;
 
 
 /**
@@ -194,4 +193,8 @@ public class Physics {
 		world.destroyBody(b);
 	}
 
+	public static void setRestitution(Body b, float restitution)
+	{
+		b.getFixtureList().get(0).setRestitution(restitution);
+	}
 }

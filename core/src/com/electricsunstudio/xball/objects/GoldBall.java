@@ -7,6 +7,7 @@ import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.Controls;
 import com.electricsunstudio.xball.FilterClass;
+import com.electricsunstudio.xball.Physics;
 
 /**
  *
@@ -15,6 +16,7 @@ import com.electricsunstudio.xball.FilterClass;
 public class GoldBall extends Ball
 {
 	float radius = 0.5f;
+	float elasticity = 0.4f;
 	
 	public GoldBall(MapObject mo)
 	{
@@ -41,6 +43,8 @@ public class GoldBall extends Ball
 			1,
 			false,
 			FilterClass.ball);
+		
+		Physics.setRestitution(physicsBody, elasticity);
 	}
 	
 	public void update()
