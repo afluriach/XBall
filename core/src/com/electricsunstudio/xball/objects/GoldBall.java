@@ -32,7 +32,7 @@ public class GoldBall extends Ball
 	
 	void create(Vector2 pos)
 	{
-		radius = 0.5f;
+		radius = 0.35f;
 		
 		//load the appropriate sprite
 		sprite = Game.loadSprite("gold_ball");
