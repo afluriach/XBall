@@ -34,6 +34,8 @@ public class Game extends ApplicationAdapter {
 	public static final int FRAMES_PER_SECOND = 30;
 	public static final float SECONDS_PER_FRAME = (float) 1.0/FRAMES_PER_SECOND;
 	
+	public static final boolean physicsRender = true;
+	
 	public static Game inst;
 	
 	TmxMapLoader mapLoader;
@@ -172,6 +174,11 @@ public class Game extends ApplicationAdapter {
 		gameObjectSystem.render(batch);
 		batch.end();
 
+		if(physicsRender)
+		{
+			physics.debugRender(camera.combined);
+		}
+		
 		controls.render(shapeRenderer);
 		
 		batch.setProjectionMatrix(defaultMatrix);

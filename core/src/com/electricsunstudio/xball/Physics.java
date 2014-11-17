@@ -2,12 +2,14 @@ package com.electricsunstudio.xball;
 
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -17,11 +19,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.EnumMap;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -36,6 +36,7 @@ public class Physics {
 	public static final float GRAVITY = 9.8f;
 	
 	World world;
+	Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 	
 	public static final short
 		playerCategory = 1,
@@ -80,6 +81,11 @@ public class Physics {
 		//no gravity, allow sleeping objects
 		world = new World(new Vector2(0,0), true);
 		world.setContactListener(new ContactHandler());
+		
+		debugRenderer.setDrawBodies(true);
+		debugRenderer.setDrawContacts(true);
+		debugRenderer.setDrawJoints(true);
+		debugRenderer.setDrawInactiveBodies(true);
 	}
 	
 	public Body addCircleBody(Vector2 pos, float radius, BodyType type, GameObject ref, float mass, boolean sensor, FilterClass filter)
@@ -257,5 +263,10 @@ public class Physics {
 			world.destroyJoint(j);
 			j.setUserData(Boolean.TRUE);
 		}
+	}
+	
+	public void debugRender(Matrix4 transform)
+	{
+		debugRenderer.render(world, transform.cpy().scale(Game.PIXELS_PER_TILE, Game.PIXELS_PER_TILE, 1));
 	}
 }
