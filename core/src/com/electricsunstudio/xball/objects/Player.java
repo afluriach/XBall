@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Joint;
+import com.electricsunstudio.xball.Action;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.Controls;
@@ -157,17 +158,17 @@ public class Player extends GameObject
 	{
 		Controls controls = Game.inst.controls;
 		
-		if(controls.kick && actionCooldown <= 0 && !grabbing)
+		if(controls.state.get(Action.kick) && actionCooldown <= 0 && !grabbing)
 		{
 			kick();
 		}
 		
-		if(!grabbing && controls.grab)
+		if(!grabbing && controls.state.get(Action.grab))
 		{
 			grabStart();
 			grabbing = true;
 		}
-		else if(grabbing && !controls.grab)
+		else if(grabbing && !controls.state.get(Action.grab))
 		{
 			grabEnd();
 			grabbing = false;

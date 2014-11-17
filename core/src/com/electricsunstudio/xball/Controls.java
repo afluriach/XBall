@@ -8,13 +8,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
+import java.util.EnumMap;
 
 public class Controls {
 	public static final int maxPressEvents = 5;
 	
 	public static final int margin = 20;
 	public static final int buttonRadius = 32;
-	public static final int buttonTrimThickness = 5;
+	public static final int buttonTrim = 15;
+	public static final int buttonTrimThickness = 10;
 	
 	public static final int controlpadDiameter = 240;
 	public static final float controlpadDeadzone = 1.0f/6;
@@ -24,6 +26,8 @@ public class Controls {
 	public static final float aimpadDeadzone = 0.8f;
 	public static final float aimpadMax = 0.8f;
 	
+	public static final float arcRadius = aimpadMax*controlpadDiameter/2-buttonTrim;
+	
 	//screen
 	int width;
 	int height;
@@ -31,13 +35,12 @@ public class Controls {
 	public Vector2 controlPadPos = Vector2.Zero;
 	public Vector2 aimPadPos = Vector2.Zero;
 
-	public boolean kick, grab, lock = false;
+	Circle controlPad, aimPad;
 	
-	Circle controlPad, kickButton, grabButton, lockButton, aimPad;
-	
-	Pair<Color,Color> kickColor = new Pair(Game.hsva(10f,.8f,.3f, 1f), Game.hsva(10f, 1f, .8f, 1f));
-	Pair<Color,Color> grabColor = new Pair(Game.hsva(251f,.8f,.3f, 1f), Game.hsva(251f, 1f, .8f, 1f));
-	Pair<Color,Color> lockColor = new Pair(Game.hsva(130f,.8f,.3f, 1f), Game.hsva(130f, 1f, .8f, 1f));
+	public EnumMap<Action, Boolean> state;
+	EnumMap<Action, Pair<Color,Color>> actionColors;
+	EnumMap<Action, Integer> actionButtonPos;
+	EnumMap<Action, Integer> actionKeys;
 	
 	Color controlPadOuterColor = Game.hsva(251, .3f, .7f, 1f);
 	Color controlPadColor = Game.hsva(251f,.1f,.3f, 1f);
@@ -47,6 +50,30 @@ public class Controls {
 	{
 		width = Gdx.graphics.getWidth();
 		height = Gdx.graphics.getHeight();
+		
+		state = new EnumMap<Action, Boolean>(Action.class);
+		state.put(Action.kick, false);
+		state.put(Action.grab, false);
+		state.put(Action.block, false);
+		state.put(Action.special, false);
+		
+		actionColors = new EnumMap<Action, Pair<Color, Color>>(Action.class);
+		actionColors.put(Action.kick, new Pair(Game.hsva(10f,.8f,.3f, 1f), Game.hsva(10f, 1f, .8f, 1f)));
+		actionColors.put(Action.grab, new Pair(Game.hsva(251f,.8f,.3f, 1f), Game.hsva(251f, 1f, .8f, 1f)));
+		actionColors.put(Action.block, new Pair(Game.hsva(130f,.8f,.3f, 1f), Game.hsva(130f, 1f, .8f, 1f)));
+		actionColors.put(Action.special, new Pair(Game.hsva(75f,.8f,.3f, 1f), Game.hsva(75f, 1f, .8f, 1f)));
+		
+		actionButtonPos = new EnumMap<Action, Integer>(Action.class);
+		actionButtonPos.put(Action.kick, 225);
+		actionButtonPos.put(Action.grab, 315);
+		actionButtonPos.put(Action.block, 135);
+		actionButtonPos.put(Action.special, 45);
+
+		actionKeys = new EnumMap<Action, Integer>(Action.class);
+		actionKeys.put(Action.kick, Keys.DOWN);
+		actionKeys.put(Action.grab, Keys.RIGHT);
+		actionKeys.put(Action.block, Keys.LEFT);
+		actionKeys.put(Action.special, Keys.UP);
 
 		createShapes();
 	}
@@ -58,12 +85,6 @@ public class Controls {
 
 		controlPad = new Circle(controlpadCenter.x, controlpadCenter.y, controlpadDiameter/2);
 		aimPad = new Circle(aimpadCenter.x, aimpadCenter.y, controlpadDiameter/2);
-		
-		float aimpadPix = aimpadMax*controlpadDiameter/4 - 5;
-		float rt2 = 1.0f/(float)Math.sqrt(2);
-		kickButton = new Circle(aimpadCenter.x - aimpadPix, aimpadCenter.y-aimpadPix*rt2, buttonRadius);
-		grabButton = new Circle(aimpadCenter.x + aimpadPix, aimpadCenter.y-aimpadPix*rt2, buttonRadius);
-		lockButton = new Circle(aimpadCenter.x, aimpadCenter.y+aimpadPix, buttonRadius);
 	}
 
 	public void drawButtonInner(ShapeRenderer shapeRenderer, boolean pressed, Pair<Color,Color> color, Circle button)
@@ -100,12 +121,19 @@ public class Controls {
 		shapeRenderer.setColor(controlPadInnerColor);
 		shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadDeadzone);
 		shapeRenderer.circle(aimPad.x, aimPad.y, aimPad.radius*aimpadDeadzone);
-
-		drawButton(shapeRenderer, kick, kickColor, kickButton);
-		drawButton(shapeRenderer, grab, grabColor, grabButton);
-		drawButton(shapeRenderer, lock, lockColor, lockButton);
+		
+		drawArcButton(shapeRenderer, Action.kick);
+		drawArcButton(shapeRenderer, Action.grab);
+		drawArcButton(shapeRenderer, Action.block);
+		drawArcButton(shapeRenderer, Action.special);
 		
 		shapeRenderer.end();
+	}
+	
+	void drawArcButton(ShapeRenderer sr, Action action)
+	{
+		sr.setColor(state.get(action) ? actionColors.get(action).a : actionColors.get(action).b);
+		sr.arc(aimPad.x, aimPad.y, arcRadius,(float) actionButtonPos.get(action), 90);
 	}
 	
 	private void handleTouchControls()
@@ -124,11 +152,7 @@ public class Controls {
 	{		
 		Vector2 point = new Vector2(x,y);
 
-		if(kickButton.contains(x,y)) kick = true;
-		else if(grabButton.contains(x,y)) grab = true;
-		else if(lockButton.contains(x,y)) lock = true;
-		
-		else if(controlPad.contains(point))
+		if(controlPad.contains(point))
 		{
 			Vector2 posOnPad = point.cpy().sub(new Vector2(controlPad.x, controlPad.y));
 			float dist = posOnPad.len()/controlPad.radius;
@@ -148,21 +172,40 @@ public class Controls {
 		else if(aimPad.contains(point))
 		{
 			Vector2 posOnPad = point.cpy().sub(new Vector2(aimPad.x, aimPad.y));
-			float dist = posOnPad.len()/aimPad.radius;
+			float dist = posOnPad.len();
+			float ratio = dist/aimPad.radius;
 			Vector2 posNorm = posOnPad.nor();
 
-			if(dist >= aimpadMax)
+			if(ratio >= aimpadMax)
 			{
 				aimPadPos = posNorm;
+			}
+			else if(dist < arcRadius)
+			{
+				//determine which section was pressed
+				float angle = posOnPad.angle();
+				
+				for(Action a : actionButtonPos.keySet())
+				{
+					float start = actionButtonPos.get(a);
+					float limit = start+90;
+					if(angle >= start && angle < limit ||
+					   limit > 360 && (angle >= start || angle < limit-360))
+					{
+						state.put(a, Boolean.TRUE);
+					}
+				}
 			}
 		}
 	}
 	
 	private void handleKeyboardControls()
 	{
-		if(Gdx.input.isKeyPressed(Keys.LEFT)) kick = true;
-		if(Gdx.input.isKeyPressed(Keys.RIGHT)) grab = true;
-		if(Gdx.input.isKeyPressed(Keys.UP)) lock = true;
+		for(Action a : actionKeys.keySet())
+		{
+			if(Gdx.input.isKeyPressed(actionKeys.get(a)))
+				state.put(a, Boolean.TRUE);
+		}
 		
 		//convert WASD to velocity vector
 		boolean up = Gdx.input.isKeyPressed(Keys.W);
@@ -188,9 +231,10 @@ public class Controls {
 	
 	private void resetControlState()
 	{
-		kick = false;
-		grab = false;
-		lock = false;
+		for(Action a : state.keySet())
+		{
+			state.put(a, Boolean.FALSE);
+		}
 		
 		controlPadPos = Vector2.Zero;		
 		aimPadPos = Vector2.Zero;
