@@ -25,6 +25,8 @@ public class Player extends GameObject
 	float accel = 5f;
 	float angularSpeedMult = 10f;
 	
+	float roughSpeedPenalty = 0.7f;
+	
 	Sprite actionEffect;
 	float fadeStart = 0.4f;
 	
@@ -121,7 +123,11 @@ public class Player extends GameObject
 		if(Game.inst.onMapLayer("ice", getCenterPos()))
 			actualAccel *= iceTraction;
 		
-		Vector2 targetVelocity = controls.controlPadPos.cpy().scl(speed);
+		float actualSpeed = speed;
+		if(Game.inst.onMapLayer("rough", getCenterPos()))
+			actualSpeed *= roughSpeedPenalty;
+		
+		Vector2 targetVelocity = controls.controlPadPos.cpy().scl(actualSpeed);
 		Vector2 velDisp = targetVelocity.cpy().sub(getVel());
 		float dv = actualAccel*Game.SECONDS_PER_FRAME;
 		

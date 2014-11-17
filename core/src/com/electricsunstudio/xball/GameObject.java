@@ -83,6 +83,7 @@ public abstract class GameObject
 	//physics
 	public Body physicsBody;
 	public static final float iceTraction = 0.3f;
+	public static final float roughResistance = 0.5f;
 	
 	String name;
 	boolean expired = false;
@@ -320,6 +321,8 @@ public abstract class GameObject
 	{
 		if(Game.inst.onMapLayer("ice", getCenterPos()))
 			uk *= iceTraction;
+		else if(Game.inst.onMapLayer("rough", getCenterPos()))
+			uk += roughResistance;
 		
 		//impulse is F*t so
 		//F*t =
