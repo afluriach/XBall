@@ -5,14 +5,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.Controls;
 import com.electricsunstudio.xball.physics.FilterClass;
-import com.electricsunstudio.xball.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +28,11 @@ public class Player extends GameObject
 	float fadeStart = 0.4f;
 	
 	float kickInterval = 0.7f;
-	float kickDist = 2.75f;
-	float kickWidth = 45f;
+	float kickDist = 1.75f;
+	float kickWidth = 30f;
 	float kickPower = 10f;
 
-	float grabDist = 2.75f;
+	float grabDist = 1.5f;
 	float grabWidth = 45f;
 
 	float actionCooldown;
@@ -173,8 +171,8 @@ public class Player extends GameObject
 	{
 		//do an AABB query then constrain to circle and then cone
 		Rectangle rect = new Rectangle();
-		rect.width = radius/2;
-		rect.height = radius/2;
+		rect.width = radius*2;
+		rect.height = radius*2;
 		rect.setCenter(getCenterPos());
 		
 		ArrayList<GameObject> prospective = Game.inst.physics.getWithinSpace(rect);
@@ -202,11 +200,11 @@ public class Player extends GameObject
 		//show the kick effect, sprite will remain in place and fade out
 		actionEffect = Game.loadSprite("kick_effect");
 		//draw the kick effect in front of the player
-		Vector2 disp = Game.rayRad(radius+0.25, Math.toRadians(getRotation()));
+		Vector2 disp = Game.rayRad(radius+actionEffect.getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
 		actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
 		actionEffect.setRotation(getRotation()-90);
 		
-		ArrayList<GameObject> targets = coneQuery(radius + 0.25f + kickDist, getRotation(), kickWidth);
+		ArrayList<GameObject> targets = coneQuery(radius + kickDist, getRotation(), kickWidth);
 		
 		//any object in the cone will have a force applied
 		for(GameObject go : targets)

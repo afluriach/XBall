@@ -16,8 +16,8 @@
    inkscape:version="0.48.5 r10040"
    sodipodi:docname="kick_effect.svg"
    inkscape:export-filename="/home/toni/git/xball/android/assets/sprite/kick_effect.png"
-   inkscape:export-xdpi="45"
-   inkscape:export-ydpi="45">
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,11 +27,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="-5.3916718"
+     inkscape:zoom="3.959798"
+     inkscape:cx="-4.6773861"
      inkscape:cy="69.818594"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer3"
      showgrid="false"
      inkscape:window-width="1440"
      inkscape:window-height="828"
@@ -56,11 +56,11 @@
      id="layer1"
      transform="translate(0,-924.36218)">
     <path
-       style="fill:#c1c1c1;fill-opacity:0.20179372;stroke:none"
-       d="m 30.714285,1046.2675 6.951744,-9.3719 12.281414,9.3719 11.12279,-11.1742 12.976589,11.5347 9.964166,-10.8138 15.989009,12.9766 15.771613,-116.78576 -31.297172,32.79854 1.096512,-32.76869 -24.356186,31.00288 -23.284759,-31.36334 1.358097,33.85007 -22.559721,-33.47966 z"
-       id="path2991"
+       style="fill:#b5b5b5;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:0.38565021999999999"
+       d="M 2.0203051,2.4885463 53.538085,125.97969 l 5.050763,-8.08122 8.333758,7.57615 4.293148,-7.82868 4.545687,7.3236 L 125.76399,2.4885463 98.237335,34.56089 101.26779,3.751237 82.579971,31.025356 65.154839,3.4986989 57.073619,32.035508 37.123106,5.5190039 32.829958,31.78297 z"
+       id="path2987"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccc" />
+       transform="translate(0,924.36218)" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -68,20 +68,18 @@
      inkscape:label="Layer2">
     <path
        inkscape:connector-curvature="0"
-       id="path2993"
-       d="m 33.571428,112.95181 4.98234,-9.8098 12.061885,7.02121 10.923972,-8.37144 12.744633,8.6415 9.786057,-8.10137 12.012922,11.46445 L 105.82072,25.142849 84.525482,49.132706 79.441946,21.901807 60.629294,50.752991 45.030928,23.417474 40.146847,49.672808 24.548244,25.143432 z"
-       style="fill:#a7a7a7;fill-opacity:0.33183857;stroke:none"
-       sodipodi:nodetypes="ccccccccccccccc" />
+       id="path2989"
+       d="m 17.097881,24.384652 39.650229,90.450998 3.887277,-5.91908 6.414007,5.54915 3.304185,-5.73411 3.49855,5.36416 L 112.33617,24.384652 91.150514,47.876018 93.48288,25.309509 79.099954,45.286419 65.688847,25.124537 59.469203,46.026304 44.114458,26.604308 40.810273,45.841332 z"
+       style="fill:#888888;stroke:none;stroke-width:0.75081520999999984px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:0.58744395" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Layer3">
     <path
-       sodipodi:nodetypes="ccccccccccccccc"
-       style="fill:#727272;fill-opacity:0.56502243;stroke:none"
-       d="m 40.714286,102.13468 2.94425,-5.057278 10.544801,5.350598 9.550008,-6.379622 11.141677,6.585482 8.555215,-6.173853 7.275857,5.972823 L 99.384872,38.562005 83.848154,55.918336 76.910644,37.463231 60.100368,60.724536 46.861522,38.328864 41.83696,56.329926 31.946135,44.223694 z"
-       id="path2995"
+       style="fill:#575757;stroke:none;stroke-width:0.56545805999999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:0.7443946"
+       d="m 27.124042,40.976803 30.9865,65.647957 3.037892,-4.29598 5.012521,4.02749 2.582208,-4.16173 2.734103,3.89323 L 101.55239,40.976803 84.995887,58.026479 86.818622,41.648051 75.578421,56.146988 65.097692,41.513801 60.237065,56.683985 48.237391,42.587796 45.655184,56.549735 z"
+       id="path2991"
        inkscape:connector-curvature="0" />
   </g>
 </svg>
