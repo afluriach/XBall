@@ -1,5 +1,7 @@
 package com.electricsunstudio.xball;
 
+import com.electricsunstudio.xball.physics.Physics;
+import com.electricsunstudio.xball.physics.FilterClass;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;

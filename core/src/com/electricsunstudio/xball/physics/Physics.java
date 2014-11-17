@@ -1,4 +1,4 @@
-package com.electricsunstudio.xball;
+package com.electricsunstudio.xball.physics;
 
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -19,6 +19,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.electricsunstudio.xball.Game;
+import com.electricsunstudio.xball.GameObject;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.EnumMap;

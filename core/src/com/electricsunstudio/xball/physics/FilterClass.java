@@ -1,4 +1,4 @@
-package com.electricsunstudio.xball;
+package com.electricsunstudio.xball.physics;
 
 public enum FilterClass{
 	player,

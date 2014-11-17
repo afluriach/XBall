@@ -8,7 +8,7 @@ import com.electricsunstudio.xball.BallNotify;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.Controls;
-import com.electricsunstudio.xball.FilterClass;
+import com.electricsunstudio.xball.physics.FilterClass;
 
 /**
  *

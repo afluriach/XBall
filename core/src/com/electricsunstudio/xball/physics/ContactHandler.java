@@ -1,10 +1,11 @@
-package com.electricsunstudio.xball;
+package com.electricsunstudio.xball.physics;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.electricsunstudio.xball.GameObject;
 
 public class ContactHandler implements ContactListener
 {

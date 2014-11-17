@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.Controls;
-import com.electricsunstudio.xball.FilterClass;
+import com.electricsunstudio.xball.physics.FilterClass;
 import com.electricsunstudio.xball.Pair;
 import java.util.ArrayList;
 import java.util.List;

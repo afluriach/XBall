@@ -6,8 +6,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.Controls;
-import com.electricsunstudio.xball.FilterClass;
-import com.electricsunstudio.xball.Physics;
+import com.electricsunstudio.xball.physics.FilterClass;
+import com.electricsunstudio.xball.physics.Physics;
 
 /**
  *

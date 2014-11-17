@@ -1,7 +1,8 @@
-package com.electricsunstudio.xball;
+package com.electricsunstudio.xball.physics;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
+import com.electricsunstudio.xball.GameObject;
 
 public class DetectObjectCallback implements QueryCallback
 {
