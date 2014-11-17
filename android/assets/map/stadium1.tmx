@@ -30,12 +30,12 @@
   <object name="ball1" type="GoldBall" x="672" y="448" width="64" height="64"/>
  </objectgroup>
  <objectgroup name="sensor" width="25" height="15">
-  <object name="player_goal" type="GoalSensor" x="192" y="320" width="64" height="384">
+  <object name="player_goal" type="GoalSensor" x="192" y="320" width="16" height="384">
    <properties>
     <property name="team" value="left"/>
    </properties>
   </object>
-  <object name="opponent_goal" type="GoalSensor" x="1216" y="320" width="64" height="384">
+  <object name="opponent_goal" type="GoalSensor" x="1264" y="320" width="16" height="384">
    <properties>
     <property name="team" value="right"/>
    </properties>
