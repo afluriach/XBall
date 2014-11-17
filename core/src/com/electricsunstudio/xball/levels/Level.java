@@ -7,6 +7,7 @@ package com.electricsunstudio.xball.levels;
 public abstract class Level
 {
 	public abstract String getMapName();
+	public abstract String getPlayerName();
 	
 	public abstract void init();
 	public abstract void update();

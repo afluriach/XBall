@@ -17,6 +17,11 @@ public class Level1 extends OneVOne {
 		return "stadium1";
 	}
 	
+	public String getPlayerName()
+	{
+		return "blue_player";
+	}
+	
 	@Override
 	public void update() {
 		int count = Game.inst.gameObjectSystem.countObjectsByType(Ball.class);

@@ -103,7 +103,7 @@ public class Game extends ApplicationAdapter {
 		engine.initLevel(Level1.class, System.currentTimeMillis());
 
 		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
-		crntPlayer = gameObjectSystem.getObjectByName("blue_player", Player.class);
+		crntPlayer = gameObjectSystem.getObjectByName(crntLevel.getPlayerName(), Player.class);
 	}
 	
 	public void update()
