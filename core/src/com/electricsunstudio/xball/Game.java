@@ -34,7 +34,7 @@ public class Game extends ApplicationAdapter {
 	public static final int PIXELS_PER_TILE = 64;
 	public static final float TILES_PER_PIXEL = (float) (1.0/PIXELS_PER_TILE);
 	
-	public static final int FRAMES_PER_SECOND = 30;
+	public static final int FRAMES_PER_SECOND = 60;
 	public static final float SECONDS_PER_FRAME = (float) 1.0/FRAMES_PER_SECOND;
 	
 	public static final boolean physicsRender = true;
