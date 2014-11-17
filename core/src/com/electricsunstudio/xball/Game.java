@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -233,11 +234,8 @@ public class Game extends ApplicationAdapter {
 	
 	public static Vector2 mapObjectPos(MapObject mo)
 	{
-		Vector2 pos = new Vector2(mo.getProperties().get("x", Float.class),
-								  mo.getProperties().get("y", Float.class));
-		pos.scl(Game.TILES_PER_PIXEL);
-		pos.add(0.5f, 0.5f);
-		return pos;
+		Rectangle rect = ((RectangleMapObject)mo).getRectangle();
+		return rect.getCenter(new Vector2()).scl(Game.TILES_PER_PIXEL);
 	}
 	
 	public static void log(String msg) {
