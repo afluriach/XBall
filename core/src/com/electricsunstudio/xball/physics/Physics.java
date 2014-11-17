@@ -225,26 +225,27 @@ public class Physics {
 	public List<Joint> joinBodies(Body a, Body b)
 	{
 		ArrayList<Joint> joints = new ArrayList();
-		float ratio = 10;
-		float freq = Game.FRAMES_PER_SECOND/2;
+		final float ratio = 10;
+		final float freq = Game.FRAMES_PER_SECOND/2;
+		final float disp = 0.3f;
 		
 		DistanceJointDef defA = new DistanceJointDef();
-		defA.initialize(a, b, a.getPosition().add(-0.4f,0), b.getPosition().add(0.4f, 0));
+		defA.initialize(a, b, a.getPosition().add(-disp,0), b.getPosition().add(disp, 0));
 		defA.dampingRatio = ratio;
 		defA.frequencyHz = freq;
 		
 		DistanceJointDef defB = new DistanceJointDef();
-		defB.initialize(a, b, a.getPosition().add(0.4f,0), b.getPosition().add(-0.4f, 0));
+		defB.initialize(a, b, a.getPosition().add(disp,0), b.getPosition().add(-disp, 0));
 		defB.dampingRatio = ratio;
 		defB.frequencyHz = freq;
 
 		DistanceJointDef defC = new DistanceJointDef();
-		defC.initialize(a, b, a.getPosition().add(0,0.4f), b.getPosition().add(0,-0.4f));
+		defC.initialize(a, b, a.getPosition().add(0,disp), b.getPosition().add(0,-disp));
 		defC.dampingRatio = ratio;
 		defC.frequencyHz = freq;
 
 		DistanceJointDef defD = new DistanceJointDef();
-		defD.initialize(a, b, a.getPosition().add(0,-0.4f), b.getPosition().add(0, 0.4f));
+		defD.initialize(a, b, a.getPosition().add(0,-disp), b.getPosition().add(0, disp));
 		defD.dampingRatio = ratio;
 		defD.frequencyHz = freq;
 
