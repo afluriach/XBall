@@ -33,7 +33,7 @@ public class Player extends GameObject
 	float kickPower = 10f;
 
 	float grabDist = 1.5f;
-	float grabWidth = 45f;
+	float grabWidth = 30f;
 
 	float actionCooldown;
 	
@@ -65,14 +65,21 @@ public class Player extends GameObject
 	{
 		actionCooldown -= Game.SECONDS_PER_FRAME;
 
-		if(actionEffect != null && actionCooldown < fadeStart)
+		if(actionEffect != null && !grabbing && actionCooldown < fadeStart)
 		{
 			actionEffect.setAlpha(actionCooldown / fadeStart);
 		}
-		if(actionCooldown <= 0)
+		if(actionCooldown <= 0 && !grabbing)
 		{
 			actionCooldown = 0;
 			actionEffect = null;
+		}
+		
+		if(grabbing && actionEffect != null)
+		{
+			Vector2 disp = Game.rayRad(radius+actionEffect.getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
+			actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
+			actionEffect.setRotation(getRotation()-90);
 		}
 	}
 	
@@ -150,7 +157,7 @@ public class Player extends GameObject
 	{
 		Controls controls = Game.inst.controls;
 		
-		if(controls.kick && actionCooldown <= 0)
+		if(controls.kick && actionCooldown <= 0 && !grabbing)
 		{
 			kick();
 		}
@@ -192,7 +199,7 @@ public class Player extends GameObject
 		}
 		return actual;
 	}
-	
+
 	void kick()
 	{
 		actionCooldown = kickInterval;
@@ -228,6 +235,13 @@ public class Player extends GameObject
 	
 	void grabStart()
 	{
+		//show the grab effect, sprite will remain in place while grabbing
+		actionEffect = Game.loadSprite("grab_effect");
+		//draw the grab effect in front of the player
+		Vector2 disp = Game.rayRad(radius+actionEffect.getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
+		actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
+		actionEffect.setRotation(getRotation()-90);
+		
 		ArrayList<GameObject> targets = coneQuery(radius + 0.25f + grabDist, getRotation(), grabWidth);
 		
 		for(GameObject go : targets)
@@ -247,5 +261,6 @@ public class Player extends GameObject
 			Game.inst.physics.removeJoint(j);
 		}
 		grabJoints.clear();
+		actionEffect = null;
 	}
 }
