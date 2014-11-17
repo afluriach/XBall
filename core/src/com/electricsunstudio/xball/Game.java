@@ -18,6 +18,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
@@ -40,8 +41,8 @@ public class Game extends ApplicationAdapter {
 	public static final boolean physicsRender = true;
 	
 	public static Game inst;
+	public CoreEngine engine;
 	
-	TmxMapLoader mapLoader;
 	OrthogonalTiledMapRenderer mapRenderer;
 	
 	OrthographicCamera camera;
@@ -52,19 +53,20 @@ public class Game extends ApplicationAdapter {
 	public ShapeRenderer shapeRenderer;
 	public BitmapFont font;
 	
+	//these are owned by the engine but a reference will be
+	//left here for convienence
 	TiledMap crntMap;
 	Level crntLevel;
-	
 	public GameObjectSystem gameObjectSystem;
 	public Physics physics;
+	public Random rand;
+
 	
 	float updateDelta = 0;
 	
 	public Controls controls;
 	
 	public Player crntPlayer;
-	
-	public Random rand;
 	
 	void initCamera()
 	{
@@ -85,14 +87,10 @@ public class Game extends ApplicationAdapter {
 	public void create () {
 		inst = this;
 		
-		mapLoader = new TmxMapLoader();
-		
 		controls = new Controls();
 		
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
-		
-		rand = new Random();
 		
 		initCamera();
 		
@@ -101,40 +99,13 @@ public class Game extends ApplicationAdapter {
 		shapeRenderer = new ShapeRenderer();
 		font = new BitmapFont(Gdx.files.internal("font/arial-32.fnt"));
 		
-		//loadMap("stadium1");
-		loadLevel(Level1.class);
-	}
-	
-	void loadLevel(Class cls)
-	{
-		try {
-			crntLevel = (Level) cls.getConstructor().newInstance();
-		} catch (Exception ex) {
-			Game.log("error loading level " + cls.getSimpleName());
-			ex.printStackTrace();
-			throw new RuntimeException("Error loading level");
-		}
-		
-		loadMap(crntLevel.getMapName());
-		crntLevel.init();
-	}
-	
-	void loadMap(String name)
-	{
-		gameObjectSystem = new GameObjectSystem();
-		physics = new Physics();
-		
-		crntMap = mapLoader.load("map/"+name+".tmx");
+		engine = new CoreEngine();
+		engine.initLevel(Level1.class, System.currentTimeMillis());
+
 		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
-		
-		loadMapObjects();
-		gameObjectSystem.handleAdditions();
-		
 		crntPlayer = gameObjectSystem.getObjectByName("blue_player", Player.class);
-
-		addWalls();
 	}
-
+	
 	public void update()
 	{
 		controls.update();
@@ -149,11 +120,7 @@ public class Game extends ApplicationAdapter {
 	
 	public void updateTick()
 	{
-		crntLevel.update();
-		
-		gameObjectSystem.update();
-		physics.update();
-		
+		engine.updateTick();
 		crntPlayer.handleControls();
 	}
 	
@@ -213,27 +180,7 @@ public class Game extends ApplicationAdapter {
 		
 		return sprite;
 	}
-	
-	public void loadMapObjects()
-	{
-		loadObjectsFromLayer(crntMap.getLayers().get("agents"));
-		loadObjectsFromLayer(crntMap.getLayers().get("sensor"));
-	}
-	
-	public void loadObjectsFromLayer(MapLayer layer)
-	{
-		log("loading layer " + layer.getName());
 		
-		for(MapObject mo : layer.getObjects())
-		{
-			GameObject obj = GameObject.instantiate(mo);
-			
-			gameObjectSystem.addObject(obj);
-			
-			log(String.format("loaded object %s, %s at %s", obj.getName(), obj.getClass().getSimpleName(), Game.string(obj.getCenterPos())));
-		}
-	}
-	
 	public static Vector2 mapObjectPos(MapObject mo)
 	{
 		Rectangle rect = ((RectangleMapObject)mo).getRectangle();
@@ -314,33 +261,6 @@ public class Game extends ApplicationAdapter {
 		return new Color(r1+m, g1+m, b1+m, a);
 	}
 
-	public void addWalls()
-	{
-		TiledMapTileLayer wallLayer = (TiledMapTileLayer) crntMap.getLayers().get("wall");
-		int width = wallLayer.getWidth();
-		int height = wallLayer.getHeight();
-
-		for(int i=0;i<height; ++i)
-		{
-			for(int j=0;j<width; ++j)
-			{
-				if(wallLayer.getCell(j,  i) != null)
-				{
-					physics.addRectBody(
-						new Vector2(j+0.5f,i+0.5f),
-						1f,
-						1f,
-						BodyType.StaticBody,
-						null,
-						1f,
-						false,
-						FilterClass.wall
-					);
-				}
-			}
-		}
-	}
-	
 	public void drawTextCentered(Color color, String msg, float x, float y)
 	{
 		float lineWidth = font.getBounds(msg).width;
