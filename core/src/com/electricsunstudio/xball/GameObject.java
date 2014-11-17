@@ -16,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.lang.reflect.Constructor;
 
 public abstract class GameObject 
-{	
+{
 	//for an object type loaded from a Tiled map, prepend this package prefix
 	//to get the full path name. i.e. all objects that can be loaded by name
 	//will be in this package (including subpackages)
@@ -82,6 +82,7 @@ public abstract class GameObject
 	
 	//physics
 	public Body physicsBody;
+	public static final float iceTraction = 0.3f;
 	
 	String name;
 	boolean expired = false;
@@ -317,6 +318,9 @@ public abstract class GameObject
 	
 	public void applyKineticFriction(float uk)
 	{
+		if(Game.inst.onMapLayer("ice", getCenterPos()))
+			uk *= iceTraction;
+		
 		//impulse is F*t so
 		//F*t =
 		//m*a*t =

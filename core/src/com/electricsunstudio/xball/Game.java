@@ -26,6 +26,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.electricsunstudio.xball.levels.Level;
 import com.electricsunstudio.xball.levels.Level1;
+import com.electricsunstudio.xball.levels.SlipperyStadium;
 
 import com.electricsunstudio.xball.objects.Player;
 import java.util.Random;
@@ -286,5 +287,14 @@ public class Game extends ApplicationAdapter {
 	public static Vector2 rayRad(double len, double angle)
 	{
 		return new Vector2((float) (len*Math.cos(angle)), (float)(len*Math.sin(angle)));
+	}
+	
+	public boolean onMapLayer(String layer, Vector2 pos)
+	{
+		TiledMapTileLayer tileLayer = (TiledMapTileLayer) crntMap.getLayers().get(layer);
+		
+		if(tileLayer == null) return false;
+		
+		return tileLayer.getCell((int)pos.x, (int)pos.y) != null;
 	}
 }

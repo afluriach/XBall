@@ -117,10 +117,13 @@ public class Player extends GameObject
 	public void handleMoveControls()
 	{
 		Controls controls = Game.inst.controls;
+		float actualAccel = accel;
+		if(Game.inst.onMapLayer("ice", getCenterPos()))
+			actualAccel *= iceTraction;
 		
 		Vector2 targetVelocity = controls.controlPadPos.cpy().scl(speed);
 		Vector2 velDisp = targetVelocity.cpy().sub(getVel());
-		float dv = accel*Game.SECONDS_PER_FRAME;
+		float dv = actualAccel*Game.SECONDS_PER_FRAME;
 		
 		if(velDisp.len2() < dv*dv)
 		{
@@ -132,7 +135,7 @@ public class Player extends GameObject
 		else
 		{
 			//scale velDisp to actual acceleration
-			setAccel(velDisp.nor().scl(accel));
+			setAccel(velDisp.nor().scl(actualAccel));
 		}
 		
 	}
