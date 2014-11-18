@@ -3,8 +3,6 @@ package com.electricsunstudio.xball.levels;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.Game;
-import com.electricsunstudio.xball.objects.Ball;
-import com.electricsunstudio.xball.objects.GoldBall;
 import com.electricsunstudio.xball.objects.Bomb;
 import com.electricsunstudio.xball.objects.SpawnSensor;
 import com.electricsunstudio.xball.HitListener;

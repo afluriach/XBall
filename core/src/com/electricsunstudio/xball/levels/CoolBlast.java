@@ -32,7 +32,7 @@ public class CoolBlast extends OneVOne {
 	
 	@Override
 	public void update() {
-		int count = Game.inst.gameObjectSystem.countObjectsByType(Ball.class);
+		int count = Game.inst.gameObjectSystem.countObjectsByType(GoldBall.class);
 		
 		if(count == 0)
 		{
