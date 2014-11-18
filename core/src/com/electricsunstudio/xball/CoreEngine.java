@@ -24,7 +24,7 @@ public class CoreEngine {
 	public static final int FRAMES_PER_SECOND = Game.FRAMES_PER_SECOND;
 	public static final float SECONDS_PER_FRAME = Game.SECONDS_PER_FRAME;
 	
-	TmxMapLoader mapLoader = new TmxMapLoader();
+	TmxMapLoader mapLoader;
 
 	public TiledMap crntMap;
 	Level crntLevel;
@@ -34,6 +34,11 @@ public class CoreEngine {
 
 	public Random rand;
 	int crntFrame = 0;
+	
+	public CoreEngine()
+	{
+		mapLoader = new TmxMapLoader();
+	}
 	
 	public void initLevel(Class level, long seed)
 	{

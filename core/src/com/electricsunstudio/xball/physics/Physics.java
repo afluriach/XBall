@@ -38,7 +38,7 @@ public class Physics {
 	public static final float GRAVITY = 9.8f;
 	
 	World world;
-	Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+	Box2DDebugRenderer debugRenderer;
 	
 	public static final short
 		playerCategory = 1,
@@ -47,36 +47,15 @@ public class Physics {
 		ballSensorCategory = 8;
 
 	//the mask type is short but the result of the expression is int
-	public static void putFilter(short category, int mask, FilterClass cls, Map map)
+	public static void putFilter(short category, int mask, FilterClass cls)
 	{
 		Filter filter = new Filter();
 		filter.categoryBits = category;
 		filter.maskBits = (short) mask;
-		map.put(cls, filter);
+		collisionFilters.put(cls, filter);
 	}
 	
-	public static Map<FilterClass, Filter> collisionFilters = new EnumMap<FilterClass,Filter>(FilterClass.class) {{
-		
-		putFilter(playerCategory,
-			playerCategory | ballCategory | wallCategory,
-			FilterClass.player,
-			this);
-		
-		putFilter(ballCategory,
-			playerCategory | ballCategory | wallCategory | ballSensorCategory,
-			FilterClass.ball,
-			this);
-		
-		putFilter(wallCategory,
-			playerCategory | ballCategory ,
-			FilterClass.wall,
-			this);
-		
-		putFilter(ballSensorCategory,
-				  ballCategory,
-				  FilterClass.ballSensor,
-				  this);
-	}};
+	public static Map<FilterClass, Filter> collisionFilters;
 
 	public Physics()
 	{
@@ -84,10 +63,29 @@ public class Physics {
 		world = new World(new Vector2(0,0), true);
 		world.setContactListener(new ContactHandler());
 		
+		debugRenderer = new Box2DDebugRenderer();
 		debugRenderer.setDrawBodies(true);
 		debugRenderer.setDrawContacts(true);
 		debugRenderer.setDrawJoints(true);
 		debugRenderer.setDrawInactiveBodies(true);
+		
+		collisionFilters = new EnumMap<FilterClass,Filter>(FilterClass.class);
+		
+		putFilter(playerCategory,
+			playerCategory | ballCategory | wallCategory,
+			FilterClass.player);
+		
+		putFilter(ballCategory,
+			playerCategory | ballCategory | wallCategory | ballSensorCategory,
+			FilterClass.ball);
+		
+		putFilter(wallCategory,
+			playerCategory | ballCategory ,
+			FilterClass.wall);
+		
+		putFilter(ballSensorCategory,
+				  ballCategory,
+				  FilterClass.ballSensor);
 	}
 	
 	public Body addCircleBody(Vector2 pos, float radius, BodyType type, GameObject ref, float mass, boolean sensor, FilterClass filter)
