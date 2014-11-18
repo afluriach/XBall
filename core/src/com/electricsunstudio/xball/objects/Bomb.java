@@ -4,7 +4,9 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.Game;
+import com.electricsunstudio.xball.HitListener;
 import com.electricsunstudio.xball.GameObject;
+import com.electricsunstudio.xball.HitType;
 import java.util.ArrayList;
 
 /**
@@ -93,6 +95,12 @@ public class Bomb extends Ball
 				//apply full force within the core blast radius
 				Vector2 impulse = disp.nor().scl(baseForce*blastTime);			
 				target.physicsBody.applyLinearImpulse(impulse, target.getCenterPos(), true);
+				
+				//and notify player by bomb if level is a HitListener
+				if(Game.inst.crntLevel instanceof HitListener && target instanceof Player)
+				{
+					((HitListener)Game.inst.crntLevel).onHit((Player)target, HitType.bomb);
+				}
 			}
 			else
 			{

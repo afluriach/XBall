@@ -22,6 +22,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.levels.Level;
 import com.electricsunstudio.xball.levels.BumpyRoad;
 import com.electricsunstudio.xball.levels.BombsAway;
+import com.electricsunstudio.xball.levels.CoolBlast;
+import com.electricsunstudio.xball.levels.BombVoyage;
 
 import com.electricsunstudio.xball.objects.Player;
 import java.util.Random;
@@ -51,7 +53,7 @@ public class Game extends ApplicationAdapter {
 	//these are owned by the engine but a reference will be
 	//left here for convienence
 	TiledMap crntMap;
-	Level crntLevel;
+	public Level crntLevel;
 	public GameObjectSystem gameObjectSystem;
 	public Physics physics;
 	public Random rand;
@@ -94,7 +96,7 @@ public class Game extends ApplicationAdapter {
 		font = new BitmapFont(Gdx.files.internal("font/arial-32.fnt"));
 		
 		engine = new CoreEngine();
-		engine.initLevel(BombsAway.class, System.currentTimeMillis());
+		engine.initLevel(BombVoyage.class, System.currentTimeMillis());
 
 		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
 		crntPlayer = gameObjectSystem.getObjectByName(crntLevel.getPlayerName(), Player.class);
