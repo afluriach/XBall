@@ -17,10 +17,13 @@ public class SlipperyStadium extends OneVOne {
 		return "slippery_stadium";
 	}
 	
+	@Override
 	public String getPlayerName()
 	{
 		return "blue_player";
 	}
+	
+	public static final String name =  "Slippery Stadium";
 	
 	@Override
 	public void update() {

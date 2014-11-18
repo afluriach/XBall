@@ -19,14 +19,13 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.electricsunstudio.xball.levels.Level;
-import com.electricsunstudio.xball.levels.BumpyRoad;
-import com.electricsunstudio.xball.levels.BombsAway;
-import com.electricsunstudio.xball.levels.CoolBlast;
-import com.electricsunstudio.xball.levels.BombVoyage;
+import com.electricsunstudio.xball.levels.*;
 
 import com.electricsunstudio.xball.objects.Player;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class Game extends ApplicationAdapter {
 	public static final int PIXELS_PER_TILE = 64;
@@ -37,6 +36,17 @@ public class Game extends ApplicationAdapter {
 	
 	public static final boolean physicsRender = true;
 	
+	public static Class level = Level1.class;
+	
+	public static final Class[] availableLevels = {
+		Level1.class,
+		BombVoyage.class,
+		BombsAway.class,
+		CoolBlast.class,
+		BumpyRoad.class,
+		SlipperyStadium.class
+	};
+
 	public static Game inst;
 	public CoreEngine engine;
 	
@@ -96,7 +106,7 @@ public class Game extends ApplicationAdapter {
 		font = new BitmapFont(Gdx.files.internal("font/arial-32.fnt"));
 		
 		engine = new CoreEngine();
-		engine.initLevel(BombVoyage.class, System.currentTimeMillis());
+		engine.initLevel(level, System.currentTimeMillis());
 
 		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
 		crntPlayer = gameObjectSystem.getObjectByName(crntLevel.getPlayerName(), Player.class);
@@ -297,5 +307,30 @@ public class Game extends ApplicationAdapter {
 		if(tileLayer == null) return false;
 		
 		return tileLayer.getCell((int)pos.x, (int)pos.y) != null;
+	}
+	
+	public static String[] availableLevelNames()
+	{
+		String[] names = new String[availableLevels.length];
+		
+		for(int i=0; i< availableLevels.length; ++i )
+		{
+			Class cls = availableLevels[i];
+
+			try {
+				Field f = cls.getField("name");
+				names[i] = (String) f.get(null);
+			} catch (NoSuchFieldException ex) {
+				log("class " + cls.getSimpleName() + " does not have name");
+				names[i] = "";
+			} catch (SecurityException ex) {
+				log("class " + cls.getSimpleName() + ", name is not accessible");
+				names[i] = "";
+			} catch(IllegalAccessException ex){
+				log("class " + cls.getSimpleName() + " illegal access");
+				names[i] = "";
+			}
+		}
+		return names;
 	}
 }

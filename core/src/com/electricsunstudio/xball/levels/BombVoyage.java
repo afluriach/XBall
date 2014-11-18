@@ -31,6 +31,8 @@ public class BombVoyage extends Level implements HitListener {
 		return "bomb_voyage";
 	}
 	
+	public static final String name = "Bomb Voyage!";
+	
 	@Override
 	public String getPlayerName()
 	{

@@ -22,6 +22,8 @@ public class CoolBlast extends OneVOne {
 		return "cool_blast";
 	}
 	
+	public static final String name =  "Cool Blast";
+	
 	@Override
 	public String getPlayerName()
 	{

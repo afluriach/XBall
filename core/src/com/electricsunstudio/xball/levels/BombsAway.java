@@ -22,6 +22,8 @@ public class BombsAway extends OneVOne {
 		return "bombs_away";
 	}
 	
+	public static final String name = "Bombs Away!";
+	
 	@Override
 	public String getPlayerName()
 	{
