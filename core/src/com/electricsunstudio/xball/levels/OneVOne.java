@@ -21,7 +21,7 @@ public abstract class OneVOne extends Level {
 	{
 		playerGoal = Game.inst.gameObjectSystem.getObjectByName("player_goal", GoalSensor.class);
 		opponentGoal = Game.inst.gameObjectSystem.getObjectByName("opponent_goal", GoalSensor.class);
-		spawnSensor = Game.inst.gameObjectSystem.getObjectByType(SpawnSensor.class);
+		spawnSensor = Game.inst.gameObjectSystem.getObjectByName("spawn_sensor", SpawnSensor.class);
 		
 		playerGoal.notifier = new PlayerGoalHit();
 		opponentGoal.notifier = new OpponentGoalHit();

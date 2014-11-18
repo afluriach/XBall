@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="25" height="15" tilewidth="64" tileheight="64">
+ <tileset firstgid="1" name="grass" tilewidth="64" tileheight="64">
+  <image source="grass.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="2" name="stadium-wall-goal" tilewidth="64" tileheight="64">
+  <image source="stadium-wall-goal.png" width="128" height="64"/>
+ </tileset>
+ <layer name="floor" width="25" height="15">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA2NkYGBgHMWjeBSP4lE8rDAABIh4KdwFAAA=
+  </data>
+ </layer>
+ <layer name="wall" width="25" height="15">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA2NgGH6AmQqYGDsodSM+wATFlABCZlBqPjHmjNoxMu2gddoFAVrnQZgaWpcltAIAQuSiBdwFAAA=
+  </data>
+ </layer>
+ <objectgroup name="agents" width="25" height="15">
+  <object name="blue_player" type="Player" x="320" y="448" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="red_player" type="Player" x="1024" y="448" width="64" height="64">
+   <properties>
+    <property name="color" value="red"/>
+   </properties>
+  </object>
+  <object name="ball1" type="GoldBall" x="672" y="448" width="64" height="64"/>
+ </objectgroup>
+ <objectgroup name="sensor" width="25" height="15">
+  <object name="player_goal" type="GoalSensor" x="192" y="320" width="16" height="384">
+   <properties>
+    <property name="team" value="left"/>
+   </properties>
+  </object>
+  <object name="opponent_goal" type="GoalSensor" x="1264" y="320" width="16" height="384">
+   <properties>
+    <property name="team" value="right"/>
+   </properties>
+  </object>
+  <object name="spawn_sensor" type="SpawnSensor" x="672" y="256" width="64" height="512"/>
+  <object name="bomb_sensor" type="SpawnSensor" x="320" y="256" width="832" height="512"/>
+ </objectgroup>
+</map>

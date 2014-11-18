@@ -38,10 +38,13 @@ public class GoalSensor extends GameObject
 	@Override
 	public void handleContact(GameObject other)
 	{
-		Game.log(other.getName() + " arrived in " + getName());
-		if(notifier != null)
+		if(other instanceof GoldBall)
 		{
-			notifier.onReceived((Ball)other);
+			Game.log(other.getName() + " arrived in " + getName());
+			if(notifier != null)
+			{
+				notifier.onReceived((Ball)other);
+			}
 		}
 	}
 	public void handleEndContact(GameObject other)

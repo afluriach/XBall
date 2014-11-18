@@ -1,7 +1,6 @@
 package com.electricsunstudio.xball;
 
 import com.electricsunstudio.xball.physics.Physics;
-import com.electricsunstudio.xball.physics.FilterClass;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -12,25 +11,20 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.electricsunstudio.xball.levels.Level;
-import com.electricsunstudio.xball.levels.Level1;
-import com.electricsunstudio.xball.levels.SlipperyStadium;
+import com.electricsunstudio.xball.levels.BumpyRoad;
+import com.electricsunstudio.xball.levels.BombsAway;
 
 import com.electricsunstudio.xball.objects.Player;
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class Game extends ApplicationAdapter {
 	public static final int PIXELS_PER_TILE = 64;
@@ -62,7 +56,6 @@ public class Game extends ApplicationAdapter {
 	public Physics physics;
 	public Random rand;
 
-	
 	float updateDelta = 0;
 	
 	public Controls controls;
@@ -101,7 +94,7 @@ public class Game extends ApplicationAdapter {
 		font = new BitmapFont(Gdx.files.internal("font/arial-32.fnt"));
 		
 		engine = new CoreEngine();
-		engine.initLevel(Level1.class, System.currentTimeMillis());
+		engine.initLevel(BombsAway.class, System.currentTimeMillis());
 
 		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
 		crntPlayer = gameObjectSystem.getObjectByName(crntLevel.getPlayerName(), Player.class);
@@ -180,6 +173,12 @@ public class Game extends ApplicationAdapter {
 		sprite.setOriginCenter();
 		
 		return sprite;
+	}
+	
+	public static void changeTexture(Sprite sprite, String name)
+	{
+		sprite.getTexture().dispose();
+		sprite.setTexture(new Texture(Gdx.files.internal("sprite/"+name+".png")));
 	}
 		
 	public static Vector2 mapObjectPos(MapObject mo)

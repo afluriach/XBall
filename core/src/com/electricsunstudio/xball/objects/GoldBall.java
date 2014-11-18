@@ -15,40 +15,29 @@ import com.electricsunstudio.xball.physics.Physics;
  */
 public class GoldBall extends Ball
 {
-	float elasticity = 0.4f;
-	float uk = 0.02f;
-	
 	public GoldBall(MapObject mo)
 	{
 		super(mo);
+		initFields();
 		create(Game.mapObjectPos(mo));
 	}
 	
 	public GoldBall(Vector2 pos)
 	{
 		super();
+		initFields();
 		create(pos);
 	}
 	
-	void create(Vector2 pos)
+	final void initFields()
 	{
 		radius = 0.35f;
-		
-		//load the appropriate sprite
-		sprite = Game.loadSprite("gold_ball");
-		
-		physicsBody = Game.inst.physics.addCircleBody(
-			pos,
-			radius,
-			BodyType.DynamicBody,
-			this,
-			1,
-			false,
-			FilterClass.ball);
-		
-		Physics.setRestitution(physicsBody, elasticity);
+		elasticity = 0.4f;
+		uk = 0.02f;
+		mass = 1;
+		spriteName = "gold_ball";
 	}
-	
+
 	public void update()
 	{
 		applyKineticFriction(uk);
