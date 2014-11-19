@@ -40,8 +40,11 @@ public class Player extends GameObject
 	float grabVelCorrectionForce = 7f;
 	float grabPosCorrectionForce = 14f;
 	float dropLimit = 0.75f;
+	float grabInterval  = 0.7f;
+	float minGrabTime = 0.125f;
 
 	float actionCooldown;
+	float grabTime;
 	
 	ArrayList<GameObject> grabbedObjects = new ArrayList();
 	ArrayList<Vector2> grabbedOffsets = new ArrayList();
@@ -92,6 +95,8 @@ public class Player extends GameObject
 		//apply impulse to try to move objects with the player
 		if(grabbing)
 		{
+			grabTime += Game.SECONDS_PER_FRAME;
+			
 			for(int i=0;i<grabbedObjects.size(); ++i)
 			{
 				GameObject go = grabbedObjects.get(i);
@@ -210,7 +215,7 @@ public class Player extends GameObject
 			grabStart();
 			grabbing = true;
 		}
-		else if(grabbing && !controls.state.get(Action.grab))
+		else if(grabbing && grabTime > minGrabTime && (!controls.state.get(Action.grab) || grabbedObjects.isEmpty()))
 		{
 			grabEnd();
 			grabbing = false;
@@ -278,6 +283,7 @@ public class Player extends GameObject
 	
 	void grabStart()
 	{
+		grabTime = 0f;
 		//show the grab effect, sprite will remain in place while grabbing
 		actionEffect = Game.loadSprite("grab_effect");
 		//draw the grab effect in front of the player
@@ -289,9 +295,12 @@ public class Player extends GameObject
 		
 		for(GameObject go : targets)
 		{
+			if(!(go instanceof Ball)) continue;
+			
+			Game.log(go.getName() + " grabbed at " + Game.string(go.getCenterPos()));
 			grabbedObjects.add(go);
 			//rotate offset to account for facing direction
-			grabbedOffsets.add(go.getCenterPos().sub(getCenterPos().rotate(-getRotation())));
+			grabbedOffsets.add(go.getCenterPos().sub(getCenterPos()).rotate(-getRotation()));
 		}
 	}
 	
@@ -301,5 +310,6 @@ public class Player extends GameObject
 		grabbedObjects.clear();
 		grabbedOffsets.clear();
 		actionEffect = null;
+		actionCooldown = grabInterval;
 	}
 }
