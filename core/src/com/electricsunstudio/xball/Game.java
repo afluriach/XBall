@@ -22,10 +22,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.levels.*;
 
 import com.electricsunstudio.xball.objects.Player;
+import com.electricsunstudio.xball.network.ObjectSocketQueue;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class Game extends ApplicationAdapter {
 	public static final int PIXELS_PER_TILE = 64;
@@ -73,6 +72,10 @@ public class Game extends ApplicationAdapter {
 	public Controls controls;
 	
 	public Player crntPlayer;
+	
+	//network
+	public static ObjectSocketQueue serverThread;
+	public static String username;
 	
 	void initCamera()
 	{

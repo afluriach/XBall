@@ -43,6 +43,12 @@ public class MainMenu extends Activity {
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					startActivity(intent);
 				}
+				else if(i == 1)
+				{
+					Intent intent = new Intent(MainMenu.this, ConnectToServer.class);
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(intent);
+				}
 			}
 		});
 		
