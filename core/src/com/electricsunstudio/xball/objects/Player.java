@@ -37,10 +37,12 @@ public class Player extends GameObject
 
 	float grabDist = 1.5f;
 	float grabWidth = 30f;
+	float grabForce = 7f;
 
 	float actionCooldown;
 	
-	ArrayList<Joint> grabJoints = new ArrayList();
+	ArrayList<GameObject> grabbedObjects = new ArrayList();
+	ArrayList<Vector2> grabbedOffets = new ArrayList();
 	boolean grabbing = false;
 	
 	public Player(MapObject mo)
@@ -83,6 +85,25 @@ public class Player extends GameObject
 			Vector2 disp = Game.rayRad(radius+actionEffect.getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
 			actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
 			actionEffect.setRotation(getRotation()-90);
+		}
+		
+		//apply impulse to try to move objects with the player
+		if(grabbing)
+		{
+			for(int i=0;i<grabbedObjects.size(); ++i)
+			{
+				GameObject go = grabbedObjects.get(i);
+				Vector2 offset = grabbedOffets.get(i).cpy().rotate(getRotation());
+				Vector2 desiredPos = getCenterPos().add(offset);
+				Vector2 disp = desiredPos.sub(go.getCenterPos());
+				
+				Vector2 dv = getVel().sub(go.getVel());
+				Vector2 linearForce = dv.scl(go.physicsBody.getMass()*grabForce);
+				//and a bit more to push it towards the desired point
+				//not a uniform force, it is scaled by distance
+				linearForce.add(disp.scl(grabForce));
+				go.physicsBody.applyLinearImpulse(linearForce.scl(Game.SECONDS_PER_FRAME), go.getCenterPos(), true);
+			}
 		}
 	}
 	
@@ -256,21 +277,17 @@ public class Player extends GameObject
 		
 		for(GameObject go : targets)
 		{
-			//grab object by joining to it
-			List<Joint> joints = Game.inst.physics.joinBodies(physicsBody, go.physicsBody);
-			grabJoints.addAll(joints);
+			grabbedObjects.add(go);
+			//rotate offset to account for facing direction
+			grabbedOffets.add(go.getCenterPos().sub(getCenterPos().rotate(-getRotation())));
 		}
 	}
 	
 	void grabEnd()
 	{
 		Game.log("grab end");
-		for(Joint j : grabJoints)
-		{
-			Game.log("trying to remove");
-			Game.inst.physics.removeJoint(j);
-		}
-		grabJoints.clear();
+		grabbedObjects.clear();
+		grabbedOffets.clear();
 		actionEffect = null;
 	}
 }
