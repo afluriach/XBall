@@ -37,12 +37,14 @@ public class Player extends GameObject
 
 	float grabDist = 1.5f;
 	float grabWidth = 30f;
-	float grabForce = 7f;
+	float grabVelCorrectionForce = 7f;
+	float grabPosCorrectionForce = 14f;
+	float dropLimit = 0.75f;
 
 	float actionCooldown;
 	
 	ArrayList<GameObject> grabbedObjects = new ArrayList();
-	ArrayList<Vector2> grabbedOffets = new ArrayList();
+	ArrayList<Vector2> grabbedOffsets = new ArrayList();
 	boolean grabbing = false;
 	
 	public Player(MapObject mo)
@@ -79,7 +81,7 @@ public class Player extends GameObject
 			actionCooldown = 0;
 			actionEffect = null;
 		}
-		
+
 		if(grabbing && actionEffect != null)
 		{
 			Vector2 disp = Game.rayRad(radius+actionEffect.getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
@@ -93,15 +95,25 @@ public class Player extends GameObject
 			for(int i=0;i<grabbedObjects.size(); ++i)
 			{
 				GameObject go = grabbedObjects.get(i);
-				Vector2 offset = grabbedOffets.get(i).cpy().rotate(getRotation());
+				Vector2 offset = grabbedOffsets.get(i).cpy().rotate(getRotation());
 				Vector2 desiredPos = getCenterPos().add(offset);
 				Vector2 disp = desiredPos.sub(go.getCenterPos());
+
+				//if object expires or moves more than the limit from its original
+				//grab offset, drop it
+				if(go.isExpired() || disp.len2() >= dropLimit*dropLimit)
+				{
+					grabbedObjects.remove(i);
+					grabbedOffsets.remove(i);
+					--i;
+					continue;
+				}
 				
 				Vector2 dv = getVel().sub(go.getVel());
-				Vector2 linearForce = dv.scl(go.physicsBody.getMass()*grabForce);
+				Vector2 linearForce = dv.scl(go.physicsBody.getMass()*grabVelCorrectionForce);
 				//and a bit more to push it towards the desired point
 				//not a uniform force, it is scaled by distance
-				linearForce.add(disp.scl(grabForce));
+				linearForce.add(disp.scl(grabPosCorrectionForce));
 				go.physicsBody.applyLinearImpulse(linearForce.scl(Game.SECONDS_PER_FRAME), go.getCenterPos(), true);
 			}
 		}
@@ -193,7 +205,7 @@ public class Player extends GameObject
 			kick();
 		}
 		
-		if(!grabbing && controls.state.get(Action.grab))
+		if(!grabbing && controls.state.get(Action.grab) && actionCooldown <= 0)
 		{
 			grabStart();
 			grabbing = true;
@@ -279,7 +291,7 @@ public class Player extends GameObject
 		{
 			grabbedObjects.add(go);
 			//rotate offset to account for facing direction
-			grabbedOffets.add(go.getCenterPos().sub(getCenterPos().rotate(-getRotation())));
+			grabbedOffsets.add(go.getCenterPos().sub(getCenterPos().rotate(-getRotation())));
 		}
 	}
 	
@@ -287,7 +299,7 @@ public class Player extends GameObject
 	{
 		Game.log("grab end");
 		grabbedObjects.clear();
-		grabbedOffets.clear();
+		grabbedOffsets.clear();
 		actionEffect = null;
 	}
 }
