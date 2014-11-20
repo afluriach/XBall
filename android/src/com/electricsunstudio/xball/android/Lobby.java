@@ -5,8 +5,7 @@ import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.electricsunstudio.xball.Game;
-import com.electricsunstudio.xball.network.ClientAction;
-import com.electricsunstudio.xball.network.ClientIntent;
+import com.electricsunstudio.xball.network.*;
 
 /**
  *
@@ -31,7 +30,7 @@ public class Lobby extends Activity{
 	@Override
 	public void onBackPressed()
 	{
-		Game.serverThread.send(new ClientIntent(ClientAction.disconnect, "", Game.username));
+		Game.serverThread.send(new DisconnectIntent());
 		Game.serverThread.quit = true;
 		super.onBackPressed();
 	}

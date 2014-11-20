@@ -7,16 +7,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-import com.electricsunstudio.xball.network.ClientAction;
-import com.electricsunstudio.xball.network.ClientIntent;
+import com.electricsunstudio.xball.network.*;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.Gson;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ServerLauncher {
 	public static final int serverPort = 49000;
@@ -27,12 +24,15 @@ public class ServerLauncher {
 	//may be better to map it to the server thread using to handle each user since
 	//the thread owns the socket and will handle the IO
 	static HashMap<String, Thread> userThreads = new HashMap<String, Thread>();
+	//keyed by the user name that created the match
+	static HashMap<String, Match> pendingMatches = new HashMap<String, Match>();
 	
 	static Lock userdataLock = new ReentrantLock(true);
 	
-	static Gson gson = new Gson();
+	static Gson gson;
 	
 	public static void main (String[] arg) {
+		gson = new Gson();
 		MainServerThread serverThread = new MainServerThread(serverPort);
 		serverThread.start();
 	}
@@ -135,11 +135,21 @@ public class ServerLauncher {
 			{
 				try {
 					Object obj = objIn.readObject();
-										
 					if(obj instanceof String)
 					{
-						ClientIntent intent = gson.fromJson((String)obj, ClientIntent.class);
-						handleIntent(intent, conn);
+						ObjectWrapper wrapper = gson.fromJson((String)obj, ObjectWrapper.class);
+						
+						try{
+							Class cls = Class.forName(wrapper.clsName);
+							if(!ClientIntent.class.isAssignableFrom(cls)){
+								System.out.printf("non intent object of type %s sent to server.\n", wrapper.clsName);
+							}
+							ClientIntent intent = (ClientIntent) gson.fromJson(wrapper.str, cls);
+							handleIntent(intent, conn);
+						} catch(ClassNotFoundException ex){
+							System.out.printf("invalid object %s sent", wrapper.clsName);
+						}
+						
 					}
 					else					
 					{
@@ -167,40 +177,32 @@ public class ServerLauncher {
 		void handleIntent(ClientIntent intent, Connection conn)
 		{
 			//TODO check that this socket hasn't already submitted a login request
-			if(intent.action == ClientAction.connect)
+			if(intent instanceof ConnectIntent)
 			{
-				user = intent.username;
+				ConnectIntent connect = (ConnectIntent) intent;
+				if(user != null)
+					System.out.printf("warning: multiple logins for %s", connect.username);
+				
+				user = connect.username;
 				userdataLock.lock();
 				try {
-					connectedUsers.put(intent.username, conn);
-					userThreads.put(intent.username, this);
+					connectedUsers.put(user, conn);
+					userThreads.put(user, this);
 				} finally {
 					userdataLock.unlock();
 				}
-				System.out.println(intent.username + " is now online, " + conn.addr + ":" + conn.port);	
+				System.out.println(user + " is now online, " + conn.addr + ":" + conn.port);	
 			}
-			else if(intent.action == ClientAction.disconnect)
+			else if(intent instanceof DisconnectIntent)
 			{
-				if(!connectedUsers.containsKey(intent.username))
-				{
-					System.out.println("Invalid disconnect for non-existant user " +
-						intent.username + " from " + conn);
+				userdataLock.lock();
+				try{
+					connectedUsers.remove(user);
+					userThreads.remove(user);
+				} finally{
+					userdataLock.unlock();
 				}
-				else if(userThreads.get(intent.username) != this)
-				{
-					System.out.printf("Invalid disconnect for %s, on wrong socket.\n", intent.username);
-				}
-				else
-				{
-					userdataLock.lock();
-					try{
-						connectedUsers.remove(intent.username);
-						userThreads.remove(intent.username);
-					} finally{
-						userdataLock.unlock();
-					}
-					System.out.println(intent.username + " has disconnected");
-				}
+				System.out.println(user + " has disconnected");
 			}
 		}
 	}	

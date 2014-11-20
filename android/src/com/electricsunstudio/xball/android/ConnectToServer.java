@@ -11,9 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.electricsunstudio.xball.Game;
-import com.electricsunstudio.xball.network.ClientAction;
-import com.electricsunstudio.xball.network.ClientIntent;
-import com.electricsunstudio.xball.network.ObjectSocketQueue;
+import com.electricsunstudio.xball.network.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -63,7 +61,7 @@ public class ConnectToServer extends Activity {
 					Game.serverThread = new ObjectSocketQueue(addr, portNum);
 					Game.serverThread.start();
 					Game.username = username.getText().toString();
-					Game.serverThread.send(new ClientIntent(ClientAction.connect, "", Game.username));
+					Game.serverThread.send(new ConnectIntent(Game.username));
 
 					Intent intent = new Intent(ConnectToServer.this, Lobby.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -1,6 +1,7 @@
 package com.electricsunstudio.xball.network;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
@@ -74,9 +75,8 @@ public class ObjectSocketQueue extends Thread
 				if(obj != null)
 				{
 					try {
-						objOut.writeObject(gson.toJson(obj));
+						objOut.writeObject(gson.toJson(new ObjectWrapper(obj.getClass().getName(),gson.toJson(obj))));
 					} catch (NotSerializableException ex){
-//							Toast.makeText(ConnectToServer.this, obj.getClass().getSimpleName() + " is not serializable", Toast.LENGTH_SHORT).show();
 						ex.printStackTrace();
 					} catch (IOException ex) {
 						ex.printStackTrace();
