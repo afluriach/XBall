@@ -22,7 +22,7 @@ import java.net.UnknownHostException;
  *
  * @author toni
  */
-public class ConnectToServer extends Activity {
+public class ConnectToServer extends XballActivity {
 	@Override
 	public void onCreate(Bundle savesInstanceState)
 	{
@@ -56,13 +56,13 @@ public class ConnectToServer extends Activity {
 					
 					if(portNum <=0 || portNum >= 65536)
 					{
-						Toast.makeText(ConnectToServer.this, "Invalid port", Toast.LENGTH_SHORT).show();
+						showToast("Invalid port", false);
 						return;
 					}
 					new MakeServerConnection().execute(host.getText().toString(), portNum, username.getText().toString());
 				}
 				catch(NumberFormatException e){
-					Toast.makeText(ConnectToServer.this, "Invalid port", Toast.LENGTH_SHORT).show();
+					showToast("Invalid port", false);
 				}
 			}
 		});
@@ -100,12 +100,10 @@ public class ConnectToServer extends Activity {
 		@Override
 		protected void onPostExecute(Object o)
 		{
-			Toast.makeText(ConnectToServer.this, msg, Toast.LENGTH_SHORT).show();
+			showToast(msg, false);
 			if(connected)
 			{
-				Intent intent = new Intent(ConnectToServer.this, Lobby.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
+                startActivity(Lobby.class);
 			}
 		}
 	}
@@ -162,7 +160,7 @@ public class ConnectToServer extends Activity {
 		protected void onPostExecute(Object o)
 		{
 			//make status toast and open Lobby if successful
-			Toast.makeText(ConnectToServer.this, msg, Toast.LENGTH_SHORT).show();
+			showToast(msg, false);
 		}
 	}
 }

@@ -19,7 +19,7 @@ import com.electricsunstudio.xball.Game;
  *
  * @author toni
  */
-public class CampaignSelect extends Activity {
+public class CampaignSelect extends XballActivity {
 	@Override
 	public void onCreate(Bundle savesInstanceState)
 	{
@@ -38,9 +38,7 @@ public class CampaignSelect extends Activity {
 			public void onItemClick(AdapterView<?> av, View view, int i, long l) {
 				//start game
 				Game.level = Game.availableLevels[i];
-				Intent intent = new Intent(CampaignSelect.this, AndroidLauncher.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
+                startActivity(AndroidLauncher.class);
 			}
 		});
 		

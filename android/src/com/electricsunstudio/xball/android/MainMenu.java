@@ -4,23 +4,19 @@ import android.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
-import com.electricsunstudio.xball.Game;
-import com.electricsunstudio.xball.android.CampaignSelect;
 
 /**
  *
  * @author toni
  */
-public class MainMenu extends Activity {
+public class MainMenu extends XballActivity {
 	@Override
 	public void onCreate(Bundle savesInstanceState)
 	{
@@ -39,15 +35,11 @@ public class MainMenu extends Activity {
 			public void onItemClick(AdapterView<?> av, View view, int i, long l) {
 				if(i == 0)
 				{
-					Intent intent = new Intent(MainMenu.this, CampaignSelect.class);
-					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(intent);
+                    startActivity(CampaignSelect.class);
 				}
 				else if(i == 1)
 				{
-					Intent intent = new Intent(MainMenu.this, ConnectToServer.class);
-					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(intent);
+                    startActivity(ConnectToServer.class);
 				}
 			}
 		});
