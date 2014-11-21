@@ -26,6 +26,7 @@ public class ConnectToServer extends Activity {
 	{
 		super.onCreate(savesInstanceState);
 		LinearLayout layout = new LinearLayout(this);
+		layout.setOrientation(LinearLayout.VERTICAL);
 	
 		TextView hostLabel = new TextView(this);
 		hostLabel.setText("Hostname");
