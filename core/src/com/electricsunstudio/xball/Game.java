@@ -39,6 +39,7 @@ public class Game extends ApplicationAdapter {
 	public static final String tag = "X-Ball";
 	
 	public static Class level = Level1.class;
+	public static String player;
 	
 	public static final Class[] availableLevels = {
 		Level1.class,
@@ -116,7 +117,10 @@ public class Game extends ApplicationAdapter {
 		engine.initLevel(level, System.currentTimeMillis());
 
 		mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
-		crntPlayer = gameObjectSystem.getObjectByName(crntLevel.getPlayerName(), Player.class);
+		
+		if(player == null)
+			player = crntLevel.getPlayerName();
+		crntPlayer = gameObjectSystem.getObjectByName(player, Player.class);
 	}
 	
 	public void update()
@@ -133,8 +137,8 @@ public class Game extends ApplicationAdapter {
 	
 	public void updateTick()
 	{
-		engine.updateTick();
 		crntPlayer.handleControls();
+		engine.updateTick();
 	}
 	
 	@Override
@@ -339,5 +343,14 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 		return names;
+	}
+	
+	public static Class getLevelFromSimpleName(String name)
+	{
+		try {
+			return Class.forName("com.electricsunstudio.xball.levels." + name);
+		} catch (ClassNotFoundException ex) {
+			return null;
+		}
 	}
 }

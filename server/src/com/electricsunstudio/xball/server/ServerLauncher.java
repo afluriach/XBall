@@ -1,5 +1,6 @@
 package com.electricsunstudio.xball.server;
 
+import com.electricsunstudio.xball.Game;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,7 +13,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.Gson;
+import java.net.BindException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 public class ServerLauncher {
@@ -23,7 +27,7 @@ public class ServerLauncher {
 	//the socket that each user is using for their connection
 	//may be better to map it to the server thread using to handle each user since
 	//the thread owns the socket and will handle the IO
-	static HashMap<String, Thread> userThreads = new HashMap<String, Thread>();
+	static HashMap<String, ServerThread> userThreads = new HashMap<String, ServerThread>();
 	static ArrayList<ServerThread> serverThreads = new ArrayList();
 	
 	static Lock userdataLock = new ReentrantLock(true);
@@ -55,9 +59,88 @@ public class ServerLauncher {
 				}
 				break;
 			}
+			else if(line.startsWith("start match "))
+			{
+				String[] tokens = line.split(" ");
+				if(tokens.length < 3)
+				{
+					System.out.println("no map name provided");
+					continue;
+				}
+				if(tokens.length < 4)
+				{
+					System.out.println("no users to join provided");
+					continue;
+				}
+				
+				//start match level {user=player_name}
+				String mapName = tokens[2];
+				
+				Class level = Game.getLevelFromSimpleName(mapName);
+				
+				if(level == null)
+				{
+					System.out.println("invalid level");
+					continue;
+				}
+				startMatch(mapName, level, Arrays.copyOfRange(tokens, 3, tokens.length));
+			}
+			else
+			{
+				System.out.println("unknown command " + line);
+			}
 		}
 	}
-	
+
+	//TODO lookup players in level map, ensure the names are valid
+	//warn if player has not been assigned
+	static void startMatch(String levelName, Class level, String[] tokens)
+	{
+		for(String s : tokens)
+		{
+			System.out.println(s);
+		}
+		
+		HashMap<String,StartMatch> messages = new HashMap<String, StartMatch>();
+		try
+		{
+			userdataLock.lock();
+			//check that each user is logged in. if so, send start match message
+			for(int i=0; i < tokens.length; ++i)
+			{
+				String[] t = tokens[i].split("=");
+				if(t.length != 2)
+				{
+					System.out.println("malformed token " + tokens[i]);
+					return;
+				}
+				String username = t[0];
+				String playerName = t[1];
+
+				if(!userThreads.containsKey(username))
+				{
+					System.out.println(username + " is not online");
+					return;
+				}
+				else
+				{
+					messages.put(username, new StartMatch(levelName, playerName));
+				}
+			}
+		}
+		finally
+		{
+			userdataLock.unlock();
+		}
+		
+		//send the messages and start match
+		for(Entry<String,StartMatch> e : messages.entrySet())
+		{
+			userThreads.get(e.getKey()).startMatch(e.getValue());
+			System.out.println("sent start message to " + e.getKey());
+		}
+	}
+
 	static class Connection
 	{
 		public Connection(InetAddress addr, int port) {
@@ -90,10 +173,12 @@ public class ServerLauncher {
 		{
 			try {
 				sock = new ServerSocket(port);
-			} catch (SocketException ex) {
-				ex.printStackTrace();
+			} catch (BindException ex) {
+				System.out.println("port in use");
+				quit = true;
 			} catch (IOException ex) {
 				ex.printStackTrace();
+				quit = true;
 			}
 		}
 		
@@ -126,6 +211,7 @@ public class ServerLauncher {
 		Connection conn;
 		
 		String user;
+		String player;
 		
 		ObjectSocketInput objIn;
 		ObjectSocketOutput objOut;
@@ -150,8 +236,14 @@ public class ServerLauncher {
 					ConnectIntent connect = (ConnectIntent) o;
 					if(user != null)
 					{
-						System.out.printf("%s has attempted another login on the same socket.", connect.username);
+						System.out.printf("%s has attempted another login on the same socket.\n", connect.username);
 						objOut.send(new LoginResponse("Already logged in", false));
+						return;
+					}
+					if(connect.username.contains(" "))
+					{
+						objOut.send(new LoginResponse("Spaces not allowed in username", false));
+						System.out.printf("login attempt with invalid username %s.\n", connect.username);
 					}
 
 					boolean uniqueUser = false;
@@ -195,6 +287,12 @@ public class ServerLauncher {
 					user = null;
 				}
 			});
+		}
+		
+		public void startMatch(StartMatch m)
+		{
+			player = m.player;
+			objOut.send(m);
 		}
 		
 		@Override
