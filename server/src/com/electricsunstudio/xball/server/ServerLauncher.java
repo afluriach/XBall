@@ -24,8 +24,6 @@ public class ServerLauncher {
 	//may be better to map it to the server thread using to handle each user since
 	//the thread owns the socket and will handle the IO
 	static HashMap<String, Thread> userThreads = new HashMap<String, Thread>();
-	//keyed by the user name that created the match
-	static HashMap<String, Match> pendingMatches = new HashMap<String, Match>();
 	
 	static Lock userdataLock = new ReentrantLock(true);
 	
