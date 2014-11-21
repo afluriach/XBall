@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ObjectSocketOutput extends Thread
 {
 	public boolean quit;
-	Socket sock;
+	public Socket sock;
 	Queue<Object> sendQueue;
 	Lock queueLock;
 	ObjectOutputStream objOut;
@@ -35,6 +35,20 @@ public class ObjectSocketOutput extends Thread
 		gson = new Gson();
 		
 		sock = new Socket(addr, port);
+		objOut = new ObjectOutputStream(sock.getOutputStream());
+	}
+	
+	public ObjectSocketOutput(Socket sock) throws IOException
+	{
+		this.addr = sock.getInetAddress();
+		this.port = sock.getPort();
+		
+		sendQueue = new LinkedList<Object>();
+		queueLock = new ReentrantLock(true);
+
+		gson = new Gson();
+		
+		this.sock = sock;
 		objOut = new ObjectOutputStream(sock.getOutputStream());
 	}
 

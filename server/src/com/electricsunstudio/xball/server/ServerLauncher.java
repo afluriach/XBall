@@ -1,7 +1,6 @@
 package com.electricsunstudio.xball.server;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -102,7 +101,7 @@ public class ServerLauncher {
 		String user;
 		
 		ObjectSocketInput objIn;
-		ObjectOutputStream objOut;
+		ObjectSocketOutput objOut;
 		
 		boolean quit;
 		
@@ -113,7 +112,7 @@ public class ServerLauncher {
 			
 			try {
 				objIn = new ObjectSocketInput(sock);
-				objOut = new ObjectOutputStream(sock.getOutputStream());
+				objOut = new ObjectSocketOutput(sock);
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
@@ -123,17 +122,34 @@ public class ServerLauncher {
 				public void onReceived(Object o) {
 					ConnectIntent connect = (ConnectIntent) o;
 					if(user != null)
-						System.out.printf("warning: multiple logins for %s", connect.username);
+					{
+						System.out.printf("%s has attempted another login on the same socket.", connect.username);
+						objOut.send(new LoginResponse("Already logged in", false));
+					}
 
+					boolean uniqueUser = false;
 					user = connect.username;
 					userdataLock.lock();
 					try {
-						connectedUsers.put(user, conn);
-						userThreads.put(user, ServerThread.this);
+						if(!connectedUsers.containsKey(connect.username))
+						{
+						    connectedUsers.put(user, conn);
+						    userThreads.put(user, ServerThread.this);
+							uniqueUser = true;
+						}
 					} finally {
 						userdataLock.unlock();
 					}
-					System.out.println(user + " is now online, " + conn.addr + ":" + conn.port);
+					if(uniqueUser)
+					{
+						System.out.println(user + " is now online, " + conn.addr + ":" + conn.port);
+						objOut.send(new LoginResponse("Success", true));
+					}
+					else
+					{
+						System.out.println("duplicate username " + user + conn.addr + ":" + conn.port);
+						objOut.send(new LoginResponse("Username is already in use", false));
+					}
 				}
 			});
 			
@@ -157,6 +173,7 @@ public class ServerLauncher {
 		public void run()
 		{
 			objIn.start();
+			objOut.start();
 		}
 	}	
 }

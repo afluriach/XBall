@@ -2,15 +2,10 @@ package com.electricsunstudio.xball.network;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ObjectSocketInput extends Thread
 {
@@ -77,7 +72,7 @@ public class ObjectSocketInput extends Thread
 					}
 				}
 			} catch (IOException ex) {
-				ex.printStackTrace();
+				break;
 			} catch (ClassNotFoundException ex) {
 				ex.printStackTrace();
 			}

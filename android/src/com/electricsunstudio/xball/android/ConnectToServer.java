@@ -81,6 +81,35 @@ public class ConnectToServer extends Activity {
 		setContentView(layout);
 	}
 	
+	class ServerResponse extends AsyncTask
+	{
+		boolean connected;
+		String msg;
+
+		public ServerResponse(boolean connected, String msg) {
+			this.connected = connected;
+			this.msg = msg;
+		}
+
+		
+		@Override
+		protected Object doInBackground(Object... paramss) {
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Object o)
+		{
+			Toast.makeText(ConnectToServer.this, msg, Toast.LENGTH_SHORT).show();
+			if(connected)
+			{
+				Intent intent = new Intent(ConnectToServer.this, Lobby.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+			}
+		}
+	}
+	
 	class MakeServerConnection extends AsyncTask
 	{
 		String msg;
@@ -95,12 +124,24 @@ public class ConnectToServer extends Activity {
 			try
 			{
 				InetAddress addr = InetAddress.getByName(host);
-
-				Game.serverThread = new ObjectSocketOutput(addr, port);
-				Game.serverThread.start();
-				Game.username = username;
-				Game.serverThread.send(new ConnectIntent(Game.username));
 				
+				Game.serverOutput = new ObjectSocketOutput(addr, port);
+				Game.serverOutput.start();
+				Game.username = username;
+				
+				Game.serverInput = new ObjectSocketInput(Game.serverOutput.sock);
+				Game.serverInput.addHandler(LoginResponse.class, new Handler(){
+
+					@Override
+					public void onReceived(Object t) {
+						LoginResponse response = (LoginResponse) t;
+						new ServerResponse(response.success, response.msg).execute();
+					}
+				});
+				
+				Game.serverInput.start();
+				Game.serverOutput.send(new ConnectIntent(Game.username));
+
 				msg = "Connected to server";
 				success = true;
 			}
@@ -120,14 +161,8 @@ public class ConnectToServer extends Activity {
 		@Override
 		protected void onPostExecute(Object o)
 		{
+			//make status toast and open Lobby if successful
 			Toast.makeText(ConnectToServer.this, msg, Toast.LENGTH_SHORT).show();
-			if(success)
-			{
-				//make status toast and open Lobby if successful
-				Intent intent = new Intent(ConnectToServer.this, Lobby.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-			}
 		}
 	}
 }

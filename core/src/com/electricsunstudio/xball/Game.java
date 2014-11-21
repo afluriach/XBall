@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.levels.*;
+import com.electricsunstudio.xball.network.ObjectSocketInput;
 
 import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.network.ObjectSocketOutput;
@@ -76,7 +77,8 @@ public class Game extends ApplicationAdapter {
 	public Player crntPlayer;
 	
 	//network
-	public static ObjectSocketOutput serverThread;
+	public static ObjectSocketOutput serverOutput;
+	public static ObjectSocketInput serverInput;
 	public static String username;
 	
 	void initCamera()

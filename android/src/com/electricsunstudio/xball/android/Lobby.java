@@ -30,8 +30,8 @@ public class Lobby extends Activity{
 	@Override
 	public void onBackPressed()
 	{
-		Game.serverThread.send(new DisconnectIntent());
-		Game.serverThread.quit = true;
+		Game.serverOutput.send(new DisconnectIntent());
+		Game.serverOutput.quit = true;
 		super.onBackPressed();
 	}
 }
