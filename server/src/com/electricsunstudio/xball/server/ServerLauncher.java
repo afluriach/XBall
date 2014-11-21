@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerLauncher {
 	public static final int serverPort = 49000;
@@ -322,6 +324,22 @@ public class ServerLauncher {
 		{
 			objIn.start();
 			objOut.start();
+            
+            while(true)
+            {
+                if(sock.isClosed() || sock.isInputShutdown() || sock.isOutputShutdown())
+                {
+                    if(user != null)
+                        System.out.printf("user %s, socket closed without disconnect\n", user);
+                    userThreads.remove(user);
+                    serverThreads.remove(this);
+                    break;
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                }
+            }
 		}
 		
 		public void close()
