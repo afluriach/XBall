@@ -59,6 +59,10 @@ nb-configuration.xml
 
 .gradle
 build/
+.nb-gradle/profiles/private
 
 ## OS Specific
 .DS_Store
+
+##Android
+android/private/cache
