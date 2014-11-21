@@ -1,7 +1,6 @@
 package com.electricsunstudio.xball.server;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -102,7 +101,7 @@ public class ServerLauncher {
 		
 		String user;
 		
-		ObjectInputStream objIn;
+		ObjectSocketInput objIn;
 		ObjectOutputStream objOut;
 		
 		boolean quit;
@@ -113,95 +112,51 @@ public class ServerLauncher {
 			conn = new Connection(sock.getInetAddress(), sock.getPort());
 			
 			try {
-				objIn = new ObjectInputStream(sock.getInputStream());
+				objIn = new ObjectSocketInput(sock);
 				objOut = new ObjectOutputStream(sock.getOutputStream());
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
+			
+			objIn.addHandler(ConnectIntent.class, new Handler(){
+				@Override
+				public void onReceived(Object o) {
+					ConnectIntent connect = (ConnectIntent) o;
+					if(user != null)
+						System.out.printf("warning: multiple logins for %s", connect.username);
+
+					user = connect.username;
+					userdataLock.lock();
+					try {
+						connectedUsers.put(user, conn);
+						userThreads.put(user, ServerThread.this);
+					} finally {
+						userdataLock.unlock();
+					}
+					System.out.println(user + " is now online, " + conn.addr + ":" + conn.port);
+				}
+			});
+			
+			objIn.addHandler(DisconnectIntent.class, new Handler<DisconnectIntent>(){
+
+				@Override
+				public <DisconnectIntent> void onReceived(DisconnectIntent t) {
+					userdataLock.lock();
+					try{
+						connectedUsers.remove(user);
+						userThreads.remove(user);
+					} finally{
+						userdataLock.unlock();
+					}
+					System.out.println(user + " has disconnected");
+				}
+			});
 		}
 		
 		@Override
 		public void run()
 		{
-			if(objIn == null || objOut == null)
-			{
-				System.out.println("Error opening object IO on server thread.");
-				return;
-			}
-			
-			while(!sock.isClosed() && !quit)
-			{
-				try {
-					Object obj = objIn.readObject();
-					if(obj instanceof String)
-					{
-						ObjectWrapper wrapper = gson.fromJson((String)obj, ObjectWrapper.class);
-						
-						try{
-							Class cls = Class.forName(wrapper.clsName);
-							if(!ClientIntent.class.isAssignableFrom(cls)){
-								System.out.printf("non intent object of type %s sent to server.\n", wrapper.clsName);
-							}
-							ClientIntent intent = (ClientIntent) gson.fromJson(wrapper.str, cls);
-							handleIntent(intent, conn);
-						} catch(ClassNotFoundException ex){
-							System.out.printf("invalid object %s sent", wrapper.clsName);
-						}
-						
-					}
-					else					
-					{
-						System.out.println("invalid object type from client");
-					}
-				} catch(SocketException ex){
-					System.out.println("Socket has been reset.");
-					quit = true;
-					if(!sock.isClosed())
-					{
-						try {
-							sock.close();
-						} catch (IOException ex1) {
-							ex.printStackTrace();
-						}
-					}
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				} catch (ClassNotFoundException ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-		
-		void handleIntent(ClientIntent intent, Connection conn)
-		{
-			//TODO check that this socket hasn't already submitted a login request
-			if(intent instanceof ConnectIntent)
-			{
-				ConnectIntent connect = (ConnectIntent) intent;
-				if(user != null)
-					System.out.printf("warning: multiple logins for %s", connect.username);
-				
-				user = connect.username;
-				userdataLock.lock();
-				try {
-					connectedUsers.put(user, conn);
-					userThreads.put(user, this);
-				} finally {
-					userdataLock.unlock();
-				}
-				System.out.println(user + " is now online, " + conn.addr + ":" + conn.port);	
-			}
-			else if(intent instanceof DisconnectIntent)
-			{
-				userdataLock.lock();
-				try{
-					connectedUsers.remove(user);
-					userThreads.remove(user);
-				} finally{
-					userdataLock.unlock();
-				}
-				System.out.println(user + " has disconnected");
-			}
+			objIn.start();
 		}
 	}	
 }

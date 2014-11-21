@@ -1,18 +1,16 @@
 package com.electricsunstudio.xball.network;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ObjectSocketOutput extends Thread
 {
@@ -26,7 +24,7 @@ public class ObjectSocketOutput extends Thread
 	InetAddress addr;
 	int port;
 
-	public ObjectSocketOutput(InetAddress addr, int port)
+	public ObjectSocketOutput(InetAddress addr, int port) throws IOException
 	{
 		this.addr = addr;
 		this.port = port;
@@ -35,6 +33,9 @@ public class ObjectSocketOutput extends Thread
 		queueLock = new ReentrantLock(true);
 
 		gson = new Gson();
+		
+		sock = new Socket(addr, port);
+		objOut = new ObjectOutputStream(sock.getOutputStream());
 	}
 
 	public void send(Object obj)
@@ -50,14 +51,6 @@ public class ObjectSocketOutput extends Thread
 	@Override
 	public void run()
 	{
-		try {
-			sock = new Socket(addr, port);
-			objOut = new ObjectOutputStream(sock.getOutputStream());
-		} catch (IOException ex) {
-			ex.printStackTrace();
-			quit = true;
-		}
-
 		while(!quit && !sock.isClosed() && sock.isConnected())
 		{
 			//try to empty queue before waiting
