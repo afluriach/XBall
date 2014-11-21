@@ -2,8 +2,10 @@ package com.electricsunstudio.xball.android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,24 +59,10 @@ public class ConnectToServer extends Activity {
 						Toast.makeText(ConnectToServer.this, "Invalid port", Toast.LENGTH_SHORT).show();
 						return;
 					}
-					InetAddress addr = InetAddress.getByName(host.getText().toString());
-					
-					Game.serverThread = new ObjectSocketQueue(addr, portNum);
-					Game.serverThread.start();
-					Game.username = username.getText().toString();
-					Game.serverThread.send(new ConnectIntent(Game.username));
-
-					Intent intent = new Intent(ConnectToServer.this, Lobby.class);
-					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(intent);
+					new MakeServerConnection().execute(host.getText().toString(), portNum, username.getText().toString());
 				}
 				catch(NumberFormatException e){
 					Toast.makeText(ConnectToServer.this, "Invalid port", Toast.LENGTH_SHORT).show();
-				} catch (UnknownHostException ex) {
-					Toast.makeText(ConnectToServer.this, "Unknown host", Toast.LENGTH_SHORT).show();					
-				} catch (IOException ex) {
-					Toast.makeText(ConnectToServer.this, "IO Exception", Toast.LENGTH_SHORT).show();
-					ex.printStackTrace();
 				}
 			}
 		});
@@ -91,5 +79,55 @@ public class ConnectToServer extends Activity {
 		layout.addView(button);
 		
 		setContentView(layout);
+	}
+	
+	class MakeServerConnection extends AsyncTask
+	{
+		String msg;
+		boolean success;
+		
+		@Override
+		protected Object doInBackground(Object... params) {
+			String host = (String) params[0];
+			Integer port = (Integer) params[1];
+			String username = (String) params[2];
+			
+			try
+			{
+				InetAddress addr = InetAddress.getByName(host);
+
+				Game.serverThread = new ObjectSocketQueue(addr, port);
+				Game.serverThread.start();
+				Game.username = username;
+				Game.serverThread.send(new ConnectIntent(Game.username));
+				
+				msg = "Connected to server";
+				success = true;
+			}
+			catch(UnknownHostException ex)
+			{
+				msg = "Unknown host";
+				Log.e(Game.tag, "Unknown host", ex);
+			}
+			catch(IOException ex)
+			{
+				msg = "Connection error";
+				Log.e(Game.tag, "IO exception connecting to server", ex);
+			}
+			return null;
+		}
+	
+		@Override
+		protected void onPostExecute(Object o)
+		{
+			Toast.makeText(ConnectToServer.this, msg, Toast.LENGTH_SHORT).show();
+			if(success)
+			{
+				//make status toast and open Lobby if successful
+				Intent intent = new Intent(ConnectToServer.this, Lobby.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+			}
+		}
 	}
 }

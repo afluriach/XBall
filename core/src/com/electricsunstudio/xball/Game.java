@@ -35,6 +35,8 @@ public class Game extends ApplicationAdapter {
 	
 	public static final boolean physicsRender = true;
 	
+	public static final String tag = "X-Ball";
+	
 	public static Class level = Level1.class;
 	
 	public static final Class[] availableLevels = {
@@ -203,7 +205,7 @@ public class Game extends ApplicationAdapter {
 	}
 	
 	public static void log(String msg) {
-		Gdx.app.log("X-Ball", msg);
+		Gdx.app.log(tag, msg);
 	}
 	
 	public static String string(Vector2 v)
