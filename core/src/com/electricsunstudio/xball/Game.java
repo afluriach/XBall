@@ -20,11 +20,14 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.levels.*;
+import com.electricsunstudio.xball.network.Handler;
 import com.electricsunstudio.xball.network.ObjectSocketInput;
 
 import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.network.ObjectSocketOutput;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Random;
 
 public class Game extends ApplicationAdapter {
@@ -74,9 +77,10 @@ public class Game extends ApplicationAdapter {
 	float updateDelta = 0;
 	
 	public Controls controls;
-	
 	public Player crntPlayer;
-	
+    HashMap<Player,ControlState> playerControlState = new HashMap<Player, ControlState>();
+    HashMap<String,Player> playersNameMap = new HashMap<String, Player>();
+    
 	//network
 	public static ObjectSocketOutput serverOutput;
 	public static ObjectSocketInput serverInput;
@@ -121,11 +125,44 @@ public class Game extends ApplicationAdapter {
 		if(player == null)
 			player = crntLevel.getPlayerName();
 		crntPlayer = gameObjectSystem.getObjectByName(player, Player.class);
+        
+        //init map for player name map
+        for(Player p : gameObjectSystem.getObjectsByType(Player.class))
+        {
+            playersNameMap.put(p.getName(), p);
+        }
+        
+        //init players control state
+        for(Player p : playersNameMap.values())
+        {
+            playerControlState.put(p, new ControlState());
+        }
+        
+        if(serverInput != null)
+        {
+            //add listener for control data
+            serverInput.addHandler(ControlState.class, new ControlHandler());
+        }
 	}
+    
+    class ControlHandler implements Handler
+    {
+        @Override
+        public void onReceived(Object t) {
+            ControlState cs = (ControlState)t;
+            playerControlState.put(playersNameMap.get(cs.player), cs);
+        }
+    }
 	
 	public void update()
 	{
 		controls.update();
+        controls.updateState(playerControlState.get(crntPlayer));
+        
+        if(serverOutput != null)
+        {
+            serverOutput.send(playerControlState.get(crntPlayer));
+        }
 		
 		updateDelta += Gdx.graphics.getDeltaTime();
 		while(updateDelta >= SECONDS_PER_FRAME)
@@ -137,7 +174,10 @@ public class Game extends ApplicationAdapter {
 	
 	public void updateTick()
 	{
-		crntPlayer.handleControls();
+        for(Entry<Player,ControlState> e : playerControlState.entrySet())
+        {
+            e.getKey().handleControls(e.getValue());
+        }
 		engine.updateTick();
 	}
 	

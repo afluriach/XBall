@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.electricsunstudio.xball.Action;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.Game;
-import com.electricsunstudio.xball.Controls;
+import com.electricsunstudio.xball.ControlState;
 import com.electricsunstudio.xball.physics.FilterClass;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,16 +147,15 @@ public class Player extends GameObject
 		
 	}
 
-	public void handleControls()
+	public void handleControls(ControlState state)
 	{
-		handleMoveControls();
-		handleAimControls();
-		handleActionControls();
+		handleMoveControls(state);
+		handleAimControls(state);
+		handleActionControls(state);
 	}
 	
-	public void handleMoveControls()
+	public void handleMoveControls(ControlState state)
 	{
-		Controls controls = Game.inst.controls;
 		float actualAccel = accel;
 		if(Game.inst.onMapLayer("ice", getCenterPos()))
 			actualAccel *= iceTraction;
@@ -165,7 +164,7 @@ public class Player extends GameObject
 		if(Game.inst.onMapLayer("rough", getCenterPos()))
 			actualSpeed *= roughSpeedPenalty;
 		
-		Vector2 targetVelocity = controls.controlPadPos.cpy().scl(actualSpeed);
+		Vector2 targetVelocity = state.movePos.cpy().scl(actualSpeed);
 		Vector2 velDisp = targetVelocity.cpy().sub(getVel());
 		float dv = actualAccel*Game.SECONDS_PER_FRAME;
 		
@@ -184,11 +183,11 @@ public class Player extends GameObject
 		
 	}
 	
-	void handleAimControls()
+	void handleAimControls(ControlState state)
 	{
-		if(Game.inst.controls.aimPadPos.len2() != 0)
+		if(state.aimPos.len2() != 0)
 		{
-			float targetAngle = Game.inst.controls.aimPadPos.angleRad();
+			float targetAngle = state.aimPos.angleRad();
 			
 			//predict 1/2 second ahead
 			float nextAngle = getRotationRad() + physicsBody.getAngularVelocity() / 2;
@@ -201,21 +200,19 @@ public class Player extends GameObject
 		}
 	}
 	
-	public void handleActionControls()
+	public void handleActionControls(ControlState state)
 	{
-		Controls controls = Game.inst.controls;
-		
-		if(controls.state.get(Action.kick) && actionCooldown <= 0 && !grabbing)
+		if(state.kick && actionCooldown <= 0 && !grabbing)
 		{
 			kick();
 		}
 		
-		if(!grabbing && controls.state.get(Action.grab) && actionCooldown <= 0)
+		if(!grabbing && state.grab && actionCooldown <= 0)
 		{
 			grabStart();
 			grabbing = true;
 		}
-		else if(grabbing && grabTime > minGrabTime && (!controls.state.get(Action.grab) || grabbedObjects.isEmpty()))
+		else if(grabbing && grabTime > minGrabTime && (!state.grab || grabbedObjects.isEmpty()))
 		{
 			grabEnd();
 			grabbing = false;

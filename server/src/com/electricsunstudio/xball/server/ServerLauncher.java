@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import com.electricsunstudio.xball.network.*;
+import com.electricsunstudio.xball.ControlState;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
@@ -140,6 +141,16 @@ public class ServerLauncher {
 			System.out.println("sent start message to " + e.getKey());
 		}
 	}
+    
+    //send to all other threads
+    static void notifyControls(ControlState cs, ServerThread from)
+    {
+        for(ServerThread t : userThreads.values())
+        {
+            if(t == from) continue;
+            t.objOut.send(cs);
+        }
+    }
 
 	static class Connection
 	{
@@ -294,6 +305,16 @@ public class ServerLauncher {
 		{
 			player = m.player;
 			objOut.send(m);
+            
+            //add listener for control state. populate the player field for this
+            //player and send to all other clients
+            objIn.addHandler(ControlState.class, new Handler(){
+            public void onReceived(Object t) {
+                ControlState cs = (ControlState)t;
+                cs.player = player;
+                notifyControls(cs, ServerThread.this);
+                }
+            });
 		}
 		
 		@Override

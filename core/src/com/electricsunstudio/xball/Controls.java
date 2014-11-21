@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import java.util.EnumMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Controls {
 	public static final int maxPressEvents = 5;
@@ -248,4 +250,12 @@ public class Controls {
 		handleTouchControls();
 	}
 
+    public void updateState(ControlState cs)
+    {
+        cs.grab = state.get(Action.grab);
+        cs.kick = state.get(Action.kick);
+        cs.special = state.get(Action.special);
+        cs.aimPos = aimPadPos;
+        cs.movePos = controlPadPos;
+    }
 }
