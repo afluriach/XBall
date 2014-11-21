@@ -244,6 +244,7 @@ public class ServerLauncher {
 					{
 						objOut.send(new LoginResponse("Spaces not allowed in username", false));
 						System.out.printf("login attempt with invalid username %s.\n", connect.username);
+                        return;
 					}
 
 					boolean uniqueUser = false;
