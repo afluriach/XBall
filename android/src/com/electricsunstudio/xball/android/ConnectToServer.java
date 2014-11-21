@@ -96,7 +96,7 @@ public class ConnectToServer extends Activity {
 			{
 				InetAddress addr = InetAddress.getByName(host);
 
-				Game.serverThread = new ObjectSocketQueue(addr, port);
+				Game.serverThread = new ObjectSocketOutput(addr, port);
 				Game.serverThread.start();
 				Game.username = username;
 				Game.serverThread.send(new ConnectIntent(Game.username));

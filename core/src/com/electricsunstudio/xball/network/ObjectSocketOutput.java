@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ObjectSocketQueue extends Thread
+public class ObjectSocketOutput extends Thread
 {
 	public boolean quit;
 	Socket sock;
@@ -26,7 +26,7 @@ public class ObjectSocketQueue extends Thread
 	InetAddress addr;
 	int port;
 
-	public ObjectSocketQueue(InetAddress addr, int port)
+	public ObjectSocketOutput(InetAddress addr, int port)
 	{
 		this.addr = addr;
 		this.port = port;

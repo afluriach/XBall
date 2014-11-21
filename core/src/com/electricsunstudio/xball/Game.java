@@ -22,7 +22,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.levels.*;
 
 import com.electricsunstudio.xball.objects.Player;
-import com.electricsunstudio.xball.network.ObjectSocketQueue;
+import com.electricsunstudio.xball.network.ObjectSocketOutput;
 import java.lang.reflect.Field;
 import java.util.Random;
 
@@ -76,7 +76,7 @@ public class Game extends ApplicationAdapter {
 	public Player crntPlayer;
 	
 	//network
-	public static ObjectSocketQueue serverThread;
+	public static ObjectSocketOutput serverThread;
 	public static String username;
 	
 	void initCamera()
