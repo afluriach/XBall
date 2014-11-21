@@ -99,4 +99,29 @@ public class ObjectSocketOutput extends Thread
 				System.out.println("excpetion closing server thread");
 		}
 	}
+
+	public void clear() {
+		while(!sendQueue.isEmpty())
+		{
+			Object obj = null;
+			queueLock.lock();
+			try{
+				if(!sendQueue.isEmpty())
+					obj = sendQueue.remove();
+			} finally{
+				queueLock.unlock();
+			}
+
+			if(obj != null)
+			{
+				try {
+					objOut.writeObject(gson.toJson(new ObjectWrapper(obj.getClass().getName(),gson.toJson(obj))));
+				} catch (NotSerializableException ex){
+					ex.printStackTrace();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
 }

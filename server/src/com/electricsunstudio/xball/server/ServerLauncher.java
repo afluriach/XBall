@@ -12,6 +12,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class ServerLauncher {
 	public static final int serverPort = 49000;
@@ -22,6 +24,7 @@ public class ServerLauncher {
 	//may be better to map it to the server thread using to handle each user since
 	//the thread owns the socket and will handle the IO
 	static HashMap<String, Thread> userThreads = new HashMap<String, Thread>();
+	static ArrayList<ServerThread> serverThreads = new ArrayList();
 	
 	static Lock userdataLock = new ReentrantLock(true);
 	
@@ -31,6 +34,28 @@ public class ServerLauncher {
 		gson = new Gson();
 		MainServerThread serverThread = new MainServerThread(serverPort);
 		serverThread.start();
+		
+		Scanner fin = new Scanner(System.in);
+		
+		while(true)
+		{
+			String line = fin.nextLine();
+			
+			if(line.equalsIgnoreCase("exit"))
+			{
+				serverThread.quit = true;
+				try {
+					serverThread.sock.close();
+				} catch (IOException ex) {
+				}
+				
+				for(ServerThread thread : serverThreads)
+				{
+					thread.close();
+				}
+				break;
+			}
+		}
 	}
 	
 	static class Connection
@@ -59,7 +84,7 @@ public class ServerLauncher {
 	//connections
 	static class MainServerThread extends Thread
 	{
-		ServerSocket sock;
+		public ServerSocket sock;
 		boolean quit = false;
 		public MainServerThread(int port)
 		{
@@ -83,9 +108,11 @@ public class ServerLauncher {
 				try {
 					Socket clientConnection = sock.accept();
 					System.out.printf("Client connection received from %s:%d\n", clientConnection.getInetAddress().toString(), clientConnection.getPort());
-					new ServerThread(clientConnection).start();
+					ServerThread t = new ServerThread(clientConnection);
+					t.start();
+					serverThreads.add(t);
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					break;
 				}
 			}
 		}
@@ -95,7 +122,7 @@ public class ServerLauncher {
 	//result
 	static class ServerThread extends Thread
 	{
-		Socket sock;
+		public Socket sock;
 		Connection conn;
 		
 		String user;
@@ -165,6 +192,7 @@ public class ServerLauncher {
 						userdataLock.unlock();
 					}
 					System.out.println(user + " has disconnected");
+					user = null;
 				}
 			});
 		}
@@ -175,5 +203,16 @@ public class ServerLauncher {
 			objIn.start();
 			objOut.start();
 		}
-	}	
+		
+		public void close()
+		{
+			objOut.send(new ServerShutdown());
+			objOut.clear();
+			try {
+				sock.close();
+			} catch (IOException ex) {
+			}
+			quit = true;
+		}
+	}
 }
