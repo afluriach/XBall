@@ -336,6 +336,7 @@ public class ServerLauncher {
                         System.out.printf("user %s, socket closed without disconnect\n", user);
                     userThreads.remove(user);
                     serverThreads.remove(this);
+                    connectedUsers.remove(user);
                     break;
                 }
                 try {
