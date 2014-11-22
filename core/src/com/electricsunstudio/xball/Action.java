@@ -7,6 +7,6 @@ package com.electricsunstudio.xball;
 public enum Action {
     kick,
     grab,
-    block,
-    special
+    special,
+    lock
 }

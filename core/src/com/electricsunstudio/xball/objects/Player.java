@@ -150,7 +150,6 @@ public class Player extends GameObject
     public void handleControls(ControlState state)
     {
         handleMoveControls(state);
-        handleAimControls(state);
         handleActionControls(state);
     }
     
@@ -164,7 +163,9 @@ public class Player extends GameObject
         if(Game.inst.onMapLayer("rough", getCenterPos()))
             actualSpeed *= roughSpeedPenalty;
         
-        Vector2 targetVelocity = state.movePos.cpy().scl(actualSpeed);
+        Vector2 movePos = new Vector2(state.moveX, state.moveY);
+        
+        Vector2 targetVelocity = movePos.cpy().scl(actualSpeed);
         Vector2 velDisp = targetVelocity.cpy().sub(getVel());
         float dv = actualAccel*Game.SECONDS_PER_FRAME;
         
@@ -181,23 +182,13 @@ public class Player extends GameObject
             setAccel(velDisp.nor().scl(actualAccel));
         }
         
-    }
-    
-    void handleAimControls(ControlState state)
-    {
-        if(state.aimPos.len2() != 0)
+        if(movePos.len2() != 0 && !state.grab && !state.lock)
         {
-            float targetAngle = state.aimPos.angleRad();
-            
-            //predict 1/2 second ahead
-            float nextAngle = getRotationRad() + physicsBody.getAngularVelocity() / 2;
-            float totalRotation = targetAngle- nextAngle;
-            while ( totalRotation < -Math.PI ) totalRotation += Math.PI*2;
-            while ( totalRotation >  Math.PI) totalRotation -= Math.PI*2;
-            float desiredAngularVelocity = totalRotation*angularSpeedMult;
-            float impulse = physicsBody.getInertia() * desiredAngularVelocity*Game.SECONDS_PER_FRAME;
-            physicsBody.applyAngularImpulse(impulse, true);
+            setRotation(movePos);
+            physicsBody.setAngularVelocity(0f);
         }
+        else if(state.grab || state.lock)
+            physicsBody.setAngularVelocity(0f);
     }
     
     public void handleActionControls(ControlState state)

@@ -9,8 +9,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import java.util.EnumMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class Controls {
     public static final int maxPressEvents = 5;
@@ -21,23 +19,22 @@ public class Controls {
     public static final int buttonTrimThickness = 10;
     
     public static final int controlpadDiameter = 240;
-    public static final float controlpadDeadzone = 1.0f/6;
-    public static final float controlpadMax = 0.8f;
+    public static final float controlpadDeadzone = 1.0f/10;
+    public static final float controlpadMax = 0.5f;
     public static final float actualRange = controlpadMax - controlpadDeadzone;
 
-    public static final float aimpadDeadzone = 0.8f;
-    public static final float aimpadMax = 0.8f;
-    
-    public static final float arcRadius = aimpadMax*controlpadDiameter/2-buttonTrim;
+    public static final float arcRadius = controlpadDiameter/2;
+    //get rid of aimpad. instead just lock when blocking. and put a lock button
+    //in the middle of the button circle. 
+    public static final float lockButtonRadius = controlpadDiameter/2*0.4f;
     
     //screen
     int width;
     int height;
     
     public Vector2 controlPadPos = Vector2.Zero;
-    public Vector2 aimPadPos = Vector2.Zero;
 
-    Circle controlPad, aimPad;
+    Circle controlPad, actionPad;
     
     public EnumMap<Action, Boolean> state;
     EnumMap<Action, Pair<Color,Color>> actionColors;
@@ -56,26 +53,24 @@ public class Controls {
         state = new EnumMap<Action, Boolean>(Action.class);
         state.put(Action.kick, false);
         state.put(Action.grab, false);
-        state.put(Action.block, false);
         state.put(Action.special, false);
+        state.put(Action.lock, false);
         
         actionColors = new EnumMap<Action, Pair<Color, Color>>(Action.class);
         actionColors.put(Action.kick, new Pair(Game.hsva(10f,.8f,.3f, 1f), Game.hsva(10f, 1f, .8f, 1f)));
         actionColors.put(Action.grab, new Pair(Game.hsva(251f,.8f,.3f, 1f), Game.hsva(251f, 1f, .8f, 1f)));
-        actionColors.put(Action.block, new Pair(Game.hsva(130f,.8f,.3f, 1f), Game.hsva(130f, 1f, .8f, 1f)));
-        actionColors.put(Action.special, new Pair(Game.hsva(75f,.8f,.3f, 1f), Game.hsva(75f, 1f, .8f, 1f)));
+        actionColors.put(Action.special, new Pair(Game.hsva(130f,.8f,.3f, 1f), Game.hsva(130f, 1f, .8f, 1f)));
         
         actionButtonPos = new EnumMap<Action, Integer>(Action.class);
-        actionButtonPos.put(Action.kick, 225);
-        actionButtonPos.put(Action.grab, 315);
-        actionButtonPos.put(Action.block, 135);
-        actionButtonPos.put(Action.special, 45);
+        actionButtonPos.put(Action.kick, 150);
+        actionButtonPos.put(Action.grab, 270);
+        actionButtonPos.put(Action.special, 30);
 
         actionKeys = new EnumMap<Action, Integer>(Action.class);
-        actionKeys.put(Action.kick, Keys.DOWN);
+        actionKeys.put(Action.kick, Keys.LEFT);
         actionKeys.put(Action.grab, Keys.RIGHT);
-        actionKeys.put(Action.block, Keys.LEFT);
         actionKeys.put(Action.special, Keys.UP);
+        actionKeys.put(Action.lock, Keys.DOWN);
 
         createShapes();
     }
@@ -83,10 +78,10 @@ public class Controls {
     public void createShapes()
     {
         Vector2 controlpadCenter = new Vector2(margin+controlpadDiameter/2, margin+controlpadDiameter/2);
-        Vector2 aimpadCenter = new Vector2(width-margin-controlpadDiameter/2, margin+controlpadDiameter/2);
+        Vector2 actionPadCenter = new Vector2(width-margin-controlpadDiameter/2, margin+controlpadDiameter/2);
 
         controlPad = new Circle(controlpadCenter.x, controlpadCenter.y, controlpadDiameter/2);
-        aimPad = new Circle(aimpadCenter.x, aimpadCenter.y, controlpadDiameter/2);
+        actionPad = new Circle(actionPadCenter.x, actionPadCenter.y, controlpadDiameter/2);
     }
 
     public void drawButtonInner(ShapeRenderer shapeRenderer, boolean pressed, Pair<Color,Color> color, Circle button)
@@ -114,20 +109,19 @@ public class Controls {
         //draw outer margin
         shapeRenderer.setColor(controlPadOuterColor);
         shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius);
-        shapeRenderer.circle(aimPad.x, aimPad.y, aimPad.radius);
         
         shapeRenderer.setColor(controlPadColor);
         shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadMax);
-        shapeRenderer.circle(aimPad.x, aimPad.y, aimPad.radius*aimpadMax);
 
         shapeRenderer.setColor(controlPadInnerColor);
         shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadDeadzone);
-        shapeRenderer.circle(aimPad.x, aimPad.y, aimPad.radius*aimpadDeadzone);
         
         drawArcButton(shapeRenderer, Action.kick);
         drawArcButton(shapeRenderer, Action.grab);
-        drawArcButton(shapeRenderer, Action.block);
         drawArcButton(shapeRenderer, Action.special);
+        
+        shapeRenderer.setColor(state.get(Action.lock) ? controlPadOuterColor : controlPadInnerColor);
+        shapeRenderer.circle(actionPad.x, actionPad.y, lockButtonRadius);
         
         shapeRenderer.end();
     }
@@ -135,7 +129,7 @@ public class Controls {
     void drawArcButton(ShapeRenderer sr, Action action)
     {
         sr.setColor(state.get(action) ? actionColors.get(action).a : actionColors.get(action).b);
-        sr.arc(aimPad.x, aimPad.y, arcRadius,(float) actionButtonPos.get(action), 90);
+        sr.arc(actionPad.x, actionPad.y, arcRadius,(float) actionButtonPos.get(action), 120);
     }
     
     private void handleTouchControls()
@@ -171,18 +165,16 @@ public class Controls {
                 controlPadPos = posNorm;
             }
         }
-        else if(aimPad.contains(point))
+        else if(actionPad.contains(point))
         {
-            Vector2 posOnPad = point.cpy().sub(new Vector2(aimPad.x, aimPad.y));
+            Vector2 posOnPad = point.cpy().sub(new Vector2(actionPad.x, actionPad.y));
             float dist = posOnPad.len();
-            float ratio = dist/aimPad.radius;
-            Vector2 posNorm = posOnPad.nor();
 
-            if(ratio >= aimpadMax)
+            if(dist < lockButtonRadius)
             {
-                aimPadPos = posNorm;
+                state.put(Action.lock, Boolean.TRUE);
             }
-            else if(dist < arcRadius)
+            else
             {
                 //determine which section was pressed
                 float angle = posOnPad.angle();
@@ -190,7 +182,7 @@ public class Controls {
                 for(Action a : actionButtonPos.keySet())
                 {
                     float start = actionButtonPos.get(a);
-                    float limit = start+90;
+                    float limit = start+120;
                     if(angle >= start && angle < limit ||
                        limit > 360 && (angle >= start || angle < limit-360))
                     {
@@ -238,8 +230,7 @@ public class Controls {
             state.put(a, Boolean.FALSE);
         }
         
-        controlPadPos = Vector2.Zero;       
-        aimPadPos = Vector2.Zero;
+        controlPadPos = Vector2.Zero;
     }
             
     public void update()
@@ -255,8 +246,9 @@ public class Controls {
         cs.grab = state.get(Action.grab);
         cs.kick = state.get(Action.kick);
         cs.special = state.get(Action.special);
-        cs.aimPos = aimPadPos;
-        cs.movePos = controlPadPos;
+        cs.lock = state.get(Action.lock);
+        cs.moveX = controlPadPos.x;
+        cs.moveY = controlPadPos.y;
         cs.frameNum = Game.inst.engine.crntFrame;
     }
 }

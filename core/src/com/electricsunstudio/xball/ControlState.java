@@ -11,8 +11,9 @@ public class ControlState {
     public boolean grab = false;
     public boolean kick = false;
     public boolean special = false;
-    public Vector2 movePos = Vector2.Zero;
-    public Vector2 aimPos = Vector2.Zero;
+    public boolean lock = false;
+    public float moveX;
+    public float moveY;
     public String player;
     public int frameNum;
 }
