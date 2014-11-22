@@ -8,5 +8,5 @@ import com.electricsunstudio.xball.objects.Player;
  */
 public interface HitListener
 {
-	public void onHit(Player player, HitType type);
+    public void onHit(Player player, HitType type);
 }

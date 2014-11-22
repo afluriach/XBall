@@ -7,20 +7,20 @@ import java.util.ArrayList;
 
 public class ObjectsInSpaceCallback implements QueryCallback
 {
-	public ArrayList<GameObject> detected = new ArrayList();
-	
-	public ObjectsInSpaceCallback()
-	{
-	}
+    public ArrayList<GameObject> detected = new ArrayList();
+    
+    public ObjectsInSpaceCallback()
+    {
+    }
 
-	@Override
-	public boolean reportFixture(Fixture fixture)
-	{
-		GameObject go = (GameObject)fixture.getBody().getUserData();
-		if(go != null && !fixture.isSensor()){
-			detected.add(go);
-		}
-		return true;
-	}
+    @Override
+    public boolean reportFixture(Fixture fixture)
+    {
+        GameObject go = (GameObject)fixture.getBody().getUserData();
+        if(go != null && !fixture.isSensor()){
+            detected.add(go);
+        }
+        return true;
+    }
 
 }

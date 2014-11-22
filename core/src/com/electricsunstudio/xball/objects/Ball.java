@@ -14,41 +14,41 @@ import com.electricsunstudio.xball.physics.Physics;
  */
 public abstract class Ball extends GameObject
 {
-	float elasticity;
-	float uk;
-	float mass;
-	String spriteName;
-	
-	public Ball(MapObject mo)
-	{
-		super(mo);
-	}
-	
-	public Ball(String name)
-	{
-		super(name);
-	}
-	
-	public Ball()
-	{
-		super("ball");
-	}
-	
-	final void create(Vector2 pos)
-	{
-		//load the appropriate sprite
-		sprite = Game.loadSprite(spriteName);
-		
-		physicsBody = Game.inst.physics.addCircleBody(
-			pos,
-			radius,
-			BodyDef.BodyType.DynamicBody,
-			this,
-			mass,
-			false,
-			FilterClass.ball);
-		
-		Physics.setRestitution(physicsBody, elasticity);
-	}
+    float elasticity;
+    float uk;
+    float mass;
+    String spriteName;
+    
+    public Ball(MapObject mo)
+    {
+        super(mo);
+    }
+    
+    public Ball(String name)
+    {
+        super(name);
+    }
+    
+    public Ball()
+    {
+        super("ball");
+    }
+    
+    final void create(Vector2 pos)
+    {
+        //load the appropriate sprite
+        sprite = Game.loadSprite(spriteName);
+        
+        physicsBody = Game.inst.physics.addCircleBody(
+            pos,
+            radius,
+            BodyDef.BodyType.DynamicBody,
+            this,
+            mass,
+            false,
+            FilterClass.ball);
+        
+        Physics.setRestitution(physicsBody, elasticity);
+    }
 
 }

@@ -6,27 +6,27 @@ import com.electricsunstudio.xball.GameObject;
 
 public class DetectObjectCallback implements QueryCallback
 {
-	//has any object been found
-	boolean detected = false;
-	
-	public boolean detected()
-	{
-		return detected;
-	}
-	
-	public DetectObjectCallback()
-	{
-	}
+    //has any object been found
+    boolean detected = false;
+    
+    public boolean detected()
+    {
+        return detected;
+    }
+    
+    public DetectObjectCallback()
+    {
+    }
 
-	@Override
-	public boolean reportFixture(Fixture fixture)
-	{
-		GameObject go = (GameObject)fixture.getBody().getUserData();
-		if(!fixture.isSensor()){
-			detected = true;
-			return false; //object found, can terminate query.
-		}
-		return true;
-	}
+    @Override
+    public boolean reportFixture(Fixture fixture)
+    {
+        GameObject go = (GameObject)fixture.getBody().getUserData();
+        if(!fixture.isSensor()){
+            detected = true;
+            return false; //object found, can terminate query.
+        }
+        return true;
+    }
 
 }

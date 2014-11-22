@@ -16,43 +16,43 @@ import com.electricsunstudio.xball.physics.FilterClass;
  */
 public class GoalSensor extends GameObject
 {
-	public BallNotify notifier;
-	
-	public GoalSensor(MapObject mo)
-	{
-		super(mo);
+    public BallNotify notifier;
+    
+    public GoalSensor(MapObject mo)
+    {
+        super(mo);
 
-		physicsBody = Game.inst.physics.addRectBody(
-			mo,
-			BodyType.StaticBody,
-			this,
-			1f,
-			true,
-			FilterClass.ballSensor);
-	}
-	@Override
-	public void update()
-	{
-	}
-	
-	@Override
-	public void handleContact(GameObject other)
-	{
-		if(other instanceof GoldBall)
-		{
-			Game.log(other.getName() + " arrived in " + getName());
-			if(notifier != null)
-			{
-				notifier.onReceived((Ball)other);
-			}
-		}
-	}
-	public void handleEndContact(GameObject other)
-	{
-		
-	}
-	public void init()
-	{
-		
-	}
+        physicsBody = Game.inst.physics.addRectBody(
+            mo,
+            BodyType.StaticBody,
+            this,
+            1f,
+            true,
+            FilterClass.ballSensor);
+    }
+    @Override
+    public void update()
+    {
+    }
+    
+    @Override
+    public void handleContact(GameObject other)
+    {
+        if(other instanceof GoldBall)
+        {
+            Game.log(other.getName() + " arrived in " + getName());
+            if(notifier != null)
+            {
+                notifier.onReceived((Ball)other);
+            }
+        }
+    }
+    public void handleEndContact(GameObject other)
+    {
+        
+    }
+    public void init()
+    {
+        
+    }
 }

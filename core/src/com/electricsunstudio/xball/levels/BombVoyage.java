@@ -14,68 +14,68 @@ import com.electricsunstudio.xball.objects.Player;
  * @author toni
  */
 public class BombVoyage extends Level implements HitListener {
-	int playerScore = 10;
-	int opponentScore = 10;
-	
-	SpawnSensor bombSensor;
-	float lastBomb = 0;
-	float bombInterval = 2;
-	
-	String playerName = "blue_player";
-	
-	@Override
-	public String getMapName()
-	{
-		return "bomb_voyage";
-	}
-	
-	public static final String name = "Bomb Voyage!";
-	
-	@Override
-	public String getPlayerName()
-	{
-		return playerName;
-	}
-	
-	@Override
-	public void update() {
-		lastBomb += Game.SECONDS_PER_FRAME;
-		
-		if(lastBomb >= bombInterval)
-		{
-			lastBomb -= bombInterval;
-			spawnBomb();
-		}
-	}
-	
-	void spawnBomb()
-	{
-		Vector2 pos = bombSensor.findSpawnPos();
-		Game.inst.gameObjectSystem.addObject(new Bomb(pos));
-	}
-	
-	@Override
-	public void init()
-	{
-		bombSensor = Game.inst.gameObjectSystem.getObjectByName("bomb_sensor", SpawnSensor.class);
-	}
+    int playerScore = 10;
+    int opponentScore = 10;
+    
+    SpawnSensor bombSensor;
+    float lastBomb = 0;
+    float bombInterval = 2;
+    
+    String playerName = "blue_player";
+    
+    @Override
+    public String getMapName()
+    {
+        return "bomb_voyage";
+    }
+    
+    public static final String name = "Bomb Voyage!";
+    
+    @Override
+    public String getPlayerName()
+    {
+        return playerName;
+    }
+    
+    @Override
+    public void update() {
+        lastBomb += Game.SECONDS_PER_FRAME;
+        
+        if(lastBomb >= bombInterval)
+        {
+            lastBomb -= bombInterval;
+            spawnBomb();
+        }
+    }
+    
+    void spawnBomb()
+    {
+        Vector2 pos = bombSensor.findSpawnPos();
+        Game.inst.gameObjectSystem.addObject(new Bomb(pos));
+    }
+    
+    @Override
+    public void init()
+    {
+        bombSensor = Game.inst.gameObjectSystem.getObjectByName("bomb_sensor", SpawnSensor.class);
+    }
 
-	@Override
-	public void render() {
-		//show score
-		Game.inst.drawTextCentered(Color.WHITE, String.valueOf(playerScore), Game.inst.screenWidth/2 - 100, Game.inst.screenHeight-100);
-		Game.inst.drawTextCentered(Color.WHITE, String.valueOf(opponentScore), Game.inst.screenWidth/2 + 100, Game.inst.screenHeight-100);
-	}
+    @Override
+    public void render() {
+        //show score
+        Game.inst.drawTextCentered(Color.WHITE, String.valueOf(playerScore), Game.inst.screenWidth/2 - 100, Game.inst.screenHeight-100);
+        Game.inst.drawTextCentered(Color.WHITE, String.valueOf(opponentScore), Game.inst.screenWidth/2 + 100, Game.inst.screenHeight-100);
+    }
 
-	@Override
-	public void onHit(Player player, HitType type) {
-		if(player.getName().equals(playerName))
-		{
-			--playerScore;
-		}
-		else
-		{
-			--opponentScore;
-		}
-	}
+    @Override
+    public void onHit(Player player, HitType type) {
+        if(player.getName().equals(playerName))
+        {
+            --playerScore;
+        }
+        else
+        {
+            --opponentScore;
+        }
+    }
 }

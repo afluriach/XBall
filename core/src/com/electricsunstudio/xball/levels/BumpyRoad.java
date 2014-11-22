@@ -10,34 +10,34 @@ import com.electricsunstudio.xball.objects.GoldBall;
  * @author toni
  */
 public class BumpyRoad extends OneVOne {
-	
-	@Override
-	public String getMapName()
-	{
-		return "bumpy_road";
-	}
-	
-	@Override
-	public String getPlayerName()
-	{
-		return "blue_player";
-	}
-	
-	public static final String name = "Bumpy Road";
-	
-	@Override
-	public void update() {
-		int count = Game.inst.gameObjectSystem.countObjectsByType(Ball.class);
-		
-		if(count < 3)
-		{
-			spawn();
-		}
-	}
-	
-	void spawn()
-	{
-		Vector2 pos = spawnSensor.findSpawnPos();
-		Game.inst.gameObjectSystem.addObject(new GoldBall(pos));
-	}
+    
+    @Override
+    public String getMapName()
+    {
+        return "bumpy_road";
+    }
+    
+    @Override
+    public String getPlayerName()
+    {
+        return "blue_player";
+    }
+    
+    public static final String name = "Bumpy Road";
+    
+    @Override
+    public void update() {
+        int count = Game.inst.gameObjectSystem.countObjectsByType(Ball.class);
+        
+        if(count < 3)
+        {
+            spawn();
+        }
+    }
+    
+    void spawn()
+    {
+        Vector2 pos = spawnSensor.findSpawnPos();
+        Game.inst.gameObjectSystem.addObject(new GoldBall(pos));
+    }
 }
