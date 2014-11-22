@@ -25,6 +25,7 @@ import com.electricsunstudio.xball.network.ObjectSocketInput;
 
 import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.network.ObjectSocketOutput;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -37,6 +38,8 @@ public class Game extends ApplicationAdapter {
     
     public static final int FRAMES_PER_SECOND = 60;
     public static final float SECONDS_PER_FRAME = (float) 1.0/FRAMES_PER_SECOND;
+    
+    public static final float latencyUpdateInterval = 0.5f;
     
     public static final boolean physicsRender = true;
     
@@ -88,7 +91,9 @@ public class Game extends ApplicationAdapter {
     public static String username;
     
     TreeMap<Integer, Long> controlTimesSent;
-    int crntControlLatency = -1;
+    int[] currentLatencies;
+    int numLatencies;
+    String latencyStr;
     
     void initCamera()
     {
@@ -147,6 +152,8 @@ public class Game extends ApplicationAdapter {
             //add listener for control data
             serverInput.addHandler(ControlState.class, new ControlHandler());
             controlTimesSent = new TreeMap<Integer, Long>();
+            currentLatencies = new int[(int) (Game.FRAMES_PER_SECOND*latencyUpdateInterval)];
+            numLatencies = 0;
         }
     }
     
@@ -162,16 +169,19 @@ public class Game extends ApplicationAdapter {
                 //one of our own control states. use it to measure ping
                 if(!controlTimesSent.containsKey(cs.frameNum))
                 {
-                    //unless control packets are being received out of sequence? the entry should be there until
-                    //controlstate with a larger frame number is received
+                    //control packets should not be received out of sequence, but it ocasionally happens and they will be ignored
                     System.out.printf("controlstate response for non-existant frame %d, min frame in buffer is %d and max is %d\n.", cs.frameNum, controlTimesSent.firstKey(), controlTimesSent.lastKey());
                 }
                 else
                 {
-                    crntControlLatency = (int) (System.currentTimeMillis() - controlTimesSent.get(cs.frameNum));
+                    if(numLatencies < currentLatencies.length)
+                    {
+                        currentLatencies[numLatencies] = (int) (System.currentTimeMillis() - controlTimesSent.get(cs.frameNum));
+                        ++numLatencies;
+                    }
                     
-                    //remove older records
-                    while(controlTimesSent.firstKey() < cs.frameNum)
+                    //remove older records - this crash didn't make sense, how can controlTimesSent be empty if it contains the received frame number?
+                    while(!controlTimesSent.isEmpty() && controlTimesSent.firstKey() < cs.frameNum)
                         controlTimesSent.remove(controlTimesSent.firstKey());
                 }
             }
@@ -236,9 +246,26 @@ public class Game extends ApplicationAdapter {
         
         crntLevel.render();
         
-        if(crntControlLatency != -1)
+        updateLatency();
+        if(latencyStr != null)
+            drawTextLeftAlign(Color.WHITE, latencyStr, 50, screenHeight-50);
+    }
+    
+    void updateLatency()
+    {
+        if(currentLatencies != null && numLatencies == currentLatencies.length)
         {
-            drawTextCentered(Color.WHITE, Integer.toString(crntControlLatency), 50, screenHeight-50);
+            int min=Integer.MAX_VALUE, max=0, sum=0;
+            
+            for(Integer i : currentLatencies)
+            {
+                sum += i;
+                if(i < min) min = i;
+                if(i > max) max = i;
+            }
+            
+            latencyStr = String.format("%d,%d,%d ms", min, max, (int)(sum/currentLatencies.length));
+            numLatencies = 0;
         }
     }
     
@@ -361,6 +388,15 @@ public class Game extends ApplicationAdapter {
         font.setScale(1f);
         font.setColor(color);
         font.draw(guiBatch, msg, x-lineWidth/2, y+font.getCapHeight()/2);
+        guiBatch.end();
+    }
+    
+    public void drawTextLeftAlign(Color color, String msg, float x, float y)
+    {
+        guiBatch.begin();
+        font.setScale(1f);
+        font.setColor(color);
+        font.draw(guiBatch, msg, x, y);
         guiBatch.end();
     }
     
