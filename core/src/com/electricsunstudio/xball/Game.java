@@ -22,15 +22,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.levels.*;
 import com.electricsunstudio.xball.network.Handler;
 import com.electricsunstudio.xball.network.ObjectSocketInput;
+import com.electricsunstudio.xball.network.PingIntent;
 
 import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.network.ObjectSocketOutput;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.TreeMap;
 
 public class Game extends ApplicationAdapter {
     public static final int PIXELS_PER_TILE = 64;
@@ -90,9 +89,9 @@ public class Game extends ApplicationAdapter {
     public static ObjectSocketInput serverInput;
     public static String username;
     
-    TreeMap<Integer, Long> controlTimesSent;
-    int[] currentLatencies;
-    int numLatencies;
+    boolean pingOut;
+    float lastPing;
+    long pingSentTime;
     String latencyStr;
     
     void initCamera()
@@ -151,9 +150,19 @@ public class Game extends ApplicationAdapter {
         {
             //add listener for control data
             serverInput.addHandler(ControlState.class, new ControlHandler());
-            controlTimesSent = new TreeMap<Integer, Long>();
-            currentLatencies = new int[(int) (Game.FRAMES_PER_SECOND*latencyUpdateInterval)];
-            numLatencies = 0;
+            serverInput.addHandler(PingIntent.class, new PingHandler());
+            lastPing = 0f;
+            pingOut = false;
+        }
+    }
+    
+    class PingHandler implements Handler
+    {
+        @Override
+        public void onReceived(Object t) {
+            latencyStr = (int) (System.currentTimeMillis() - pingSentTime) + " ms";
+            pingOut = false;
+            lastPing = 0f;
         }
     }
     
@@ -163,28 +172,6 @@ public class Game extends ApplicationAdapter {
         public void onReceived(Object t) {
             ControlState cs = (ControlState)t;
             playerControlState.put(playersNameMap.get(cs.player), cs);
-            
-            if(cs.player.equals(player))
-            {
-                //one of our own control states. use it to measure ping
-                if(!controlTimesSent.containsKey(cs.frameNum))
-                {
-                    //control packets should not be received out of sequence, but it ocasionally happens and they will be ignored
-                    System.out.printf("controlstate response for non-existant frame %d, min frame in buffer is %d and max is %d\n.", cs.frameNum, controlTimesSent.firstKey(), controlTimesSent.lastKey());
-                }
-                else
-                {
-                    if(numLatencies < currentLatencies.length)
-                    {
-                        currentLatencies[numLatencies] = (int) (System.currentTimeMillis() - controlTimesSent.get(cs.frameNum));
-                        ++numLatencies;
-                    }
-                    
-                    //remove older records - this crash didn't make sense, how can controlTimesSent be empty if it contains the received frame number?
-                    while(!controlTimesSent.isEmpty() && controlTimesSent.firstKey() < cs.frameNum)
-                        controlTimesSent.remove(controlTimesSent.firstKey());
-                }
-            }
         }
     }
     
@@ -195,8 +182,12 @@ public class Game extends ApplicationAdapter {
         
         if(serverOutput != null)
         {
-            serverOutput.send(playerControlState.get(crntPlayer));
-            controlTimesSent.put(engine.crntFrame, System.currentTimeMillis());
+            if(!pingOut && lastPing >= 1)
+            {
+                serverOutput.send(new PingIntent());
+                pingSentTime = System.currentTimeMillis();
+                pingOut = true;
+            }
         }
         updateDelta += Gdx.graphics.getDeltaTime();
         while(updateDelta >= SECONDS_PER_FRAME)
@@ -213,6 +204,7 @@ public class Game extends ApplicationAdapter {
             e.getKey().handleControls(e.getValue());
         }
         engine.updateTick();
+        lastPing += Game.SECONDS_PER_FRAME;
     }
     
     @Override
@@ -246,27 +238,8 @@ public class Game extends ApplicationAdapter {
         
         crntLevel.render();
         
-        updateLatency();
         if(latencyStr != null)
             drawTextLeftAlign(Color.WHITE, latencyStr, 50, screenHeight-50);
-    }
-    
-    void updateLatency()
-    {
-        if(currentLatencies != null && numLatencies == currentLatencies.length)
-        {
-            int min=Integer.MAX_VALUE, max=0, sum=0;
-            
-            for(Integer i : currentLatencies)
-            {
-                sum += i;
-                if(i < min) min = i;
-                if(i > max) max = i;
-            }
-            
-            latencyStr = String.format("%d,%d,%d ms", min, max, (int)(sum/currentLatencies.length));
-            numLatencies = 0;
-        }
     }
     
     public static void drawSprite(Sprite sprite, Vector2 centerPos, SpriteBatch batch, float rotation)

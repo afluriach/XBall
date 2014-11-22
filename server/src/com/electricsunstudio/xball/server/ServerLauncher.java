@@ -4,7 +4,6 @@ import com.electricsunstudio.xball.Game;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 
 import com.electricsunstudio.xball.network.*;
 import com.electricsunstudio.xball.ControlState;
@@ -19,15 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ServerLauncher {
     public static final int serverPort = 49000;
     static final int maxPacketSize = 65536;
-    
-    //send the controlstate back to the client that sent it in as well
-    static final boolean reflectControlState = true;
     
     static HashMap<String,Connection> connectedUsers = new HashMap<String, Connection>();
     //the socket that each user is using for their connection
@@ -152,7 +146,7 @@ public class ServerLauncher {
     {
         for(ServerThread t : userThreads.values())
         {
-            if(!reflectControlState && t == from) continue;
+            if(t == from) continue;
             t.objOut.send(cs);
         }
     }
@@ -319,6 +313,14 @@ public class ServerLauncher {
                 ControlState cs = (ControlState)t;
                 cs.player = player;
                 notifyControls(cs, ServerThread.this);
+                }
+            });
+            
+            //add listener for ping. send the object right back to the same client
+            objIn.addHandler(PingIntent.class, new Handler(){
+                @Override
+                public void onReceived(Object t) {
+                    objOut.sendImmediate(t);
                 }
             });
         }

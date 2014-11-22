@@ -7,7 +7,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -15,7 +14,7 @@ public class ObjectSocketOutput extends Thread
 {
     public boolean quit;
     public Socket sock;
-    Queue<Object> sendQueue;
+    LinkedList<Object> sendQueue;
     Lock queueLock;
     ObjectOutputStream objOut;
     //Gson gson;
@@ -56,6 +55,17 @@ public class ObjectSocketOutput extends Thread
         queueLock.lock();
         try{
             sendQueue.add(obj);
+        } finally{
+            queueLock.unlock();
+        }
+    }
+    
+    //put object at head of queue
+    public void sendImmediate(Object obj)
+    {
+        queueLock.lock();
+        try{
+            sendQueue.addFirst(obj);
         } finally{
             queueLock.unlock();
         }
