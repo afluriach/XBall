@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -19,7 +18,7 @@ public class ObjectSocketOutput extends Thread
     Queue<Object> sendQueue;
     Lock queueLock;
     ObjectOutputStream objOut;
-    Gson gson;
+    //Gson gson;
 
     InetAddress addr;
     int port;
@@ -32,7 +31,7 @@ public class ObjectSocketOutput extends Thread
         sendQueue = new LinkedList<Object>();
         queueLock = new ReentrantLock(true);
 
-        gson = new Gson();
+        //gson = new Gson();
         
         sock = new Socket(addr, port);
         objOut = new ObjectOutputStream(sock.getOutputStream());
@@ -46,7 +45,7 @@ public class ObjectSocketOutput extends Thread
         sendQueue = new LinkedList<Object>();
         queueLock = new ReentrantLock(true);
 
-        gson = new Gson();
+        //gson = new Gson();
         
         this.sock = sock;
         objOut = new ObjectOutputStream(sock.getOutputStream());
@@ -82,7 +81,8 @@ public class ObjectSocketOutput extends Thread
                 if(obj != null)
                 {
                     try {
-                        objOut.writeObject(gson.toJson(new ObjectWrapper(obj.getClass().getName(),gson.toJson(obj))));
+                        objOut.writeObject(obj);
+                        //objOut.writeObject(gson.toJson(new ObjectWrapper(obj.getClass().getName(),gson.toJson(obj))));
                     } catch (NotSerializableException ex){
                         ex.printStackTrace();
                     } catch (IOException ex) {
@@ -115,7 +115,8 @@ public class ObjectSocketOutput extends Thread
             if(obj != null)
             {
                 try {
-                    objOut.writeObject(gson.toJson(new ObjectWrapper(obj.getClass().getName(),gson.toJson(obj))));
+                    //objOut.writeObject(gson.toJson(new ObjectWrapper(obj.getClass().getName(),gson.toJson(obj))));
+                    objOut.writeObject(obj);
                 } catch (NotSerializableException ex){
                     ex.printStackTrace();
                 } catch (IOException ex) {

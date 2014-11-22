@@ -12,14 +12,14 @@ public class ObjectSocketInput extends Thread
     public boolean quit;
     Socket sock;
     ObjectInputStream objIn;
-    Gson gson;
+    //Gson gson;
 
     HashMap<Class,Handler> handlers = new HashMap<Class, Handler>();
 
     public ObjectSocketInput(Socket sock)
     {
         this.sock = sock;
-        gson = new Gson();
+        //gson = new Gson();
     }
 
     public void addHandler(Class cls, Handler handler)
@@ -48,18 +48,19 @@ public class ObjectSocketInput extends Thread
         while(!quit && !sock.isClosed() && sock.isConnected())
         {
             try {
-                Object rawObj = objIn.readObject();
-                if(rawObj instanceof String)
-                {
-                    ObjectWrapper wrapper = gson.fromJson((String)rawObj, ObjectWrapper.class);
-                    try{
-                        Class cls = Class.forName(wrapper.clsName);
-                        Object obj = gson.fromJson(wrapper.str, cls);
-                        handleObject(obj);
-                    } catch(ClassNotFoundException ex){
-                        System.out.printf("invalid object %s sent", wrapper.clsName);
-                    }
-                }
+                Object obj = objIn.readObject();
+                handleObject(obj);
+//                if(rawObj instanceof String)
+//                {
+//                    ObjectWrapper wrapper = gson.fromJson((String)rawObj, ObjectWrapper.class);
+//                    try{
+//                        Class cls = Class.forName(wrapper.clsName);
+//                        Object obj = gson.fromJson(wrapper.str, cls);
+//                        handleObject(obj);
+//                    } catch(ClassNotFoundException ex){
+//                        System.out.printf("invalid object %s sent", wrapper.clsName);
+//                    }
+//                }
             } catch(SocketException ex){
                 System.out.println("Socket has been reset.");
                 quit = true;

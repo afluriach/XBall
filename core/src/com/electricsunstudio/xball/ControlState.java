@@ -1,13 +1,13 @@
 package com.electricsunstudio.xball;
 
-import com.badlogic.gdx.math.Vector2;
-import java.util.EnumMap;
+import java.io.Serializable;
 
 /**
  *
  * @author toni
  */
-public class ControlState {
+public class ControlState implements Serializable{
+    private static final long serialVersionUID = 6677073694301387998L;
     public boolean grab = false;
     public boolean kick = false;
     public boolean special = false;
