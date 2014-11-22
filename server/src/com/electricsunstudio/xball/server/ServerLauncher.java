@@ -25,6 +25,9 @@ import java.util.logging.Logger;
 public class ServerLauncher {
 	public static final int serverPort = 49000;
 	static final int maxPacketSize = 65536;
+    
+    //send the controlstate back to the client that sent it in as well
+    static final boolean reflectControlState = true;
 	
 	static HashMap<String,Connection> connectedUsers = new HashMap<String, Connection>();
 	//the socket that each user is using for their connection
@@ -149,7 +152,7 @@ public class ServerLauncher {
     {
         for(ServerThread t : userThreads.values())
         {
-            if(t == from) continue;
+            if(!reflectControlState && t == from) continue;
             t.objOut.send(cs);
         }
     }

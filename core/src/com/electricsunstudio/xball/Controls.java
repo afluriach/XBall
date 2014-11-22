@@ -257,5 +257,6 @@ public class Controls {
         cs.special = state.get(Action.special);
         cs.aimPos = aimPadPos;
         cs.movePos = controlPadPos;
+        cs.frameNum = Game.inst.engine.crntFrame;
     }
 }

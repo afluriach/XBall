@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class Game extends ApplicationAdapter {
 	public static final int PIXELS_PER_TILE = 64;
@@ -85,6 +86,9 @@ public class Game extends ApplicationAdapter {
 	public static ObjectSocketOutput serverOutput;
 	public static ObjectSocketInput serverInput;
 	public static String username;
+    
+    TreeMap<Integer, Long> controlTimesSent;
+    int crntControlLatency = -1;
 	
 	void initCamera()
 	{
@@ -142,6 +146,7 @@ public class Game extends ApplicationAdapter {
         {
             //add listener for control data
             serverInput.addHandler(ControlState.class, new ControlHandler());
+            controlTimesSent = new TreeMap<Integer, Long>();
         }
 	}
     
@@ -151,6 +156,25 @@ public class Game extends ApplicationAdapter {
         public void onReceived(Object t) {
             ControlState cs = (ControlState)t;
             playerControlState.put(playersNameMap.get(cs.player), cs);
+            
+            if(cs.player.equals(player))
+            {
+                //one of our own control states. use it to measure ping
+                if(!controlTimesSent.containsKey(cs.frameNum))
+                {
+                    //unless control packets are being received out of sequence? the entry should be there until
+                    //controlstate with a larger frame number is received
+                    System.out.printf("controlstate response for non-existant frame %d, min frame in buffer is %d and max is %d\n.", cs.frameNum, controlTimesSent.firstKey(), controlTimesSent.lastKey());
+                }
+                else
+                {
+                    crntControlLatency = (int) (System.currentTimeMillis() - controlTimesSent.get(cs.frameNum));
+                    
+                    //remove older records
+                    while(controlTimesSent.firstKey() < cs.frameNum)
+                        controlTimesSent.remove(controlTimesSent.firstKey());
+                }
+            }
         }
     }
 	
@@ -158,13 +182,13 @@ public class Game extends ApplicationAdapter {
 	{
 		controls.update();
         controls.updateState(playerControlState.get(crntPlayer));
-        
+		
         if(serverOutput != null)
         {
             serverOutput.send(playerControlState.get(crntPlayer));
+            controlTimesSent.put(engine.crntFrame, System.currentTimeMillis());
         }
-		
-		updateDelta += Gdx.graphics.getDeltaTime();
+        updateDelta += Gdx.graphics.getDeltaTime();
 		while(updateDelta >= SECONDS_PER_FRAME)
 		{
 			updateDelta -= SECONDS_PER_FRAME;
@@ -211,6 +235,11 @@ public class Game extends ApplicationAdapter {
 		batch.setProjectionMatrix(defaultMatrix);
 		
 		crntLevel.render();
+        
+        if(crntControlLatency != -1)
+        {
+            drawTextCentered(Color.WHITE, Integer.toString(crntControlLatency), 50, screenHeight-50);
+        }
 	}
 	
 	public static void drawSprite(Sprite sprite, Vector2 centerPos, SpriteBatch batch, float rotation)

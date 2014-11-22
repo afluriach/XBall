@@ -14,4 +14,5 @@ public class ControlState {
     public Vector2 movePos = Vector2.Zero;
     public Vector2 aimPos = Vector2.Zero;
     public String player;
+    public int frameNum;
 }
