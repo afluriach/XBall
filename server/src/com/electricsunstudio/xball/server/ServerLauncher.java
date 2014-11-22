@@ -208,6 +208,7 @@ public class ServerLauncher {
             {
                 try {
                     Socket clientConnection = sock.accept();
+                    clientConnection.setTcpNoDelay(true);
                     System.out.printf("Client connection received from %s:%d\n", clientConnection.getInetAddress().toString(), clientConnection.getPort());
                     ServerThread t = new ServerThread(clientConnection);
                     t.start();

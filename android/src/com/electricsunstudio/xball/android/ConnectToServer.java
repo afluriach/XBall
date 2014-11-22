@@ -127,6 +127,8 @@ public class ConnectToServer extends XballActivity {
                 Game.serverOutput.start();
                 Game.username = username;
                 
+                Game.serverOutput.sock.setTcpNoDelay(true);
+                
                 Game.serverInput = new ObjectSocketInput(Game.serverOutput.sock);
                 Game.serverInput.addHandler(LoginResponse.class, new Handler(){
 
