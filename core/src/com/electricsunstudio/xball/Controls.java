@@ -19,8 +19,8 @@ public class Controls {
     public static final int buttonTrimThickness = 10;
     
     public static final int controlpadDiameter = 240;
-    public static final float controlpadDeadzone = 1.0f/10;
-    public static final float controlpadMax = 0.5f;
+    public static final float controlpadDeadzone = 0f;
+    public static final float controlpadMax = 0.4f;
     public static final float actualRange = controlpadMax - controlpadDeadzone;
 
     public static final float arcRadius = controlpadDiameter/2;
