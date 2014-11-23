@@ -180,15 +180,6 @@ public class Game extends ApplicationAdapter {
         controls.update();
         controls.updateState(playerControlState.get(crntPlayer));
         
-        if(serverOutput != null)
-        {
-            if(!pingOut && lastPing >= 1)
-            {
-                serverOutput.send(new PingIntent());
-                pingSentTime = System.currentTimeMillis();
-                pingOut = true;
-            }
-        }
         updateDelta += Gdx.graphics.getDeltaTime();
         while(updateDelta >= SECONDS_PER_FRAME)
         {
@@ -203,6 +194,18 @@ public class Game extends ApplicationAdapter {
         {
             e.getKey().handleControls(e.getValue());
         }
+        
+        if(serverOutput != null)
+        {
+            if(!pingOut && lastPing >= 1)
+            {
+                serverOutput.send(new PingIntent());
+                pingSentTime = System.currentTimeMillis();
+                pingOut = true;
+            }
+            serverOutput.send(playerControlState.get(crntPlayer));
+        }
+        
         engine.updateTick();
         lastPing += Game.SECONDS_PER_FRAME;
     }
