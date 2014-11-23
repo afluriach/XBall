@@ -171,7 +171,8 @@ public class Game extends ApplicationAdapter {
         @Override
         public void onReceived(Object t) {
             ControlState cs = (ControlState)t;
-            playerControlState.put(playersNameMap.get(cs.player), cs);
+            if(playersNameMap.containsKey(cs.player) && crntPlayer != playersNameMap.get(cs.player))
+                playerControlState.put(playersNameMap.get(cs.player), cs);
         }
     }
     
