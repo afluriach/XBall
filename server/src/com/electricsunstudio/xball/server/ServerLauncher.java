@@ -1,5 +1,6 @@
 package com.electricsunstudio.xball.server;
 
+import java.util.Timer;
 import com.electricsunstudio.xball.Game;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,10 +19,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.TimerTask;
 
 public class ServerLauncher {
     public static final int serverPort = 49000;
     static final int maxPacketSize = 65536;
+    static final float engineDelay = 0.2f;
     
     static HashMap<String,Connection> connectedUsers = new HashMap<String, Connection>();
     //the socket that each user is using for their connection
@@ -33,6 +36,44 @@ public class ServerLauncher {
     static Lock userdataLock = new ReentrantLock(true);
     
     static Gson gson;
+    
+    //engine running the current match
+    static Timer engineTimer;
+    static Game game;
+    static float updateTimeAcc;
+    
+    static class EngineTick extends TimerTask
+    {
+        long lastTick = Long.MIN_VALUE;
+        long getDelta()
+        {
+            if(lastTick != Long.MIN_VALUE)
+            {
+                long crnt = System.currentTimeMillis();
+                long delta = crnt - lastTick;
+                lastTick = crnt;
+                return delta;
+            }
+            else
+            {
+                lastTick = System.currentTimeMillis();
+                return 0;
+            }
+        }
+        
+        @Override
+        public void run() {
+            long delta = getDelta();
+            updateTimeAcc += delta/1000f;
+            
+            while(updateTimeAcc >= engineDelay)
+            {
+//                System.out.printf("running update tick for frame %d\n", game.engine.crntFrame);
+                game.updateTick();
+                updateTimeAcc -= Game.SECONDS_PER_FRAME;
+            }
+        }
+    }
     
     public static void main (String[] arg) {
         gson = new Gson();
@@ -102,6 +143,7 @@ public class ServerLauncher {
         }
         
         HashMap<String,StartMatch> messages = new HashMap<String, StartMatch>();
+        long seed = System.currentTimeMillis();
         try
         {
             userdataLock.lock();
@@ -124,7 +166,7 @@ public class ServerLauncher {
                 }
                 else
                 {
-                    messages.put(username, new StartMatch(levelName, playerName));
+                    messages.put(username, new StartMatch(levelName, playerName, seed));
                 }
             }
         }
@@ -139,6 +181,17 @@ public class ServerLauncher {
             userThreads.get(e.getKey()).startMatch(e.getValue());
             System.out.println("sent start message to " + e.getKey());
         }
+        startMatchGame(levelName, seed);
+    }
+    
+    static void startMatchGame(String levelName, long seed)
+    {
+        game = new Game(seed);
+        Game.level = Game.getLevelFromSimpleName(levelName);
+        game.createServer();
+
+        engineTimer = new Timer(true);
+        engineTimer.schedule(new EngineTick(), 0, 10);
     }
     
     //send to all other threads

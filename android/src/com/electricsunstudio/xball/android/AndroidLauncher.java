@@ -7,10 +7,12 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.electricsunstudio.xball.Game;
 
 public class AndroidLauncher extends AndroidApplication {
+    public static long seed;
+    
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-        initialize(new Game(), config);
+        initialize(new Game(seed), config);
     }
 }

@@ -2,6 +2,10 @@ package com.electricsunstudio.xball;
 
 //to be run by both client and server. can be run headless
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.badlogic.gdx.assets.loaders.AssetLoader;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -26,7 +30,8 @@ public class CoreEngine {
     public static final float SECONDS_PER_FRAME = Game.SECONDS_PER_FRAME;
     
     TmxMapLoader mapLoader;
-
+    ServerMapLoader serverMapLoader;
+    
     public TiledMap crntMap;
     Level crntLevel;
 
@@ -34,14 +39,17 @@ public class CoreEngine {
     public Physics physics;
 
     public Random rand;
-    int crntFrame = 0;
+    public int crntFrame = 0;
     
     HashMap<Player,ControlState> playerControlState;
     HashMap<String,Player> playersNameMap;
     
-    public CoreEngine()
+    public CoreEngine(boolean server)
     {
-        mapLoader = new TmxMapLoader();
+        if(!server)
+            mapLoader = new TmxMapLoader();
+        else
+            serverMapLoader = new ServerMapLoader();
     }
     
     public void initLevel(Class level, long seed)
@@ -69,14 +77,13 @@ public class CoreEngine {
     
     public void updateTick()
     {
-        ++crntFrame;
+        handleControls();
         
         crntLevel.update();
-        
         gameObjectSystem.update();
         physics.update();
-        
-        handleControls();
+
+        ++crntFrame;
     }
     
     void handleControls()
@@ -106,8 +113,11 @@ public class CoreEngine {
             Game.inst.crntLevel = crntLevel;
         }
         
+        System.out.printf("%s loaded\n", cls.getSimpleName());
         loadMap(crntLevel.getMapName());
+        System.out.printf("map loaded\n");
         crntLevel.init();
+        System.out.println("level init");
     }
     
     void loadMap(String name)
@@ -115,14 +125,13 @@ public class CoreEngine {
         gameObjectSystem = new GameObjectSystem();
         physics = new Physics();
         
-        crntMap = mapLoader.load("map/"+name+".tmx");
+        if(mapLoader != null)
+            crntMap = mapLoader.load("map/"+name+".tmx");
+        else crntMap = serverMapLoader.load("map/"+name+".tmx");
 
-        if(Game.inst != null)
-        {
-            Game.inst.gameObjectSystem = gameObjectSystem;
-            Game.inst.physics = physics;
-            Game.inst.crntMap = crntMap;
-        }
+        Game.inst.gameObjectSystem = gameObjectSystem;
+        Game.inst.physics = physics;
+        Game.inst.crntMap = crntMap;
         
         loadMapObjects();
         gameObjectSystem.handleAdditions();

@@ -71,7 +71,7 @@ public class Game extends ApplicationAdapter {
     
     //these are owned by the engine but a reference will be
     //left here for convienence
-    TiledMap crntMap;
+    public TiledMap crntMap;
     public Level crntLevel;
     public GameObjectSystem gameObjectSystem;
     public Physics physics;
@@ -92,6 +92,13 @@ public class Game extends ApplicationAdapter {
     long pingSentTime;
     String latencyStr;
     
+    long seed;
+    
+    public Game(long seed)
+    {
+        this.seed = seed;
+    }
+    
     void initCamera()
     {
         camera = new OrthographicCamera(screenWidth, screenHeight);
@@ -105,6 +112,14 @@ public class Game extends ApplicationAdapter {
         camera.position.set(pixelSpace.x, pixelSpace.y, 0);
         camera.update();
         mapRenderer.setView(camera);
+    }
+    
+    public void createServer()
+    {
+        inst = this;
+        
+        engine = new CoreEngine(true);
+        engine.initLevel(level, seed);
     }
     
     @Override
@@ -123,8 +138,8 @@ public class Game extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         font = new BitmapFont(Gdx.files.internal("font/arial-32.fnt"));
         
-        engine = new CoreEngine();
-        engine.initLevel(level, System.currentTimeMillis());
+        engine = new CoreEngine(false);
+        engine.initLevel(level, seed);
 
         mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
 
@@ -176,8 +191,11 @@ public class Game extends ApplicationAdapter {
     
     public void updateTick()
     {
-        controls.update();
-        controls.updateState(engine.playerControlState.get(crntPlayer));
+        if(controls != null)
+        {
+            controls.update();
+            controls.updateState(engine.playerControlState.get(crntPlayer));
+        }
         
         if(serverOutput != null)
         {
@@ -187,11 +205,11 @@ public class Game extends ApplicationAdapter {
                 pingSentTime = System.currentTimeMillis();
                 pingOut = true;
             }
+            lastPing += Game.SECONDS_PER_FRAME;
             serverOutput.send(engine.playerControlState.get(crntPlayer));
         }
         
         engine.updateTick();
-        lastPing += Game.SECONDS_PER_FRAME;
     }
     
     @Override
@@ -246,6 +264,8 @@ public class Game extends ApplicationAdapter {
     
     public static Sprite loadSprite(String name)
     {
+        if(Gdx.app == null || Gdx.files == null) return null;
+        
         Texture texture = new Texture(Gdx.files.internal("sprite/"+name+".png"));
         Sprite sprite = new Sprite(texture);
         
@@ -256,6 +276,7 @@ public class Game extends ApplicationAdapter {
     
     public static void changeTexture(Sprite sprite, String name)
     {
+        if(Gdx.app == null || Gdx.files == null) return;
         sprite.getTexture().dispose();
         sprite.setTexture(new Texture(Gdx.files.internal("sprite/"+name+".png")));
     }
@@ -267,7 +288,10 @@ public class Game extends ApplicationAdapter {
     }
     
     public static void log(String msg) {
-        Gdx.app.log(tag, msg);
+        if(Gdx.app == null)
+            System.out.println(tag + ": " + msg);
+        else
+            Gdx.app.log(tag, msg);
     }
     
     public static String string(Vector2 v)

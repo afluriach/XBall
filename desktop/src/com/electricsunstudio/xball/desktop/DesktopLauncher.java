@@ -10,6 +10,6 @@ public class DesktopLauncher {
         config.title = "X-Ball";
         config.width = 1280;
         config.height = 720;
-        new LwjglApplication(new Game(), config);
+        new LwjglApplication(new Game(System.currentTimeMillis()), config);
     }
 }
