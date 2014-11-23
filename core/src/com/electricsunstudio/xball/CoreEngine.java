@@ -11,8 +11,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import static com.electricsunstudio.xball.Game.log;
 import com.electricsunstudio.xball.levels.Level;
+import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.physics.FilterClass;
 import com.electricsunstudio.xball.physics.Physics;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class CoreEngine {
@@ -33,6 +36,9 @@ public class CoreEngine {
     public Random rand;
     int crntFrame = 0;
     
+    HashMap<Player,ControlState> playerControlState;
+    HashMap<String,Player> playersNameMap;
+    
     public CoreEngine()
     {
         mapLoader = new TmxMapLoader();
@@ -44,6 +50,21 @@ public class CoreEngine {
         if(Game.inst != null)
             Game.inst.rand = rand;
         loadLevel(level);
+        
+        //init map for player name map
+        playersNameMap = new HashMap<String, Player>();
+        for(Player p : gameObjectSystem.getObjectsByType(Player.class))
+        {
+            playersNameMap.put(p.getName(), p);
+        }
+        
+        //init players control state
+        playerControlState = new HashMap<Player, ControlState>();
+        for(Player p : playersNameMap.values())
+        {
+            playerControlState.put(p, new ControlState());
+        }
+
     }
     
     public void updateTick()
@@ -64,6 +85,10 @@ public class CoreEngine {
         //may assume that all control states have arrived prior to processing them
         //or if a control state is not available for this frame, do not process
         //controls for that player
+        for(Map.Entry<Player,ControlState> e : playerControlState.entrySet())
+        {
+            e.getKey().handleControls(e.getValue());
+        }
     }
     
     void loadLevel(Class cls)

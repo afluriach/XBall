@@ -63,12 +63,6 @@ public class Physics {
         world = new World(new Vector2(0,0), true);
         world.setContactListener(new ContactHandler());
         
-        debugRenderer = new Box2DDebugRenderer();
-        debugRenderer.setDrawBodies(true);
-        debugRenderer.setDrawContacts(true);
-        debugRenderer.setDrawJoints(true);
-        debugRenderer.setDrawInactiveBodies(true);
-        
         collisionFilters = new EnumMap<FilterClass,Filter>(FilterClass.class);
         
         putFilter(playerCategory,
@@ -86,6 +80,15 @@ public class Physics {
         putFilter(ballSensorCategory,
                   ballCategory,
                   FilterClass.ballSensor);
+    }
+    
+    public void initRender()
+    {
+        debugRenderer = new Box2DDebugRenderer();
+        debugRenderer.setDrawBodies(true);
+        debugRenderer.setDrawContacts(true);
+        debugRenderer.setDrawJoints(true);
+        debugRenderer.setDrawInactiveBodies(true);
     }
     
     public Body addCircleBody(Vector2 pos, float radius, BodyType type, GameObject ref, float mass, boolean sensor, FilterClass filter)
@@ -268,6 +271,11 @@ public class Physics {
     
     public void debugRender(Matrix4 transform)
     {
+        if(debugRenderer == null)
+        {
+            System.out.println("physics debug renderer has not been initialized.");
+            return;
+        }
         debugRenderer.render(world, transform.cpy().scale(Game.PIXELS_PER_TILE, Game.PIXELS_PER_TILE, 1));
     }
 }

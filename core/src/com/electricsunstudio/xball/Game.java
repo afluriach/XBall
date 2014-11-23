@@ -81,8 +81,6 @@ public class Game extends ApplicationAdapter {
     
     public Controls controls;
     public Player crntPlayer;
-    HashMap<Player,ControlState> playerControlState = new HashMap<Player, ControlState>();
-    HashMap<String,Player> playersNameMap = new HashMap<String, Player>();
     
     //network
     public static ObjectSocketOutput serverOutput;
@@ -129,23 +127,13 @@ public class Game extends ApplicationAdapter {
         engine.initLevel(level, System.currentTimeMillis());
 
         mapRenderer = new OrthogonalTiledMapRenderer(crntMap);
+
+        if(physicsRender)
+            physics.initRender();
         
         if(player == null)
             player = crntLevel.getPlayerName();
         crntPlayer = gameObjectSystem.getObjectByName(player, Player.class);
-        
-        //init map for player name map
-        for(Player p : gameObjectSystem.getObjectsByType(Player.class))
-        {
-            playersNameMap.put(p.getName(), p);
-        }
-        
-        //init players control state
-        for(Player p : playersNameMap.values())
-        {
-            playerControlState.put(p, new ControlState());
-        }
-        
         if(serverInput != null)
         {
             //add listener for control data
@@ -171,16 +159,13 @@ public class Game extends ApplicationAdapter {
         @Override
         public void onReceived(Object t) {
             ControlState cs = (ControlState)t;
-            if(playersNameMap.containsKey(cs.player) && crntPlayer != playersNameMap.get(cs.player))
-                playerControlState.put(playersNameMap.get(cs.player), cs);
+            if(engine.playersNameMap.containsKey(cs.player) && crntPlayer != engine.playersNameMap.get(cs.player))
+                engine.playerControlState.put(engine.playersNameMap.get(cs.player), cs);
         }
     }
     
     public void update()
     {
-        controls.update();
-        controls.updateState(playerControlState.get(crntPlayer));
-        
         updateDelta += Gdx.graphics.getDeltaTime();
         while(updateDelta >= SECONDS_PER_FRAME)
         {
@@ -191,10 +176,8 @@ public class Game extends ApplicationAdapter {
     
     public void updateTick()
     {
-        for(Entry<Player,ControlState> e : playerControlState.entrySet())
-        {
-            e.getKey().handleControls(e.getValue());
-        }
+        controls.update();
+        controls.updateState(engine.playerControlState.get(crntPlayer));
         
         if(serverOutput != null)
         {
@@ -204,7 +187,7 @@ public class Game extends ApplicationAdapter {
                 pingSentTime = System.currentTimeMillis();
                 pingOut = true;
             }
-            serverOutput.send(playerControlState.get(crntPlayer));
+            serverOutput.send(engine.playerControlState.get(crntPlayer));
         }
         
         engine.updateTick();
