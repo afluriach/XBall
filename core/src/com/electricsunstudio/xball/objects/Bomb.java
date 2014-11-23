@@ -104,8 +104,9 @@ public class Bomb extends Ball
             }
             else
             {
+                float dist = disp.len();
                 //scale force according to distance from the core radius
-                float forceMag = baseForce / (disp.len()-blastRadius);
+                float forceMag = baseForce / (dist-blastRadius)/(dist-blastRadius);
                 Vector2 impulse = disp.nor().scl(forceMag*blastTime);
                 target.physicsBody.applyLinearImpulse(impulse, target.getCenterPos(), true);
             }           
