@@ -191,10 +191,11 @@ public class Game extends ApplicationAdapter {
     
     public void updateTick()
     {
+        //System.out.printf("game update tick frame " + engine.crntFrame);
         if(controls != null)
         {
             controls.update();
-            controls.updateState(engine.playerControlState.get(crntPlayer));
+            engine.playerControlState.put(crntPlayer, controls.getState());
         }
         
         if(serverOutput != null)
@@ -206,6 +207,7 @@ public class Game extends ApplicationAdapter {
                 pingOut = true;
             }
             lastPing += Game.SECONDS_PER_FRAME;
+            //System.out.printf("controlstate frame sent " + engine.playerControlState.get(crntPlayer).frameNum);
             serverOutput.send(engine.playerControlState.get(crntPlayer));
         }
         

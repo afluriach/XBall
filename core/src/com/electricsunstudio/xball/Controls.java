@@ -241,8 +241,9 @@ public class Controls {
         handleTouchControls();
     }
 
-    public void updateState(ControlState cs)
+    public ControlState getState()
     {
+        ControlState cs = new ControlState();
         cs.grab = state.get(Action.grab);
         cs.kick = state.get(Action.kick);
         cs.special = state.get(Action.special);
@@ -250,5 +251,7 @@ public class Controls {
         cs.moveX = controlPadPos.x;
         cs.moveY = controlPadPos.y;
         cs.frameNum = Game.inst.engine.crntFrame;
+        //System.out.printf("update controlstate frame %d, movepad %f,%f\n", cs.frameNum, cs.moveX, cs.moveY);
+        return cs;
     }
 }
