@@ -199,7 +199,7 @@ public class Game extends ApplicationAdapter {
     }
     
     //for capturing current game state
-    void saveState()
+    void saveStateToFile(Object s)
     {
         File f = new File("state.bin");
         if(!f.exists())
@@ -219,7 +219,7 @@ public class Game extends ApplicationAdapter {
         ObjectOutputStream os = null;
         try {
             os = new ObjectOutputStream(buf);
-            os.writeObject(gameObjectSystem.getState());
+            os.writeObject(s);
         } catch (IOException ex) {
             System.out.println("io error writing state");
             ex.printStackTrace();
@@ -235,9 +235,10 @@ public class Game extends ApplicationAdapter {
         System.out.println("state written");
     }
     
-    void loadState()
+    Object loadStateFromFile()
     {
         File f = new File("state.bin");
+        Object o = null;
         if(!f.exists())
             System.out.println("state doesn't exist");
         else
@@ -251,7 +252,7 @@ public class Game extends ApplicationAdapter {
             ObjectInputStream is = null;
             try {
                 is = new ObjectInputStream(buf);
-                gameObjectSystem.restoreFromState((GameObjectSystemState) is.readObject());
+                o = is.readObject();
             } catch (IOException ex) {
                 System.out.println("io error reading state");
             } catch (ClassNotFoundException ex) {
@@ -265,17 +266,18 @@ public class Game extends ApplicationAdapter {
             }
             System.out.println("state read");
         }
+        return o;
     }
     
     public void updateTick()
     {
         if(Gdx.input.isKeyJustPressed(Input.Keys.F))
         {
-            saveState();
+            saveStateToFile(gameObjectSystem.getState());
         }
         else if (Gdx.input.isKeyJustPressed(Input.Keys.R))
         {
-            loadState();
+            gameObjectSystem.restoreFromState((GameObjectSystemState) loadStateFromFile());
         }
         
         //System.out.printf("game update tick frame " + engine.crntFrame);
