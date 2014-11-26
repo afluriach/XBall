@@ -2,7 +2,6 @@ package com.electricsunstudio.xball.levels;
 
 import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.Game;
-import com.electricsunstudio.xball.objects.Ball;
 import com.electricsunstudio.xball.objects.GoldBall;
 import com.electricsunstudio.xball.objects.Bomb;
 import com.electricsunstudio.xball.objects.SpawnSensor;
@@ -28,6 +27,22 @@ public class CoolBlast extends OneVOne {
     public String getPlayerName()
     {
         return "blue_player";
+    }
+    
+    @Override
+    public LevelState getState()
+    {
+        LevelState s = new LevelState(playerScore, opponentScore);
+        s.lastBombTime = lastBomb;
+        return s;
+    }
+    
+    @Override
+    public void restoreFromState(LevelState s)
+    {
+        lastBomb = s.lastBombTime;
+        playerScore = s.playerScore;
+        opponentScore = s.opponentScore;
     }
     
     @Override

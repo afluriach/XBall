@@ -12,4 +12,7 @@ public abstract class Level
     public abstract void init();
     public abstract void update();
     public abstract void render();
+    
+    public abstract LevelState getState();
+    public abstract void restoreFromState(LevelState s);
 }

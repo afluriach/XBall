@@ -17,6 +17,19 @@ public abstract class OneVOne extends Level {
     SpawnSensor spawnSensor;
     
     @Override
+    public LevelState getState()
+    {
+        return new LevelState(playerScore, opponentScore);
+    }
+    
+    @Override
+    public void restoreFromState(LevelState s)
+    {
+        playerScore = s.playerScore;
+        opponentScore = s.opponentScore;
+    }
+    
+    @Override
     public void init()
     {
         playerGoal = Game.inst.gameObjectSystem.getObjectByName("player_goal", GoalSensor.class);

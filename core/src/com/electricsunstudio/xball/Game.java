@@ -198,6 +198,18 @@ public class Game extends ApplicationAdapter {
         }
     }
     
+    GameState getState()
+    {
+        return new GameState(engine.crntFrame, gameObjectSystem.getState(), crntLevel.getState());
+    }
+    
+    void restoreState(GameState s)
+    {
+        crntLevel.restoreFromState(s.levelState);
+        gameObjectSystem.restoreFromState(s.objectState);
+        engine.crntFrame = s.frameNum;
+    }
+    
     //for capturing current game state
     void saveStateToFile(Object s)
     {
@@ -273,11 +285,11 @@ public class Game extends ApplicationAdapter {
     {
         if(Gdx.input.isKeyJustPressed(Input.Keys.F))
         {
-            saveStateToFile(gameObjectSystem.getState());
+            saveStateToFile(getState());
         }
         else if (Gdx.input.isKeyJustPressed(Input.Keys.R))
         {
-            gameObjectSystem.restoreFromState((GameObjectSystemState) loadStateFromFile());
+            restoreState((GameState) loadStateFromFile());
         }
         
         //System.out.printf("game update tick frame " + engine.crntFrame);
@@ -299,6 +311,8 @@ public class Game extends ApplicationAdapter {
             //System.out.printf("controlstate frame sent " + engine.playerControlState.get(crntPlayer).frameNum);
             serverOutput.send(engine.playerControlState.get(crntPlayer));
         }
+        
+        rand.setSeed(seed+engine.crntFrame);
         
         engine.updateTick();
     }

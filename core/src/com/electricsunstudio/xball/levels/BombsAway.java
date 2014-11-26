@@ -31,6 +31,22 @@ public class BombsAway extends OneVOne {
     }
     
     @Override
+    public LevelState getState()
+    {
+        LevelState s = new LevelState(playerScore, opponentScore);
+        s.lastBombTime = lastBomb;
+        return s;
+    }
+    
+    @Override
+    public void restoreFromState(LevelState s)
+    {
+        playerScore = s.playerScore;
+        opponentScore = s.opponentScore;
+        lastBomb = s.lastBombTime;
+    }
+
+    @Override
     public void update() {
         int count = Game.inst.gameObjectSystem.countObjectsByType(GoldBall.class);
         

@@ -38,6 +38,22 @@ public class BombVoyage extends Level implements HitListener {
     }
     
     @Override
+    public LevelState getState()
+    {
+        LevelState s = new LevelState(playerScore, opponentScore);
+        s.lastBombTime = lastBomb;
+        return s;
+    }
+    
+    @Override
+    public void restoreFromState(LevelState s)
+    {
+        playerScore = s.playerScore;
+        opponentScore = s.opponentScore;
+        lastBomb = s.lastBombTime;
+    }
+    
+    @Override
     public void update() {
         lastBomb += Game.SECONDS_PER_FRAME;
         
