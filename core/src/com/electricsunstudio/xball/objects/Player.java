@@ -9,8 +9,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.GameObjectState;
 import com.electricsunstudio.xball.Game;
+import com.electricsunstudio.xball.EffectSprite;
 import com.electricsunstudio.xball.ControlState;
 import com.electricsunstudio.xball.physics.FilterClass;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -25,7 +27,7 @@ public class Player extends GameObject
     
     float roughSpeedPenalty = 0.7f;
     
-    Sprite actionEffect;
+    EffectSprite actionEffect;
     float fadeStart = 0.4f;
     
     float kickInterval = 0.7f;
@@ -76,7 +78,7 @@ public class Player extends GameObject
 
         if(actionEffect != null && !grabbing && actionCooldown < fadeStart)
         {
-            actionEffect.setAlpha(actionCooldown / fadeStart);
+            actionEffect.getSprite().setAlpha(actionCooldown / fadeStart);
         }
         if(actionCooldown <= 0 && !grabbing)
         {
@@ -86,8 +88,8 @@ public class Player extends GameObject
 
         if(grabbing && actionEffect != null)
         {
-            Vector2 disp = Game.rayRad(radius+actionEffect.getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
-            actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
+            Vector2 disp = Game.rayRad(radius+actionEffect.getSprite().getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
+            actionEffect.setPos(new Vector2((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE));
             actionEffect.setRotation(getRotation()-90);
         }
         
@@ -128,7 +130,7 @@ public class Player extends GameObject
     {
         if(actionEffect != null)
         {
-            Game.drawSprite(actionEffect, batch);
+            Game.drawSprite(actionEffect.getSprite(), batch);
         }
         super.render(batch);
     }
@@ -240,11 +242,10 @@ public class Player extends GameObject
         actionCooldown = kickInterval;
         
         //show the kick effect, sprite will remain in place and fade out
-        actionEffect = Game.loadSprite("kick_effect");
+        actionEffect =  new EffectSprite("kick_effect", Vector2.Zero, getRotation()-90);
         //draw the kick effect in front of the player
-        Vector2 disp = Game.rayRad(radius+actionEffect.getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
-        actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
-        actionEffect.setRotation(getRotation()-90);
+        Vector2 disp = Game.rayRad(radius+actionEffect.getSprite().getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
+        actionEffect.setPos(new Vector2((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE));
         
         ArrayList<GameObject> targets = coneQuery(radius + kickDist, getRotation(), kickWidth);
         
@@ -272,11 +273,10 @@ public class Player extends GameObject
     {
         grabTime = 0f;
         //show the grab effect, sprite will remain in place while grabbing
-        actionEffect = Game.loadSprite("grab_effect");
+        actionEffect = new EffectSprite("grab_effect", Vector2.Zero, getRotation()-90);
         //draw the grab effect in front of the player
-        Vector2 disp = Game.rayRad(radius+actionEffect.getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
-        actionEffect.setCenter((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE);
-        actionEffect.setRotation(getRotation()-90);
+        Vector2 disp = Game.rayRad(radius+actionEffect.getSprite().getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
+        actionEffect.setPos(new Vector2((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE));
         
         ArrayList<GameObject> targets = coneQuery(radius + 0.25f + grabDist, getRotation(), grabWidth);
         

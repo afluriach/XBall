@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.GameObjectState;
+import com.electricsunstudio.xball.EffectSprite;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -15,6 +16,8 @@ public class PlayerState extends GameObjectState
     public boolean grabbing;
     ArrayList<Integer> grabbedObjects;
     ArrayList<Vector2> grabbedOffsets;
+    
+    EffectSprite effect;
 
     public PlayerState(Player p)
     {
@@ -22,6 +25,7 @@ public class PlayerState extends GameObjectState
         actionCooldown = p.actionCooldown;
         grabTime = p.grabTime;
         grabbing = p.grabbing;
+        effect = p.actionEffect;
 
         if(grabbing)
         {
@@ -42,6 +46,9 @@ public class PlayerState extends GameObjectState
                 p.grabbedObjects.add(Game.inst.gameObjectSystem.getByUid(objId));
             }
         }
+        if(p.actionEffect != null)
+        {
+        }
     }
 
     public void applyState(Player p)
@@ -50,9 +57,25 @@ public class PlayerState extends GameObjectState
         p.actionCooldown = actionCooldown;
         p.grabTime = grabTime;
         p.grabbing = grabbing;
+
+        if(p.actionEffect != null)
+        {
+            p.actionEffect.getSprite().getTexture().dispose();
+        }
+        
+        p.actionEffect = effect;
+        if(p.actionEffect != null)
+            p.actionEffect.recreateSrite();
+        
         if(grabbing)
         {
             p.grabbedOffsets = grabbedOffsets;
+            p.grabbedObjects = new ArrayList<GameObject>(grabbedObjects.size());
+            
+            for(Integer id : grabbedObjects)
+            {
+                p.grabbedObjects.add(Game.inst.gameObjectSystem.getByUid(id));
+            }
         }
     }
 }
