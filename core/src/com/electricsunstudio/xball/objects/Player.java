@@ -6,14 +6,12 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Joint;
-import com.electricsunstudio.xball.Action;
 import com.electricsunstudio.xball.GameObject;
+import com.electricsunstudio.xball.GameObjectState;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.ControlState;
 import com.electricsunstudio.xball.physics.FilterClass;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -71,6 +69,7 @@ public class Player extends GameObject
             FilterClass.player);
     }
     
+    @Override
     public void update()
     {
         actionCooldown -= Game.SECONDS_PER_FRAME;
@@ -299,5 +298,24 @@ public class Player extends GameObject
         grabbedOffsets.clear();
         actionEffect = null;
         actionCooldown = grabInterval;
+    }
+    
+    @Override
+    public GameObjectState getState()
+    {
+        return new PlayerState(this);
+    }
+    
+    @Override
+    public void restoreFromState(GameObjectState s)
+    {
+        ((PlayerState)s).applyState(this);
+    }
+    
+    public Player(GameObjectState s)
+    {
+        super(s.name);
+        System.out.println("suspicous instantiation of player from object state");
+        restoreFromState(s);
     }
 }

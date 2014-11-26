@@ -3,6 +3,7 @@ package com.electricsunstudio.xball;
 import com.electricsunstudio.xball.physics.Physics;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -26,10 +27,18 @@ import com.electricsunstudio.xball.network.PingIntent;
 
 import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.network.ObjectSocketOutput;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class Game extends ApplicationAdapter {
     public static final int PIXELS_PER_TILE = 64;
@@ -189,8 +198,86 @@ public class Game extends ApplicationAdapter {
         }
     }
     
+    //for capturing current game state
+    void saveState()
+    {
+        File f = new File("state.bin");
+        if(!f.exists())
+        {
+            try {
+                f.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(Game.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+        }
+
+        BufferedOutputStream buf = null;
+        try {
+            buf = new BufferedOutputStream(new FileOutputStream(f));
+        } catch (FileNotFoundException ex) {
+        }
+        ObjectOutputStream os = null;
+        try {
+            os = new ObjectOutputStream(buf);
+            os.writeObject(gameObjectSystem.getState());
+        } catch (IOException ex) {
+            System.out.println("io error writing state");
+            ex.printStackTrace();
+        }
+        try {
+            os.flush();
+            os.close();
+            buf.flush();
+            buf.close();
+        } catch (IOException ex) {
+            System.out.println("io error closing stream");
+        }
+        System.out.println("state written");
+    }
+    
+    void loadState()
+    {
+        File f = new File("state.bin");
+        if(!f.exists())
+            System.out.println("state doesn't exist");
+        else
+        {
+            BufferedInputStream buf = null;
+            try {
+                buf = new BufferedInputStream(new FileInputStream(f));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            ObjectInputStream is = null;
+            try {
+                is = new ObjectInputStream(buf);
+                gameObjectSystem.restoreFromState((GameObjectSystemState) is.readObject());
+            } catch (IOException ex) {
+                System.out.println("io error reading state");
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            try {
+                is.close();
+                buf.close();
+            } catch (IOException ex) {
+                System.out.println("io error closing stream");
+            }
+            System.out.println("state read");
+        }
+    }
+    
     public void updateTick()
     {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F))
+        {
+            saveState();
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.R))
+        {
+            loadState();
+        }
+        
         //System.out.printf("game update tick frame " + engine.crntFrame);
         if(controls != null)
         {

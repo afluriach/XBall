@@ -4,6 +4,7 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.Game;
+import com.electricsunstudio.xball.GameObjectState;
 import com.electricsunstudio.xball.HitListener;
 import com.electricsunstudio.xball.GameObject;
 import com.electricsunstudio.xball.HitType;
@@ -47,6 +48,14 @@ public class Bomb extends Ball
         super();
         initFields();
         create(pos);
+    }
+    
+    public Bomb(BombState s)
+    {
+        super(s.name);
+        initFields();
+        create(new Vector2(s.posX, s.posY));
+        restoreFromState(s);
     }
     
     final void initFields()
@@ -146,5 +155,17 @@ public class Bomb extends Ball
     @Override
     public void init() {
     }
-
+    
+    @Override
+    public GameObjectState getState()
+    {
+        return new BombState(this);
+    }
+    
+    @Override
+    public void restoreFromState(GameObjectState s)
+    {
+        super.restoreFromState(s);
+        ((BombState)s).applyState(this);
+    }
 }

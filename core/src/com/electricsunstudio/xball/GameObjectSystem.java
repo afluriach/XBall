@@ -1,9 +1,19 @@
 package com.electricsunstudio.xball;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.electricsunstudio.xball.objects.Bomb;
+import com.electricsunstudio.xball.objects.BombState;
+import com.electricsunstudio.xball.objects.GoalSensor;
+import com.electricsunstudio.xball.objects.GoldBall;
+import com.electricsunstudio.xball.objects.GoldBallState;
+import com.electricsunstudio.xball.objects.Player;
+import com.electricsunstudio.xball.objects.PlayerState;
+import com.electricsunstudio.xball.objects.SpawnSensor;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +25,8 @@ public class GameObjectSystem
     Map<String, GameObject> nameMap = new TreeMap<String, GameObject>();
     ArrayList<GameObject> objectsToAdd = new ArrayList<GameObject>();
     HashMap<Class, ArrayList<GameObject>> typeMap = new HashMap<Class, ArrayList<GameObject>>();
+    HashMap<Class,Class> stateToObjType = new HashMap<Class, Class>();
+    HashSet<Class> stateIgnore = new HashSet<Class>();
     
     public void clear()
     {
@@ -25,7 +37,41 @@ public class GameObjectSystem
     
     public GameObjectSystem()
     {
+        stateToObjType.put(BombState.class, Bomb.class);
+        stateToObjType.put(GoldBallState.class, GoldBall.class);
+        stateToObjType.put(PlayerState.class, Player.class);
+        
+        stateIgnore.add(SpawnSensor.class);
+        stateIgnore.add(GoalSensor.class);
     }
+    
+    GameObject createObjectFromState(GameObjectState s)
+    {
+        Class objCls = stateToObjType.get(s.getClass());
+        Constructor cons = null;
+
+        try {
+            cons = objCls.getConstructor(s.getClass());
+        } catch (NoSuchMethodException ex) {
+            System.out.printf("class %s lacks state constructor\n", objCls.getSimpleName());
+        } catch (SecurityException ex) {
+            System.out.printf("class %s, unable to call state constructor\n", objCls.getSimpleName());
+        }
+
+        if(cons == null)
+        {
+            System.out.println("unable to instantiate object of type " + objCls.getSimpleName());
+        }
+
+        try {
+            return (GameObject) cons.newInstance(s);
+        } catch (Exception ex) {
+            System.out.println("exception creating class from state: " + objCls.getSimpleName());
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
         
     /**
      * Adds GameObject before the next update cycle. Additions are not handled within the update cycle,
@@ -82,7 +128,7 @@ public class GameObjectSystem
         objectsToAdd.clear();
     }
     
-    private void remove(GameObject go)
+    void remove(GameObject go)
     {
         gameObjects.remove(go.uid);
         nameMap.remove(go.name);
@@ -182,6 +228,12 @@ public class GameObjectSystem
         return typeMap.get(cls).size();
     }
     
+    public GameObject getByUid(int uid)
+    {
+        if(!gameObjects.containsKey(uid)) return null;
+        return gameObjects.get(uid);
+    }
+    
     public Collection<GameObject> getObjects()
     {
         return gameObjects.values();
@@ -209,5 +261,15 @@ public class GameObjectSystem
         {
             go.applyAccel();
         }
+    }
+    
+    public GameObjectSystemState getState()
+    {
+        return new GameObjectSystemState(this);
+    }
+    
+    public void restoreFromState(GameObjectSystemState s)
+    {
+        s.applyState(this);
     }
 }

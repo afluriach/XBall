@@ -4,6 +4,7 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.electricsunstudio.xball.GameObject;
+import com.electricsunstudio.xball.GameObjectState;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.Controls;
 import com.electricsunstudio.xball.physics.FilterClass;
@@ -27,6 +28,14 @@ public class GoldBall extends Ball
         super();
         initFields();
         create(pos);
+    }
+    
+    public GoldBall(GoldBallState s)
+    {
+        super(s.name);
+        initFields();
+        create(new Vector2(s.posX, s.posY));
+        restoreFromState(s);
     }
     
     final void initFields()
@@ -54,5 +63,11 @@ public class GoldBall extends Ball
     public void init()
     {
         
+    }
+    
+    @Override
+    public GameObjectState getState()
+    {
+        return new GoldBallState(this);
     }
 }

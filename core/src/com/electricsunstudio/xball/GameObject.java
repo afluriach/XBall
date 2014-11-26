@@ -107,6 +107,11 @@ public abstract class GameObject
         uid = nextUid++;
     }
     
+    public int getUid()
+    {
+        return uid;
+    }
+    
     public void setRotation(Vector2 v)
     {
         //vector2 and sprite angle conventions are different
@@ -354,5 +359,17 @@ public abstract class GameObject
     public float getRadius()
     {
         return radius;
+    }
+    
+    public GameObjectState getState()
+    {
+        return new GameObjectState(this);
+    }
+    
+    public void restoreFromState(GameObjectState s)
+    {
+        this.name = s.name;
+        this.uid = s.uid;
+        s.applyState(this);
     }
 }
