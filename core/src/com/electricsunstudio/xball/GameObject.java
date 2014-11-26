@@ -80,6 +80,8 @@ public abstract class GameObject
         }
     }
     
+    static int nextUid = 0;
+    
     //physics
     public Body physicsBody;
     public static final float iceTraction = 0.3f;
@@ -87,6 +89,7 @@ public abstract class GameObject
     
     String name;
     boolean expired = false;
+    int uid;
 
     public Sprite sprite;
     
@@ -95,11 +98,13 @@ public abstract class GameObject
     public GameObject(MapObject mo)
     {
         name = mo.getName();
+        uid = nextUid++;
     }
     
     public GameObject(String name)
     {
         this.name = name;
+        uid = nextUid++;
     }
     
     public void setRotation(Vector2 v)

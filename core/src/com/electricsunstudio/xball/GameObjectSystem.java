@@ -1,19 +1,16 @@
 package com.electricsunstudio.xball;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class GameObjectSystem
 {
-    ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+    HashMap<Integer, GameObject> gameObjects = new HashMap<Integer,GameObject>();
     Map<String, GameObject> nameMap = new TreeMap<String, GameObject>();
     ArrayList<GameObject> objectsToAdd = new ArrayList<GameObject>();
     
@@ -47,7 +44,7 @@ public class GameObjectSystem
     {
         for(GameObject go : objectsToAdd)
         {
-            gameObjects.add(go);
+            gameObjects.put(go.uid, go);
             if(go.name != null) nameMap.put(go.name, go);
         }
         objectsToAdd.clear();
@@ -55,14 +52,14 @@ public class GameObjectSystem
     
     private void remove(GameObject go)
     {
-        gameObjects.remove(go);
+        gameObjects.remove(go.uid);
         nameMap.remove(go.name);        
     }
 
     
     public void updateAll()
     {
-        for(GameObject go : gameObjects)
+        for(GameObject go : gameObjects.values())
         {
             go.update();
         }
@@ -70,7 +67,7 @@ public class GameObjectSystem
     
     public void initAll()
     {
-        for(GameObject go : gameObjects)
+        for(GameObject go : gameObjects.values())
         {
             go.init();
         }
@@ -80,7 +77,7 @@ public class GameObjectSystem
     {
         ArrayList<GameObject> expired = new ArrayList<GameObject>();
         
-        for(GameObject go : gameObjects)
+        for(GameObject go : gameObjects.values())
         {
             if(go.expired)
             {
@@ -98,7 +95,7 @@ public class GameObjectSystem
         
     public void render(SpriteBatch sb)
     {
-        for(GameObject go : gameObjects)
+        for(GameObject go : gameObjects.values())
         {
             go.render(sb);
         }
@@ -131,7 +128,7 @@ public class GameObjectSystem
     public <T> List<T> getObjectsByType(Class<T> cls)
     {
         ArrayList<GameObject> results = new ArrayList<GameObject>();
-        for(GameObject go : gameObjects)
+        for(GameObject go : gameObjects.values())
         {
             if(cls.isInstance(go))
                 results.add(go);
@@ -142,7 +139,7 @@ public class GameObjectSystem
     public <T> T getObjectByType(Class<T> cls)
     {
         ArrayList<GameObject> results = new ArrayList<GameObject>();
-        for(GameObject go : gameObjects)
+        for(GameObject go : gameObjects.values())
         {
             if(cls.isInstance(go))
                 return (T) go;
@@ -153,7 +150,7 @@ public class GameObjectSystem
     public int countObjectsByType(Class cls)
     {
         int count = 0;
-        for(GameObject go : gameObjects)
+        for(GameObject go : gameObjects.values())
         {
             if(cls.isInstance(go))
                 ++count;
@@ -161,9 +158,9 @@ public class GameObjectSystem
         return count;       
     }
     
-    public List<GameObject> getObjects()
+    public Collection<GameObject> getObjects()
     {
-        return gameObjects;
+        return gameObjects.values();
     }
     
     public boolean allExpired(String[] names)
@@ -184,7 +181,7 @@ public class GameObjectSystem
     
     public void applyAccel()
     {
-        for(GameObject go : gameObjects)
+        for(GameObject go : gameObjects.values())
         {
             go.applyAccel();
         }
