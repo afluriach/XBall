@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,6 +14,7 @@ public class GameObjectSystem
     HashMap<Integer, GameObject> gameObjects = new HashMap<Integer,GameObject>();
     Map<String, GameObject> nameMap = new TreeMap<String, GameObject>();
     ArrayList<GameObject> objectsToAdd = new ArrayList<GameObject>();
+    HashMap<Class, ArrayList<GameObject>> typeMap = new HashMap<Class, ArrayList<GameObject>>();
     
     public void clear()
     {
@@ -40,12 +42,42 @@ public class GameObjectSystem
         objectsToAdd.addAll(gameObjects);
     }
     
+    void addByType(GameObject go)
+    {
+        //add object to the type map
+        Class cls = go.getClass();
+        
+        while(cls != GameObject.class)
+        {
+            if(!typeMap.containsKey(cls))
+            {
+                typeMap.put(cls, new ArrayList());
+            }
+            typeMap.get(cls).add(go);
+            
+            cls = cls.getSuperclass();
+        }
+    }
+    
+    void removeByType(GameObject go)
+    {
+        Class cls = go.getClass();
+        
+        while(cls != GameObject.class)
+        {
+            typeMap.get(cls).remove(go);
+            
+            cls = cls.getSuperclass();
+        }
+    }
+    
     public void handleAdditions()
     {
         for(GameObject go : objectsToAdd)
         {
             gameObjects.put(go.uid, go);
             if(go.name != null) nameMap.put(go.name, go);
+            addByType(go);
         }
         objectsToAdd.clear();
     }
@@ -53,7 +85,8 @@ public class GameObjectSystem
     private void remove(GameObject go)
     {
         gameObjects.remove(go.uid);
-        nameMap.remove(go.name);        
+        nameMap.remove(go.name);
+        removeByType(go);
     }
 
     
@@ -127,35 +160,26 @@ public class GameObjectSystem
     
     public <T> List<T> getObjectsByType(Class<T> cls)
     {
-        ArrayList<GameObject> results = new ArrayList<GameObject>();
-        for(GameObject go : gameObjects.values())
-        {
-            if(cls.isInstance(go))
-                results.add(go);
-        }
-        return (List<T>) results;
+        if(!typeMap.containsKey(cls))
+            return new LinkedList();
+        
+        return (List<T>) typeMap.get(cls);
     }
     
     public <T> T getObjectByType(Class<T> cls)
     {
-        ArrayList<GameObject> results = new ArrayList<GameObject>();
-        for(GameObject go : gameObjects.values())
-        {
-            if(cls.isInstance(go))
-                return (T) go;
-        }
-        return null;
+        if(!typeMap.containsKey(cls) || typeMap.get(cls).isEmpty())
+            return null;
+        
+        return (T) typeMap.get(cls).get(0);
     }
     
     public int countObjectsByType(Class cls)
     {
-        int count = 0;
-        for(GameObject go : gameObjects.values())
-        {
-            if(cls.isInstance(go))
-                ++count;
-        }
-        return count;       
+        if(!typeMap.containsKey(cls))
+            return 0;
+        
+        return typeMap.get(cls).size();
     }
     
     public Collection<GameObject> getObjects()
