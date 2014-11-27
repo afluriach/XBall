@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class ObjectSocketOutput extends Thread
 {
     public static final int capacity = 32;
-    public static final long timeout = 100;
+    public static final long timeout = 1000;
     
     public boolean quit;
     public Socket sock;
@@ -80,6 +80,7 @@ public class ObjectSocketOutput extends Thread
             {
                 try {
                     objOut.writeObject(obj);
+                    objOut.flush();
                     //objOut.writeObject(gson.toJson(new ObjectWrapper(obj.getClass().getName(),gson.toJson(obj))));
                 } catch (NotSerializableException ex){
                         ex.printStackTrace();
