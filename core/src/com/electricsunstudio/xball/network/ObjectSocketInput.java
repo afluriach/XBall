@@ -19,6 +19,7 @@ public class ObjectSocketInput extends Thread
     public ObjectSocketInput(Socket sock)
     {
         this.sock = sock;
+        this.setPriority(Thread.MAX_PRIORITY);
         //gson = new Gson();
     }
 
@@ -73,9 +74,10 @@ public class ObjectSocketInput extends Thread
                     }
                 }
             } catch (IOException ex) {
+                quit = true;
                 break;
             } catch (ClassNotFoundException ex) {
-                ex.printStackTrace();
+                System.out.println("invalid class received");
             }
         }
         System.out.println("ObjectSocketInput has been closed");

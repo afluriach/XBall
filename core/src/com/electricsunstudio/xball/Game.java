@@ -283,13 +283,16 @@ public class Game extends ApplicationAdapter {
     
     public void updateTick()
     {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F))
+        if(Gdx.input != null)
         {
-            saveStateToFile(getState());
-        }
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.R))
-        {
-            restoreState((GameState) loadStateFromFile());
+            if(Gdx.input.isKeyJustPressed(Input.Keys.F))
+            {
+                saveStateToFile(getState());
+            }
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.R))
+            {
+                restoreState((GameState) loadStateFromFile());
+            }
         }
         
         //System.out.printf("game update tick frame " + engine.crntFrame);

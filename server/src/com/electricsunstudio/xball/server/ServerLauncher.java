@@ -373,7 +373,7 @@ public class ServerLauncher {
             objIn.addHandler(PingIntent.class, new Handler(){
                 @Override
                 public void onReceived(Object t) {
-                    objOut.sendImmediate(t);
+                    objOut.send(t);
                 }
             });
         }
