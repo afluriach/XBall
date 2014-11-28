@@ -64,7 +64,8 @@ public class Game extends ApplicationAdapter {
         BumpyRoad.class,
         SlipperyStadium.class,
         PlusStadium.class,
-        RoughPatch.class
+        RoughPatch.class,
+        ColdPatch.class
     };
 
     public static Game inst;
