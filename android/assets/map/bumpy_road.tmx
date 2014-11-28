@@ -48,5 +48,6 @@
    </properties>
   </object>
   <object name="spawn_sensor" type="SpawnSensor" x="672" y="256" width="64" height="512"/>
+  <object name="bomb_sensor1" type="SpawnSensor" x="256" y="192" width="960" height="640"/>
  </objectgroup>
 </map>

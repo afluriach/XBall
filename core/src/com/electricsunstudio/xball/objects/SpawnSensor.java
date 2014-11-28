@@ -48,8 +48,7 @@ public class SpawnSensor extends GameObject
         return rect.getCenter(new Vector2());
     }
     
-    //choose a random tile that is not occupied
-    public Vector2 findSpawnPos()
+    public ArrayList<Vector2> findAllSpawnPos()
     {
         ArrayList<Vector2> points = new ArrayList();
         
@@ -68,7 +67,14 @@ public class SpawnSensor extends GameObject
                 }
             }
         }
-        
+
+        return points;
+    }
+    
+    //choose a random tile that is not occupied
+    public Vector2 findSpawnPos()
+    {
+        ArrayList<Vector2> points = findAllSpawnPos();
         return points.get(Game.inst.rand.nextInt(points.size()));
     }
 }

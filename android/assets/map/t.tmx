@@ -13,7 +13,7 @@
  </layer>
  <layer name="wall" width="40" height="40">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAA+3XMQoAIAxD0WLvf2cnN1uRokb4D1xEQhaLmgEA8EZLloKoh0o/39y/jX419Fsb88KDNROdPTF7yCOPvDxP+f5mFOZfhn419KtR76f+vlf/HwHAjzrQszv/ABkAAA==
+   H4sIAAAAAAAAA+3XOwrAIBAEUIn3v3OqdNkNwXymeA9sRIZpXHQMAPjH1qwEVY+UfvPm/tf0W6PftWNezGKdqc6+MXvkyZPX5yXf307C/Ovot0a/Nenv5/T/BwDP2wEc/22YABkAAA==
   </data>
  </layer>
  <objectgroup name="agents">
@@ -43,6 +43,9 @@
   <object name="goal1" type="GoalSensor" x="704" y="1152" width="16" height="320"/>
   <object name="goal2" type="GoalSensor" x="1904" y="1152" width="16" height="320"/>
   <object name="goal3" type="GoalSensor" x="1152" y="704" width="320" height="16"/>
-  <object name="goal4" type="GoalSensor" x="1152" y="1968" width="320" height="16"/>
+  <object name="goal4" type="GoalSensor" x="1152" y="1904" width="320" height="16"/>
+  <object name="bomb_sensor1" type="SpawnSensor" x="768" y="1152" width="1088" height="320"/>
+  <object name="bomb_sensor2" type="SpawnSensor" x="1152" y="1472" width="320" height="384"/>
+  <object name="bomb_sensor3" type="SpawnSensor" x="1152" y="768" width="320" height="384"/>
  </objectgroup>
 </map>

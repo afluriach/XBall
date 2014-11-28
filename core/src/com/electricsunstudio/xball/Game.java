@@ -58,7 +58,6 @@ public class Game extends ApplicationAdapter {
     
     public static final Class[] availableLevels = {
         Level1.class,
-        BombVoyage.class,
         BombsAway.class,
         CoolBlast.class,
         BumpyRoad.class,

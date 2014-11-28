@@ -1,15 +1,14 @@
 package com.electricsunstudio.xball.levels;
 
-import com.badlogic.gdx.math.Vector2;
-import com.electricsunstudio.xball.Game;
-import com.electricsunstudio.xball.objects.Ball;
-import com.electricsunstudio.xball.objects.GoldBall;
-
 /**
  *
  * @author toni
  */
 public class BumpyRoad extends OneVOne {
+
+    public BumpyRoad() {
+        super(2, 10, 20);
+    }
     
     @Override
     public String getMapName()
@@ -24,20 +23,4 @@ public class BumpyRoad extends OneVOne {
     }
     
     public static final String name = "Bumpy Road";
-    
-    @Override
-    public void update() {
-        int count = Game.inst.gameObjectSystem.countObjectsByType(Ball.class);
-        
-        if(count < 3)
-        {
-            spawn();
-        }
-    }
-    
-    void spawn()
-    {
-        Vector2 pos = spawnSensor.findSpawnPos();
-        Game.inst.gameObjectSystem.addObject(new GoldBall(pos));
-    }
 }

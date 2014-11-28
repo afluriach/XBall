@@ -6,17 +6,17 @@
  <tileset firstgid="2" name="stadium-wall-goal" tilewidth="64" tileheight="64">
   <image source="stadium-wall-goal.png" width="128" height="64"/>
  </tileset>
- <tileset firstgid="4" name="rough_ground" tilewidth="64" tileheight="64">
-  <image source="rough_ground.png" width="128" height="128"/>
+ <tileset firstgid="4" name="ice" tilewidth="64" tileheight="64">
+  <image source="ice.png" width="128" height="128"/>
  </tileset>
  <layer name="floor" width="40" height="40">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAA+3OoQEAAAgDoO3/p612i4FAp0kKAAAAAAd5cACAbQCzbPkmABkAAA==
+   H4sIAAAAAAAAA+3DAQkAAAwEofv+pddjKLhqqqqqqqqqjx7+ij1jABkAAA==
   </data>
  </layer>
- <layer name="rough" width="40" height="40">
+ <layer name="ice" width="40" height="40">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAA+3QKw4AIAxEwQo+978x1bUQUjGTvKzfCAAA4LeRzbKdrGyX7cR/d7r/BwAALxwYk/FlABkAAA==
+   H4sIAAAAAAAAA+3OsQkAAAjAMDf//9gH3AR1SKB7IwAAgG3Z9Im/GX8AAHCvAMspj2EAGQAA
   </data>
  </layer>
  <layer name="wall" width="40" height="40">
@@ -53,7 +53,7 @@
   <object name="goal3" type="GoalSensor" x="1152" y="704" width="320" height="16"/>
   <object name="goal4" type="GoalSensor" x="1152" y="1904" width="320" height="16"/>
   <object name="bomb_sensor1" type="SpawnSensor" x="768" y="1152" width="1088" height="320"/>
-  <object name="bomb_sensor2" type="SpawnSensor" x="1152" y="768" width="320" height="384"/>
-  <object name="bomb_sensor3" type="SpawnSensor" x="1152" y="1472" width="320" height="384"/>
+  <object name="bomb_sensor3" type="SpawnSensor" x="1152" y="768" width="320" height="384"/>
+  <object name="bomb_sensor2" type="SpawnSensor" x="1152" y="1472" width="320" height="384"/>
  </objectgroup>
 </map>
