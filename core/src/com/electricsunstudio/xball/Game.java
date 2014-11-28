@@ -62,7 +62,9 @@ public class Game extends ApplicationAdapter {
         BombsAway.class,
         CoolBlast.class,
         BumpyRoad.class,
-        SlipperyStadium.class
+        SlipperyStadium.class,
+        PlusStadium.class,
+        RoughPatch.class
     };
 
     public static Game inst;

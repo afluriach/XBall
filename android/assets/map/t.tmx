@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="64" tileheight="64">
+ <tileset firstgid="1" name="grass" tilewidth="64" tileheight="64">
+  <image source="grass.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="2" name="stadium-wall-goal" tilewidth="64" tileheight="64">
+  <image source="stadium-wall-goal.png" width="128" height="64"/>
+ </tileset>
+ <layer name="floor" width="40" height="40">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3DAQkAAAwEofv+pddjKLhqqqqqqqqqjx7+ij1jABkAAA==
+  </data>
+ </layer>
+ <layer name="wall" width="40" height="40">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3XMQoAIAxD0WLvf2cnN1uRokb4D1xEQhaLmgEA8EZLloKoh0o/39y/jX419Fsb88KDNROdPTF7yCOPvDxP+f5mFOZfhn419KtR76f+vlf/HwHAjzrQszv/ABkAAA==
+  </data>
+ </layer>
+ <objectgroup name="agents">
+  <object name="player1" type="Player" x="832" y="1280" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player2" type="Player" x="1728" y="1280" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player3" type="Player" x="1280" y="832" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player4" type="Player" x="1280" y="1792" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="sensor">
+  <object name="spawn_sensor" type="SpawnSensor" x="1216" y="1216" width="192" height="192"/>
+  <object name="goal1" type="GoalSensor" x="704" y="1152" width="16" height="320"/>
+  <object name="goal2" type="GoalSensor" x="1904" y="1152" width="16" height="320"/>
+  <object name="goal3" type="GoalSensor" x="1152" y="704" width="320" height="16"/>
+  <object name="goal4" type="GoalSensor" x="1152" y="1968" width="320" height="16"/>
+ </objectgroup>
+</map>
