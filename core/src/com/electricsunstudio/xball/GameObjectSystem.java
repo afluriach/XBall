@@ -5,7 +5,9 @@ import com.electricsunstudio.xball.objects.Bomb;
 import com.electricsunstudio.xball.objects.BombState;
 import com.electricsunstudio.xball.objects.GoalSensor;
 import com.electricsunstudio.xball.objects.GoldBall;
+import com.electricsunstudio.xball.objects.BlueBall;
 import com.electricsunstudio.xball.objects.GoldBallState;
+import com.electricsunstudio.xball.objects.BlueBallState;
 import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.objects.PlayerState;
 import com.electricsunstudio.xball.objects.SpawnSensor;
@@ -39,6 +41,7 @@ public class GameObjectSystem
     {
         stateToObjType.put(BombState.class, Bomb.class);
         stateToObjType.put(GoldBallState.class, GoldBall.class);
+        stateToObjType.put(BlueBallState.class, BlueBall.class);
         stateToObjType.put(PlayerState.class, Player.class);
         
         stateIgnore.add(SpawnSensor.class);

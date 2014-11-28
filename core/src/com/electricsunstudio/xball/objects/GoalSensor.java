@@ -38,7 +38,7 @@ public class GoalSensor extends GameObject
     @Override
     public void handleContact(GameObject other)
     {
-        if(other instanceof GoldBall)
+        if(other instanceof GoldBall || other instanceof BlueBall)
         {
             Game.log(other.getName() + " arrived in " + getName());
             if(notifier != null)

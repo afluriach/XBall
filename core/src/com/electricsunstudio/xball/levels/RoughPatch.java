@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.objects.Ball;
 import com.electricsunstudio.xball.objects.GoldBall;
+import com.electricsunstudio.xball.objects.BlueBall;
 
 /**
  *
@@ -38,6 +39,6 @@ public class RoughPatch extends FourWay {
     void spawn()
     {
         Vector2 pos = spawnSensor.findSpawnPos();
-        Game.inst.gameObjectSystem.addObject(new GoldBall(pos));
+        Game.inst.gameObjectSystem.addObject(Game.inst.rand.nextBoolean() ? new GoldBall(pos) : new BlueBall(pos));
     }
 }

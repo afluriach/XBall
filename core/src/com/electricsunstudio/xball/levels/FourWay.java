@@ -5,6 +5,8 @@ import com.electricsunstudio.xball.Game;
 import com.electricsunstudio.xball.BallNotify;
 import com.electricsunstudio.xball.objects.GoalSensor;
 import com.electricsunstudio.xball.objects.Ball;
+import com.electricsunstudio.xball.objects.GoldBall;
+import com.electricsunstudio.xball.objects.BlueBall;
 import com.electricsunstudio.xball.objects.SpawnSensor;
 
 /**
@@ -72,7 +74,11 @@ public abstract class FourWay extends Level {
         @Override
         public void onReceived(Ball ball)
         {
-            --scores[id];
+            if(ball instanceof GoldBall)
+                ++scores[id];
+            else if(ball instanceof BlueBall)
+                --scores[id];
+            
             super.onReceived(ball);
         }
     }
