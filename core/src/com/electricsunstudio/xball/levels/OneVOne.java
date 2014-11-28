@@ -19,14 +19,19 @@ public abstract class OneVOne extends Level {
     @Override
     public LevelState getState()
     {
-        return new LevelState(playerScore, opponentScore);
+        LevelState s = new LevelState();
+        s.scores = new int[2];
+        s.scores[0] = playerScore;
+        s.scores[1] = opponentScore;
+        
+        return s;
     }
     
     @Override
     public void restoreFromState(LevelState s)
     {
-        playerScore = s.playerScore;
-        opponentScore = s.opponentScore;
+        playerScore = s.scores[0];
+        opponentScore = s.scores[1];
     }
     
     @Override

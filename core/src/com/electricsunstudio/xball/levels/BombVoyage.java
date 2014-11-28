@@ -40,7 +40,10 @@ public class BombVoyage extends Level implements HitListener {
     @Override
     public LevelState getState()
     {
-        LevelState s = new LevelState(playerScore, opponentScore);
+        LevelState s = new LevelState();
+        s.scores = new int[2];
+        s.scores[0]  = playerScore;
+        s.scores[1] = opponentScore;
         s.lastBombTime = lastBomb;
         return s;
     }
@@ -48,8 +51,8 @@ public class BombVoyage extends Level implements HitListener {
     @Override
     public void restoreFromState(LevelState s)
     {
-        playerScore = s.playerScore;
-        opponentScore = s.opponentScore;
+        playerScore = s.scores[0];
+        opponentScore = s.scores[1];
         lastBomb = s.lastBombTime;
     }
     

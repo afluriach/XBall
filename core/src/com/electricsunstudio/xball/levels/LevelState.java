@@ -9,13 +9,6 @@ import java.io.Serializable;
 public class LevelState implements Serializable {
     private static final long serialVersionUID = -6908891545470788582L;
     
-    int playerScore;
-    int opponentScore;
+    public int [] scores;
     float lastBombTime;
-
-    public LevelState(int playerScore, int opponentScore) {
-        this.playerScore = playerScore;
-        this.opponentScore = opponentScore;
-    }
-    
 }
