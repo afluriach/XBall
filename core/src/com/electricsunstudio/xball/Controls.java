@@ -4,11 +4,14 @@ package com.electricsunstudio.xball;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import java.util.EnumMap;
+import java.util.Map.Entry;
 
 public class Controls {
     public static final int maxPressEvents = 5;
@@ -35,15 +38,19 @@ public class Controls {
     public Vector2 controlPadPos = Vector2.Zero;
 
     Circle controlPad, actionPad;
+    Vector2 actionPadPos;
     
     public EnumMap<Action, Boolean> state;
-    EnumMap<Action, Pair<Color,Color>> actionColors;
     EnumMap<Action, Integer> actionButtonPos;
     EnumMap<Action, Integer> actionKeys;
+    EnumMap<Action, Vector2> buttonDividerOffset;
+    EnumMap<Action, Vector2> buttonIconPos;
+    EnumMap<Action, Sprite> buttonIcons;
     
     Color controlPadOuterColor = Game.hsva(251, .3f, .7f, 1f);
     Color controlPadColor = Game.hsva(251f,.1f,.3f, 1f);
     Color controlPadInnerColor = Game.hsva(251f, .1f, .8f, 1f);
+    Color buttonOutlines = Game.hsva(0f, 0f, .9f, 1f);
         
     public Controls()
     {
@@ -55,11 +62,6 @@ public class Controls {
         state.put(Action.grab, false);
         state.put(Action.special, false);
         state.put(Action.lock, false);
-        
-        actionColors = new EnumMap<Action, Pair<Color, Color>>(Action.class);
-        actionColors.put(Action.kick, new Pair(Game.hsva(10f,.8f,.3f, 1f), Game.hsva(10f, 1f, .8f, 1f)));
-        actionColors.put(Action.grab, new Pair(Game.hsva(251f,.8f,.3f, 1f), Game.hsva(251f, 1f, .8f, 1f)));
-        actionColors.put(Action.special, new Pair(Game.hsva(130f,.8f,.3f, 1f), Game.hsva(130f, 1f, .8f, 1f)));
         
         actionButtonPos = new EnumMap<Action, Integer>(Action.class);
         actionButtonPos.put(Action.kick, 150);
@@ -82,6 +84,19 @@ public class Controls {
 
         controlPad = new Circle(controlpadCenter.x, controlpadCenter.y, controlpadDiameter/2);
         actionPad = new Circle(actionPadCenter.x, actionPadCenter.y, controlpadDiameter/2);
+        actionPadPos = new Vector2(actionPad.x, actionPad.y);
+        
+        buttonDividerOffset = new EnumMap<Action, Vector2>(Action.class);
+        for(Action a : actionButtonPos.keySet())
+            buttonDividerOffset.put(a,actionPadPos.cpy().add(Game.rayRad(arcRadius, Math.toRadians(actionButtonPos.get(a)))));
+        
+        buttonIconPos = new EnumMap<Action, Vector2>(Action.class);
+        for(Action a : actionButtonPos.keySet())
+            buttonIconPos.put(a,actionPadPos.cpy().add(Game.rayRad(arcRadius*0.7f, Math.toRadians(actionButtonPos.get(a)+60))));
+        
+        buttonIcons = new EnumMap<Action, Sprite>(Action.class);
+        buttonIcons.put(Action.kick, Game.loadSprite("kick_effect", buttonIconPos.get(Action.kick), 0.5f));
+        buttonIcons.put(Action.grab, Game.loadSprite("grab_effect", buttonIconPos.get(Action.grab), 0.5f));
     }
 
     public void drawButtonInner(ShapeRenderer shapeRenderer, boolean pressed, Pair<Color,Color> color, Circle button)
@@ -116,19 +131,36 @@ public class Controls {
         shapeRenderer.setColor(controlPadInnerColor);
         shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadDeadzone);
         
+        shapeRenderer.setColor(buttonOutlines);
+        shapeRenderer.circle(actionPad.x, actionPad.y, arcRadius+5);
+
+        
         drawArcButton(shapeRenderer, Action.kick);
         drawArcButton(shapeRenderer, Action.grab);
         drawArcButton(shapeRenderer, Action.special);
+
+        shapeRenderer.setColor(buttonOutlines);
+        for(Action action : actionButtonPos.keySet())
+        {
+            shapeRenderer.rectLine(actionPadPos, buttonDividerOffset.get(action), 5);
+        }
         
         shapeRenderer.setColor(state.get(Action.lock) ? controlPadOuterColor : controlPadInnerColor);
         shapeRenderer.circle(actionPad.x, actionPad.y, lockButtonRadius);
         
         shapeRenderer.end();
+        
+        Game.inst.guiBatch.begin();
+        for(Entry<Action,Sprite> e : buttonIcons.entrySet())
+        {
+            e.getValue().draw(Game.inst.guiBatch);
+        }
+        Game.inst.guiBatch.end();
     }
     
     void drawArcButton(ShapeRenderer sr, Action action)
     {
-        sr.setColor(state.get(action) ? actionColors.get(action).a : actionColors.get(action).b);
+        sr.setColor(state.get(action) ? controlPadInnerColor : controlPadColor);
         sr.arc(actionPad.x, actionPad.y, arcRadius,(float) actionButtonPos.get(action), 120);
     }
     

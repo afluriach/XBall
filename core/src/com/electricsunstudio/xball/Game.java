@@ -385,6 +385,14 @@ public class Game extends ApplicationAdapter {
         return sprite;
     }
     
+    public static Sprite loadSprite(String name, Vector2 pos, float scale)
+    {
+        Sprite s = loadSprite(name);
+        s.setCenter(pos.x, pos.y);
+        s.setScale(scale);
+        return s;
+    }
+    
     public static void changeTexture(Sprite sprite, String name)
     {
         if(Gdx.app == null || Gdx.files == null) return;
