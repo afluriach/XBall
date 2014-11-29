@@ -47,7 +47,6 @@ public class Controls {
     EnumMap<Action, Vector2> buttonIconPos;
     EnumMap<Action, Sprite> buttonIcons;
     
-    Color controlPadOuterColor = Game.hsva(251, .3f, .7f, 1f);
     Color controlPadColor = Game.hsva(251f,.1f,.3f, 1f);
     Color controlPadInnerColor = Game.hsva(251f, .1f, .8f, 1f);
     Color buttonOutlines = Game.hsva(0f, 0f, .9f, 1f);
@@ -92,11 +91,14 @@ public class Controls {
         
         buttonIconPos = new EnumMap<Action, Vector2>(Action.class);
         for(Action a : actionButtonPos.keySet())
-            buttonIconPos.put(a,actionPadPos.cpy().add(Game.rayRad(arcRadius*0.7f, Math.toRadians(actionButtonPos.get(a)+60))));
+            buttonIconPos.put(a,actionPadPos.cpy().add(Game.rayRad(arcRadius*0.75f, Math.toRadians(actionButtonPos.get(a)+60))));
+        
+        buttonIconPos.put(Action.lock,actionPadPos);
         
         buttonIcons = new EnumMap<Action, Sprite>(Action.class);
-        buttonIcons.put(Action.kick, Game.loadSprite("kick_effect", buttonIconPos.get(Action.kick), 0.5f));
-        buttonIcons.put(Action.grab, Game.loadSprite("grab_effect", buttonIconPos.get(Action.grab), 0.5f));
+        buttonIcons.put(Action.kick, Game.loadSprite("kick_effect", buttonIconPos.get(Action.kick), 0.4f));
+        buttonIcons.put(Action.grab, Game.loadSprite("grab_effect", buttonIconPos.get(Action.grab), 0.4f));
+        buttonIcons.put(Action.lock, Game.loadSprite("lock_icon", buttonIconPos.get(Action.lock), 1f));
     }
 
     public void drawButtonInner(ShapeRenderer shapeRenderer, boolean pressed, Pair<Color,Color> color, Circle button)
@@ -122,14 +124,11 @@ public class Controls {
         shapeRenderer.begin(ShapeType.Filled);
 
         //draw outer margin
-        shapeRenderer.setColor(controlPadOuterColor);
+        shapeRenderer.setColor(controlPadColor);
         shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius);
         
-        shapeRenderer.setColor(controlPadColor);
-        shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadMax);
-
         shapeRenderer.setColor(controlPadInnerColor);
-        shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadDeadzone);
+        shapeRenderer.circle(controlPad.x, controlPad.y, controlPad.radius*controlpadMax);
         
         shapeRenderer.setColor(buttonOutlines);
         shapeRenderer.circle(actionPad.x, actionPad.y, arcRadius+5);
@@ -145,7 +144,10 @@ public class Controls {
             shapeRenderer.rectLine(actionPadPos, buttonDividerOffset.get(action), 5);
         }
         
-        shapeRenderer.setColor(state.get(Action.lock) ? controlPadOuterColor : controlPadInnerColor);
+        shapeRenderer.setColor(buttonOutlines);
+        shapeRenderer.circle(actionPad.x, actionPad.y, lockButtonRadius+5);
+        
+        shapeRenderer.setColor(state.get(Action.lock) ? controlPadInnerColor: controlPadColor);
         shapeRenderer.circle(actionPad.x, actionPad.y, lockButtonRadius);
         
         shapeRenderer.end();
