@@ -17,10 +17,4 @@ public class BombsAway extends OneVOne {
     }
     
     public static final String name = "Bombs Away!";
-    
-    @Override
-    public String getPlayerName()
-    {
-        return "blue_player";
-    }    
 }

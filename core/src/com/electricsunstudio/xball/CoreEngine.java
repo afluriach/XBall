@@ -141,7 +141,10 @@ public class CoreEngine {
     
     public void loadMapObjects()
     {
-        loadObjectsFromLayer(crntMap.getLayers().get("agents"));
+        for(int i=0;i<Game.teamSize; ++i)
+        {
+            loadObjectsFromLayer(crntMap.getLayers().get("players"+(i+1)));
+        }
         loadObjectsFromLayer(crntMap.getLayers().get("sensor"));
     }
     

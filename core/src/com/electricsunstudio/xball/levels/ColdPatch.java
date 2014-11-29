@@ -16,11 +16,5 @@ public class ColdPatch extends FourWay {
         return "t_cold_patch";
     }
     
-    @Override
-    public String getPlayerName()
-    {
-        return "player1";
-    }
-    
     public static final String name = "Cold Patch";
 }

@@ -55,6 +55,7 @@ public class Game extends ApplicationAdapter {
     
     public static Class level = Level1.class;
     public static String player;
+    public static int teamSize = 1;
     
     public static final Class[] availableLevels = {
         Level1.class,

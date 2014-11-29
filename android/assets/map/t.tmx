@@ -16,23 +16,67 @@
    H4sIAAAAAAAAA+3XOwrAIBAEUIn3v3OqdNkNwXymeA9sRIZpXHQMAPjH1qwEVY+UfvPm/tf0W6PftWNezGKdqc6+MXvkyZPX5yXf307C/Ovot0a/Nenv5/T/BwDP2wEc/22YABkAAA==
   </data>
  </layer>
- <objectgroup name="agents">
-  <object name="player1" type="Player" x="832" y="1280" width="64" height="64">
+ <objectgroup name="players1">
+  <object name="player1a" type="Player" x="768" y="1280" width="64" height="64">
    <properties>
     <property name="color" value="blue"/>
    </properties>
   </object>
-  <object name="player2" type="Player" x="1728" y="1280" width="64" height="64">
+  <object name="player2a" type="Player" x="1792" y="1280" width="64" height="64">
    <properties>
     <property name="color" value="blue"/>
    </properties>
   </object>
-  <object name="player3" type="Player" x="1280" y="832" width="64" height="64">
+  <object name="player3a" type="Player" x="1280" y="768" width="64" height="64">
    <properties>
     <property name="color" value="blue"/>
    </properties>
   </object>
-  <object name="player4" type="Player" x="1280" y="1792" width="64" height="64">
+  <object name="player4a" type="Player" x="1280" y="1792" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="players2">
+  <object name="player1b" type="Player" x="896" y="1344" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player2b" type="Player" x="1664" y="1344" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player3b" type="Player" x="1344" y="896" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player4b" type="Player" x="1344" y="1664" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="players3">
+  <object name="player1c" type="Player" x="896" y="1216" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player2c" type="Player" x="1664" y="1216" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player3c" type="Player" x="1216" y="896" width="64" height="64">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object name="player4c" type="Player" x="1216" y="1664" width="64" height="64">
    <properties>
     <property name="color" value="blue"/>
    </properties>

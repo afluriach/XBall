@@ -11,10 +11,12 @@ public class StartMatch extends ServerIntent implements Serializable {
     public String levelName;
     public String player;
     public long seed;
+    public int teamSize;
 
-    public StartMatch(String levelName, String player, long seed) {
+    public StartMatch(String levelName, String player, long seed, int teamSize) {
         this.levelName = levelName;
         this.player = player;
         this.seed = seed;
+        this.teamSize = teamSize;
     }
 }

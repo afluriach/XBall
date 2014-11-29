@@ -16,11 +16,5 @@ public class RoughPatch extends FourWay {
         return "t_rough_patch";
     }
     
-    @Override
-    public String getPlayerName()
-    {
-        return "player1";
-    }
-    
     public static final String name = "Rough Patch";
 }

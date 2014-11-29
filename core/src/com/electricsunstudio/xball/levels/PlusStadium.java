@@ -16,11 +16,5 @@ public class PlusStadium extends FourWay {
         return "t";
     }
     
-    @Override
-    public String getPlayerName()
-    {
-        return "player1";
-    }
-    
     public static final String name = "+ Stadium";
 }

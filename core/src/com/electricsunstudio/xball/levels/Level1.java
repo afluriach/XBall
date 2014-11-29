@@ -16,11 +16,5 @@ public class Level1 extends OneVOne {
         return "stadium1";
     }
     
-    @Override
-    public String getPlayerName()
-    {
-        return "blue_player";
-    }
-    
     public static final String name = "Stadium 1";
 }

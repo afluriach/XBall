@@ -110,6 +110,10 @@ public class ServerLauncher {
                 }
                 if(tokens.length < 4)
                 {
+                    System.out.println("no team size provided");
+                }
+                if(tokens.length < 5)
+                {
                     System.out.println("no users to join provided");
                     continue;
                 }
@@ -124,7 +128,19 @@ public class ServerLauncher {
                     System.out.println("invalid level");
                     continue;
                 }
-                startMatch(mapName, level, Arrays.copyOfRange(tokens, 3, tokens.length));
+                
+                int teamSize=0;
+                try{
+                    teamSize = Integer.parseInt(tokens[3]);
+                    if(teamSize <= 0 || teamSize > 3)
+                        throw new NumberFormatException();
+                } catch(NumberFormatException e)
+                {
+                    System.out.println("invalid team size");
+                    continue;
+                }
+                
+                startMatch(mapName, level, Arrays.copyOfRange(tokens, 4, tokens.length), teamSize);
             }
             else
             {
@@ -135,13 +151,8 @@ public class ServerLauncher {
 
     //TODO lookup players in level map, ensure the names are valid
     //warn if player has not been assigned
-    static void startMatch(String levelName, Class level, String[] tokens)
+    static void startMatch(String levelName, Class level, String[] tokens, int teamSize)
     {
-        for(String s : tokens)
-        {
-            System.out.println(s);
-        }
-        
         HashMap<String,StartMatch> messages = new HashMap<String, StartMatch>();
         long seed = System.currentTimeMillis();
         try
@@ -166,7 +177,7 @@ public class ServerLauncher {
                 }
                 else
                 {
-                    messages.put(username, new StartMatch(levelName, playerName, seed));
+                    messages.put(username, new StartMatch(levelName, playerName, seed, teamSize));
                 }
             }
         }
@@ -181,13 +192,14 @@ public class ServerLauncher {
             userThreads.get(e.getKey()).startMatch(e.getValue());
             System.out.println("sent start message to " + e.getKey());
         }
-        startMatchGame(levelName, seed);
+        startMatchGame(levelName, seed, teamSize);
     }
     
-    static void startMatchGame(String levelName, long seed)
+    static void startMatchGame(String levelName, long seed, int teamSize)
     {
         game = new Game(seed);
         Game.level = Game.getLevelFromSimpleName(levelName);
+        Game.teamSize = teamSize;
         game.createServer();
 
         engineTimer = new Timer(true);

@@ -49,7 +49,11 @@ public abstract class Level
     }
     
     public abstract String getMapName();
-    public abstract String getPlayerName();
+    //the default player, in single player campaign
+    public String getPlayerName()
+    {
+        return "player1a";
+    }
     
     public void init()
     {

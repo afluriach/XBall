@@ -37,6 +37,7 @@ public class Lobby extends XballActivity{
                 StartMatch match = (StartMatch) t;
                 Game.player = match.player;
                 Game.level = Game.getLevelFromSimpleName(match.levelName);
+                Game.teamSize = match.teamSize;
                 Log.d(Game.tag, String.format("starting level %s as %s\n", match.levelName, match.player));
                 AndroidLauncher.seed = match.seed;
                 //start match

@@ -16,11 +16,5 @@ public class BumpyRoad extends OneVOne {
         return "bumpy_road";
     }
     
-    @Override
-    public String getPlayerName()
-    {
-        return "blue_player";
-    }
-    
     public static final String name = "Bumpy Road";
 }
