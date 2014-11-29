@@ -99,10 +99,14 @@ public class Bomb extends Ball
         {
             Vector2 disp = target.getCenterPos().sub(getCenterPos());
             
+            float actualForce = baseForce;
+            if(target instanceof Ball)
+                actualForce *= 0.7f;
+            
             if(disp.len2() <= blastRadius*blastRadius)
             {
                 //apply full force within the core blast radius
-                Vector2 impulse = disp.nor().scl(baseForce*blastTime);          
+                Vector2 impulse = disp.nor().scl(actualForce*blastTime);
                 target.physicsBody.applyLinearImpulse(impulse, target.getCenterPos(), true);
                 
                 //and notify player by bomb if level is a HitListener
@@ -115,7 +119,7 @@ public class Bomb extends Ball
             {
                 float dist = disp.len();
                 //scale force according to distance from the core radius
-                float forceMag = baseForce / (dist-blastRadius)/(dist-blastRadius);
+                float forceMag = actualForce / (dist-blastRadius)/(dist-blastRadius);
                 Vector2 impulse = disp.nor().scl(forceMag*blastTime);
                 target.physicsBody.applyLinearImpulse(impulse, target.getCenterPos(), true);
             }           
