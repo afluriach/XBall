@@ -545,6 +545,34 @@ public class Game extends ApplicationAdapter {
         return names;
     }
     
+    public static String getMapName(Class levelCls)
+    {
+        try {
+            Field f = levelCls.getField("mapName");
+            return (String) f.get(null);
+        } catch (SecurityException ex) {
+            log("class " + levelCls.getSimpleName() + ", name is not accessible");
+            return null;
+        } catch(IllegalAccessException ex){
+            log("class " + levelCls.getSimpleName() + " illegal access");
+            return null;
+        } catch (IllegalArgumentException ex) {
+            return null;
+        } catch (NoSuchFieldException ex) {
+            return null;
+        }
+    }
+    
+    public static String levelName(Class levelCls)
+    {
+        try {
+            Field f = levelCls.getField("name");
+            return (String) f.get(null);
+        } catch (Exception ex) {
+            throw new RuntimeException("Level " + levelCls.getSimpleName() + " does not have a name");
+        }
+    }
+    
     public static Class getLevelFromSimpleName(String name)
     {
         try {

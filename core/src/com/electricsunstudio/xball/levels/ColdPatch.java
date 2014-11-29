@@ -13,8 +13,9 @@ public class ColdPatch extends FourWay {
     @Override
     public String getMapName()
     {
-        return "t_cold_patch";
+        return mapName;
     }
     
     public static final String name = "Cold Patch";
+    public static final String mapName = "t_cold_patch";
 }

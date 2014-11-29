@@ -1,12 +1,9 @@
 package com.electricsunstudio.xball.android;
 
 import android.R;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -37,8 +34,9 @@ public class CampaignSelect extends XballActivity {
             @Override
             public void onItemClick(AdapterView<?> av, View view, int i, long l) {
                 //start game
-                Game.level = Game.availableLevels[i];
-                startActivity(AndroidLauncher.class);
+                CampaignSelectViewer.selectedLevel = Game.availableLevels[i];
+                Log.e(Game.tag, "selected level: " + CampaignSelectViewer.selectedLevel.getSimpleName());
+                startActivity(CampaignSelectViewer.class);
             }
         });
         

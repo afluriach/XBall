@@ -13,8 +13,9 @@ public class Level1 extends OneVOne {
     @Override
     public String getMapName()
     {
-        return "stadium1";
+        return mapName;
     }
     
     public static final String name = "Stadium 1";
+    public static final String mapName = "stadium1";
 }

@@ -13,8 +13,9 @@ public class BumpyRoad extends OneVOne {
     @Override
     public String getMapName()
     {
-        return "bumpy_road";
+        return mapName;
     }
     
     public static final String name = "Bumpy Road";
+    public static final String mapName = "bumpy_road";
 }

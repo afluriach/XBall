@@ -13,8 +13,9 @@ public class PlusStadium extends FourWay {
     @Override
     public String getMapName()
     {
-        return "t";
+        return mapName;
     }
     
     public static final String name = "+ Stadium";
+    public static final String mapName = "t";
 }

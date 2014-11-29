@@ -14,8 +14,9 @@ public class CoolBlast extends OneVOne {
     @Override
     public String getMapName()
     {
-        return "cool_blast";
+        return mapName;
     }
     
     public static final String name =  "Cool Blast";
+    public static final String mapName =  "cool_blast";
 }

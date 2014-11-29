@@ -14,8 +14,9 @@ public class SlipperyStadium extends OneVOne {
     @Override
     public String getMapName()
     {
-        return "slippery_stadium";
+        return mapName;
     }
     
+    public static final String mapName = "slippery_stadium";
     public static final String name =  "Slippery Stadium";
 }

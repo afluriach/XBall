@@ -13,8 +13,9 @@ public class BombsAway extends OneVOne {
     @Override
     public String getMapName()
     {
-        return "bombs_away";
+        return mapName;
     }
     
     public static final String name = "Bombs Away!";
+    public static final String mapName = "bombs_away";
 }

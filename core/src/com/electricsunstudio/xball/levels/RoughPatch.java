@@ -13,8 +13,9 @@ public class RoughPatch extends FourWay {
     @Override
     public String getMapName()
     {
-        return "t_rough_patch";
+        return mapName;
     }
     
     public static final String name = "Rough Patch";
+    public static final String mapName = "rough_patch";
 }

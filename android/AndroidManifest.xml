@@ -27,6 +27,13 @@
         </activity>
         
         <activity
+            android:name="com.electricsunstudio.xball.android.CampaignSelectViewer"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+        </activity>
+          
+        <activity
             android:name="com.electricsunstudio.xball.android.ConnectToServer"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
