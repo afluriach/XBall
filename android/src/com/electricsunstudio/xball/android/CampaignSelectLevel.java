@@ -16,7 +16,7 @@ import com.electricsunstudio.xball.Game;
  *
  * @author toni
  */
-public class CampaignSelect extends XballActivity {
+public class CampaignSelectLevel extends XballActivity {
     @Override
     public void onCreate(Bundle savesInstanceState)
     {
@@ -34,9 +34,9 @@ public class CampaignSelect extends XballActivity {
             @Override
             public void onItemClick(AdapterView<?> av, View view, int i, long l) {
                 //start game
-                CampaignSelectViewer.selectedLevel = Game.availableLevels[i];
-                Log.e(Game.tag, "selected level: " + CampaignSelectViewer.selectedLevel.getSimpleName());
-                startActivity(CampaignSelectViewer.class);
+                CampaignLevelViewer.selectedLevel = Game.availableLevels[i];
+                Log.e(Game.tag, "selected level: " + CampaignLevelViewer.selectedLevel.getSimpleName());
+                startActivity(CampaignLevelViewer.class);
             }
         });
         

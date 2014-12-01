@@ -35,7 +35,7 @@ public class MainMenu extends XballActivity {
             public void onItemClick(AdapterView<?> av, View view, int i, long l) {
                 if(i == 0)
                 {
-                    startActivity(CampaignSelect.class);
+                    startActivity(CampaignSelectLevel.class);
                 }
                 else if(i == 1)
                 {

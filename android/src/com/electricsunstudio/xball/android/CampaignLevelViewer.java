@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author toni
  */
-public class CampaignSelectViewer extends XballActivity {
+public class CampaignLevelViewer extends XballActivity {
     public static Class selectedLevel;
     @Override
     public void onCreate(Bundle savesInstanceState)
