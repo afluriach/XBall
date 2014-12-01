@@ -38,6 +38,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 public class Game extends ApplicationAdapter {
@@ -90,6 +91,7 @@ public class Game extends ApplicationAdapter {
     public Random rand;
 
     float updateDelta = 0;
+    ReentrantLock engineLock;
     
     public Controls controls;
     public Player crntPlayer;
@@ -166,9 +168,12 @@ public class Game extends ApplicationAdapter {
             //add listener for control data
             serverInput.addHandler(ControlState.class, new ControlHandler());
             serverInput.addHandler(PingIntent.class, new PingHandler());
+            serverInput.addHandler(GameState.class, new GameStateHandler());
             lastPing = 0f;
             pingOut = false;
         }
+        
+        engineLock = new ReentrantLock();
     }
     
     class PingHandler implements Handler
@@ -186,8 +191,23 @@ public class Game extends ApplicationAdapter {
         @Override
         public void onReceived(Object t) {
             ControlState cs = (ControlState)t;
+            engineLock.lock();
+            engine.addControlStateToBuffer(cs);
             if(engine.playersNameMap.containsKey(cs.player) && crntPlayer != engine.playersNameMap.get(cs.player))
                 engine.playerControlState.put(engine.playersNameMap.get(cs.player), cs);
+            engineLock.unlock();
+        }
+    }
+    
+    class GameStateHandler implements Handler
+    {
+        @Override
+        public void onReceived(Object t) {
+            GameState state = (GameState)t;
+            System.out.println("received game state, frame " + state.frameNum);
+            engineLock.lock();
+            restoreStateAndFastForward(state);
+            engineLock.unlock();
         }
     }
     
@@ -201,7 +221,7 @@ public class Game extends ApplicationAdapter {
         }
     }
     
-    GameState getState()
+    public GameState getState()
     {
         return new GameState(engine.crntFrame, gameObjectSystem.getState(), crntLevel.getState());
     }
@@ -211,6 +231,23 @@ public class Game extends ApplicationAdapter {
         crntLevel.restoreFromState(s.levelState);
         gameObjectSystem.restoreFromState(s.objectState);
         engine.crntFrame = s.frameNum;
+    }
+    
+    void restoreStateAndFastForward(GameState s)
+    {
+    	System.out.printf("Restore and fast forward from %d to %d\n", s.frameNum, engine.crntFrame);
+        //fast forward back to the current frame after loading state
+        int frameBeforeLoad = engine.crntFrame;
+        
+        crntLevel.restoreFromState(s.levelState);
+        gameObjectSystem.restoreFromState(s.objectState);
+        engine.crntFrame = s.frameNum;
+
+        while(engine.crntFrame < frameBeforeLoad)
+        {
+            engine.fastForwardTick();
+        }
+        engine.clearControlBuffer(s.frameNum);
     }
     
     //for capturing current game state
@@ -298,11 +335,18 @@ public class Game extends ApplicationAdapter {
             }
         }
         
+        engineLock.lock();
+        
         //System.out.printf("game update tick frame " + engine.crntFrame);
         if(controls != null)
         {
             controls.update();
-            engine.playerControlState.put(crntPlayer, controls.getState());
+            ControlState state = controls.getState();
+            state.player = player;
+            //update current
+            engine.playerControlState.put(crntPlayer, state);
+            //add our state to the buffer as well
+            engine.addControlStateToBuffer(state);
         }
         
         if(serverOutput != null)
@@ -318,9 +362,14 @@ public class Game extends ApplicationAdapter {
             serverOutput.send(engine.playerControlState.get(crntPlayer));
         }
         
-        rand.setSeed(seed+engine.crntFrame);
-        
         engine.updateTick();
+        
+        engineLock.unlock();
+    }
+    
+    public void serverTick()
+    {
+        engine.fastForwardTick();
     }
     
     @Override
@@ -339,9 +388,11 @@ public class Game extends ApplicationAdapter {
         mapRenderer.render();
         batch.end();
         
+        engineLock.lock();
         batch.begin();
         gameObjectSystem.render(batch);
         batch.end();
+        engineLock.unlock();
 
         if(physicsRender)
         {

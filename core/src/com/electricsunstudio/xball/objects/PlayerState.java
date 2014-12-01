@@ -65,7 +65,7 @@ public class PlayerState extends GameObjectState
         
         p.actionEffect = effect;
         if(p.actionEffect != null)
-            p.actionEffect.recreateSrite();
+            p.actionEffect.recreateSprite();
         
         if(grabbing)
         {

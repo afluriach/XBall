@@ -30,7 +30,7 @@ public class BlueBall extends Ball
         create(pos);
     }
     
-    public BlueBall(GoldBallState s)
+    public BlueBall(BlueBallState s)
     {
         super(s.name);
         initFields();

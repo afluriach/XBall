@@ -78,7 +78,7 @@ public class Player extends GameObject
 
         if(actionEffect != null && !grabbing && actionCooldown < fadeStart)
         {
-            actionEffect.getSprite().setAlpha(actionCooldown / fadeStart);
+            actionEffect.setAlpha(actionCooldown/fadeStart);
         }
         if(actionCooldown <= 0 && !grabbing)
         {
@@ -88,9 +88,7 @@ public class Player extends GameObject
 
         if(grabbing && actionEffect != null)
         {
-            Vector2 disp = Game.rayRad(radius+actionEffect.getSprite().getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
-            actionEffect.setPos(new Vector2((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE));
-            actionEffect.setRotation(getRotation()-90);
+            actionEffect.setPos(getCenterPos().scl(Game.PIXELS_PER_TILE));
         }
         
         //apply impulse to try to move objects with the player
@@ -244,8 +242,8 @@ public class Player extends GameObject
         //show the kick effect, sprite will remain in place and fade out
         actionEffect =  new EffectSprite("kick_effect", Vector2.Zero, getRotation()-90);
         //draw the kick effect in front of the player
-        Vector2 disp = Game.rayRad(radius+actionEffect.getSprite().getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
-        actionEffect.setPos(new Vector2((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE));
+        actionEffect.setPos(getCenterPos().scl(Game.PIXELS_PER_TILE));
+        actionEffect.setEntityOffset(Game.rayRad(1, getRotationRad()), radius*Game.PIXELS_PER_TILE);
         
         ArrayList<GameObject> targets = coneQuery(radius + kickDist, getRotation(), kickWidth);
         
@@ -275,8 +273,8 @@ public class Player extends GameObject
         //show the grab effect, sprite will remain in place while grabbing
         actionEffect = new EffectSprite("grab_effect", Vector2.Zero, getRotation()-90);
         //draw the grab effect in front of the player
-        Vector2 disp = Game.rayRad(radius+actionEffect.getSprite().getHeight()/2*Game.TILES_PER_PIXEL, Math.toRadians(getRotation()));
-        actionEffect.setPos(new Vector2((getCenterPos().x+disp.x)*Game.PIXELS_PER_TILE, (getCenterPos().y+disp.y)*Game.PIXELS_PER_TILE));
+        actionEffect.setPos(getCenterPos().scl(Game.PIXELS_PER_TILE));
+        actionEffect.setEntityOffset(Game.rayRad(1, getRotationRad()), radius*Game.PIXELS_PER_TILE);
         
         ArrayList<GameObject> targets = coneQuery(radius + 0.25f + grabDist, getRotation(), grabWidth);
         

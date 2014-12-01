@@ -21,6 +21,7 @@ import com.electricsunstudio.xball.physics.Physics;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class CoreEngine {
     public static final int PIXELS_PER_TILE = Game.PIXELS_PER_TILE;
@@ -41,7 +42,10 @@ public class CoreEngine {
     public Random rand;
     public int crntFrame = 0;
     
+    long seed;
+    
     HashMap<Player,ControlState> playerControlState;
+    TreeMap<Integer, HashMap<Player,ControlState>> pastControlStates;
     HashMap<String,Player> playersNameMap;
     
     public CoreEngine(boolean server)
@@ -54,6 +58,8 @@ public class CoreEngine {
     
     public void initLevel(Class level, long seed)
     {
+        this.seed = seed;
+        
         rand = new Random(seed);
         if(Game.inst != null)
             Game.inst.rand = rand;
@@ -72,11 +78,33 @@ public class CoreEngine {
         {
             playerControlState.put(p, new ControlState());
         }
-
+        pastControlStates = new TreeMap<Integer, HashMap<Player, ControlState>>();
+        initControlBuffer();
+    }
+    
+    //initialize the buffer with the starting state, which includes
+    //entries for all players.
+    public void initControlBuffer()
+    {
+        pastControlStates.put(crntFrame, (HashMap) playerControlState.clone());
+    }
+    
+    //entries will get added to the buffer when they become available. this 
+    //players state will always be up to date.
+    public void addControlStateToBuffer(ControlState s)
+    {
+        if(!pastControlStates.containsKey(s.frameNum))
+        {
+            pastControlStates.put(s.frameNum, new HashMap());
+        }
+        Player p = playersNameMap.get(s.player);
+        pastControlStates.get(s.frameNum).put(p, s);
     }
     
     public void updateTick()
     {
+        rand.setSeed(seed+crntFrame);
+        
         handleControls();
         
         crntLevel.update();
@@ -86,12 +114,62 @@ public class CoreEngine {
         ++crntFrame;
     }
     
+    public void fastForwardTick()
+    {
+        rand.setSeed(seed+crntFrame);
+        
+        applyPastControls();
+        
+        crntLevel.update();
+        gameObjectSystem.update();
+        physics.update();
+
+        ++crntFrame;
+    }
+    
+    public void clearControlBuffer(int limitFrame)
+    {
+		while(!pastControlStates.isEmpty() && pastControlStates.firstKey() < limitFrame)
+		{
+			pastControlStates.remove(pastControlStates.firstKey());
+		}
+    }
+    
+    void applyPastControls()
+    {
+        HashMap<Player,ControlState> nextFrameState = getNextFrameControls();
+        
+        System.out.println("applying past controls for frame " + crntFrame);
+        
+        //apply the past controls stored for the current frame
+        for(Map.Entry<Player,ControlState> e : pastControlStates.get(crntFrame).entrySet())
+        {
+            e.getKey().handleControls(e.getValue());
+
+            //if the next frame does have an entry for this player, push the
+            //current frames entry to the next one
+            if(!nextFrameState.containsKey(e.getKey()))
+            {
+                //the control state will still the contain the actual frame when
+                //it was captured, but this will not affect how it is processed
+                nextFrameState.put(e.getKey(), e.getValue());
+            }
+        }
+    }
+    
+    HashMap<Player,ControlState> getNextFrameControls()
+    {
+        if(!pastControlStates.containsKey(crntFrame+1))
+        {
+            pastControlStates.put(crntFrame+1, new HashMap());
+        }
+        return pastControlStates.get(crntFrame+1);
+    }
+    
     void handleControls()
     {
         //apply control state for each player
-        //may assume that all control states have arrived prior to processing them
-        //or if a control state is not available for this frame, do not process
-        //controls for that player
+        //use the latest that is available for all other players
         for(Map.Entry<Player,ControlState> e : playerControlState.entrySet())
         {
             e.getKey().handleControls(e.getValue());

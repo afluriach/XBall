@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import com.electricsunstudio.xball.network.*;
 import com.electricsunstudio.xball.ControlState;
+import com.electricsunstudio.xball.GameState;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
@@ -25,6 +26,7 @@ public class ServerLauncher {
     public static final int serverPort = 49000;
     static final int maxPacketSize = 65536;
     static final float engineDelay = 0.2f;
+    static final float stateUpdateInterval = 0.1f;
     
     static HashMap<String,Connection> connectedUsers = new HashMap<String, Connection>();
     //the socket that each user is using for their connection
@@ -41,6 +43,8 @@ public class ServerLauncher {
     static Timer engineTimer;
     static Game game;
     static float updateTimeAcc;
+    static float lastUpdateSent = 0f;
+    static ReentrantLock controlDataLock = new ReentrantLock();
     
     static class EngineTick extends TimerTask
     {
@@ -69,8 +73,24 @@ public class ServerLauncher {
             while(updateTimeAcc >= engineDelay)
             {
 //                System.out.printf("running update tick for frame %d\n", game.engine.crntFrame);
-                game.updateTick();
+                controlDataLock.lock();
+                game.serverTick();
+                controlDataLock.unlock();
                 updateTimeAcc -= Game.SECONDS_PER_FRAME;
+                lastUpdateSent += Game.SECONDS_PER_FRAME;
+            }
+            
+            if(lastUpdateSent > stateUpdateInterval)
+            {
+                lastUpdateSent = 0f;
+                
+                GameState state = game.getState();
+                System.out.printf("sending update for frame %d\n", game.engine.crntFrame);
+                
+                for(ServerThread t : userThreads.values())
+                {
+                    t.objOut.send(state);
+                }
             }
         }
     }
@@ -214,6 +234,10 @@ public class ServerLauncher {
             if(t == from) continue;
             t.objOut.send(cs);
         }
+        
+        controlDataLock.lock();
+        game.engine.addControlStateToBuffer(cs);
+        controlDataLock.unlock();
     }
 
     static class Connection

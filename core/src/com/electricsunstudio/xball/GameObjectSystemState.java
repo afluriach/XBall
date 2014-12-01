@@ -19,7 +19,7 @@ public class GameObjectSystemState implements Serializable
         {
             if(!gos.stateIgnore.contains(go.getClass())){
                 stateList.add(go.getState());
-                System.out.println("added state of type " + stateList.get(stateList.size()-1).getClass().getName());
+                //System.out.println("added state of type " + stateList.get(stateList.size()-1).getClass().getName());
             }
         }
         states = stateList.toArray(new GameObjectState[0]);
