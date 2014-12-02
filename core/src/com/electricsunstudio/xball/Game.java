@@ -51,7 +51,7 @@ public class Game extends ApplicationAdapter {
     
     public static final float latencyUpdateInterval = 0.5f;
     
-    public static final boolean physicsRender = true;
+    public static final boolean physicsRender = false;
     
     public static final String tag = "X-Ball";
     
@@ -404,7 +404,9 @@ public class Game extends ApplicationAdapter {
 
         if(physicsRender)
         {
+        	engineLock.lock();
             physics.debugRender(camera.combined);
+            engineLock.unlock();
         }
         
         controls.render(shapeRenderer);
