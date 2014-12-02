@@ -201,10 +201,6 @@ public abstract class GameObject
         {
             Game.inst.physics.removeBody(physicsBody);
         }
-        if(sprite != null)
-        {
-            sprite.getTexture().dispose();
-        }
     }
 
     /**

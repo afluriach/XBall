@@ -24,9 +24,9 @@ import com.electricsunstudio.xball.levels.*;
 import com.electricsunstudio.xball.network.Handler;
 import com.electricsunstudio.xball.network.ObjectSocketInput;
 import com.electricsunstudio.xball.network.PingIntent;
-
 import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.network.ObjectSocketOutput;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
@@ -81,6 +82,9 @@ public class Game extends ApplicationAdapter {
     public SpriteBatch guiBatch;
     public ShapeRenderer shapeRenderer;
     public BitmapFont font;
+    Sprite[] crntSprites;
+    
+    static HashMap<String,Texture> textureCache;
     
     //these are owned by the engine but a reference will be
     //left here for convienence
@@ -139,6 +143,8 @@ public class Game extends ApplicationAdapter {
     @Override
     public void create () {
         inst = this;
+
+        textureCache = new HashMap<String, Texture>();
         
         controls = new Controls();
         
@@ -424,11 +430,20 @@ public class Game extends ApplicationAdapter {
         sprite.draw(batch);
     }
     
+    static Texture loadTexture(String name)
+    {
+    	if(!textureCache.containsKey(name))
+    	{
+    		textureCache.put(name, new Texture(Gdx.files.internal("sprite/"+name+".png")));
+    	}
+    	return textureCache.get(name);
+    }
+    
     public static Sprite loadSprite(String name)
     {
         if(Gdx.app == null || Gdx.files == null) return null;
         
-        Texture texture = new Texture(Gdx.files.internal("sprite/"+name+".png"));
+        Texture texture = loadTexture(name);
         Sprite sprite = new Sprite(texture);
         
         sprite.setOriginCenter();

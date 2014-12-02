@@ -58,11 +58,6 @@ public class PlayerState extends GameObjectState
         p.grabTime = grabTime;
         p.grabbing = grabbing;
 
-        if(p.actionEffect != null)
-        {
-            p.actionEffect.getSprite().getTexture().dispose();
-        }
-        
         p.actionEffect = effect;
         if(p.actionEffect != null)
             p.actionEffect.recreateSprite();
