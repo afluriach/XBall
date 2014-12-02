@@ -313,12 +313,15 @@ public abstract class GameObject
     }
     
     public abstract void update();
-    //default behavior is to just render the texture
-    public void render(SpriteBatch sb)
+    
+    public Sprite getSprite()
     {
-        if(sprite != null)
-            Game.drawSprite(sprite, getCenterPos(), sb, getRotation()-90);
+    	if(sprite == null) return null;
+
+    	Game.setSpritePos(sprite, getCenterPos(), getRotation()-90);
+    	return new Sprite(sprite);
     }
+    
     public abstract void handleContact(GameObject other);
     public abstract void handleEndContact(GameObject other);
     public abstract void init();

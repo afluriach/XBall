@@ -145,6 +145,7 @@ public class Game extends ApplicationAdapter {
         inst = this;
 
         textureCache = new HashMap<String, Texture>();
+        crntSprites = new Sprite[0];
         
         controls = new Controls();
         
@@ -248,7 +249,6 @@ public class Game extends ApplicationAdapter {
         crntLevel.restoreFromState(s.levelState);
         gameObjectSystem.restoreFromState(s.objectState);
         engine.crntFrame = s.frameNum;
-
         while(engine.crntFrame < frameBeforeLoad)
         {
             engine.fastForwardTick();
@@ -369,6 +369,7 @@ public class Game extends ApplicationAdapter {
         }
         
         engine.updateTick();
+        crntSprites = gameObjectSystem.getSprites();
         
         engineLock.unlock();
     }
@@ -394,11 +395,12 @@ public class Game extends ApplicationAdapter {
         mapRenderer.render();
         batch.end();
         
-        engineLock.lock();
         batch.begin();
-        gameObjectSystem.render(batch);
+        for(Sprite s : crntSprites)
+        {
+        	Game.drawSprite(s, batch);
+        }
         batch.end();
-        engineLock.unlock();
 
         if(physicsRender)
         {
@@ -413,6 +415,14 @@ public class Game extends ApplicationAdapter {
         
         if(latencyStr != null)
             drawTextLeftAlign(Color.WHITE, latencyStr, 50, screenHeight-50);
+    }
+    
+    public static void setSpritePos(Sprite sprite, Vector2 centerPos, float rotation)
+    {
+        Vector2 pix = centerPos.cpy().scl(Game.PIXELS_PER_TILE);
+        
+        sprite.setCenter(pix.x, pix.y);
+        sprite.setRotation(rotation);
     }
     
     public static void drawSprite(Sprite sprite, Vector2 centerPos, SpriteBatch batch, float rotation)

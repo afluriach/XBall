@@ -1,5 +1,6 @@
 package com.electricsunstudio.xball;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.electricsunstudio.xball.objects.Bomb;
 import com.electricsunstudio.xball.objects.BombState;
@@ -11,6 +12,7 @@ import com.electricsunstudio.xball.objects.BlueBallState;
 import com.electricsunstudio.xball.objects.Player;
 import com.electricsunstudio.xball.objects.PlayerState;
 import com.electricsunstudio.xball.objects.SpawnSensor;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -174,15 +176,25 @@ public class GameObjectSystem
             remove(go);
         }
     }
-        
-    public void render(SpriteBatch sb)
+    
+    public Sprite[] getSprites()
     {
-        for(GameObject go : gameObjects.values())
-        {
-            go.render(sb);
-        }
+    	ArrayList<Sprite> sprites = new ArrayList<Sprite>();
+    	
+    	for(GameObject go : gameObjects.values())
+    	{
+    		Sprite s = go.getSprite();
+    		if(s != null) sprites.add(s);
+    		
+    		if(go instanceof Player)
+    		{
+    			Sprite effect = ((Player)go).getEffectSprite();
+    			if(effect != null) sprites.add(effect);
+    		}
+    	}
+    	return sprites.toArray(new Sprite[sprites.size()]);
     }
-        
+            
     //check if the object is still in existence and not expired
     public boolean hasObject(String name)
     {

@@ -123,14 +123,12 @@ public class Player extends GameObject
         }
     }
     
-    @Override
-    public void render(SpriteBatch batch)
+    public Sprite getEffectSprite()
     {
-        if(actionEffect != null)
-        {
-            Game.drawSprite(actionEffect.getSprite(), batch);
-        }
-        super.render(batch);
+    	if(actionEffect == null)
+    		return null;
+
+		return new Sprite(actionEffect.getSprite());
     }
     
     public void handleContact(GameObject other)
