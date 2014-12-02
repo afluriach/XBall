@@ -80,6 +80,9 @@ public abstract class Level
     }
     
     public void update() {
+    	//do not spawn client-side in a network game
+    	if(Game.serverOutput != null) return;
+    	
         int count = Game.inst.gameObjectSystem.countObjectsByType(GoldBall.class) + 
                     Game.inst.gameObjectSystem.countObjectsByType(BlueBall.class);
         
